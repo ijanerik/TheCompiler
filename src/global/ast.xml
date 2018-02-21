@@ -17,6 +17,8 @@
     <type name="Bool" ctype="bool" init="FALSE" copy="literal" />
     <type name="Float" ctype="float" init="0.0" copy="literal" />
     <type name="BinOp" ctype="binop" init="BO_unknown" copy="literal" />
+    <type name="MonOp" ctype="monop" init="MO_unknown" copy="literal" />
+    <type name="Type" ctype="cctype" init="T_unknown" copy="literal" />
     <type name="Link" ctype="node*" init="NULL" copy="lookup" />
     <type name="CompilerPhase" ctype="compiler_phase_t" init="PH_initial" copy="literal" />
   </attributetypes>
@@ -71,10 +73,12 @@
     <nodeset name="Expr">
       <target>
         <node name="BinOp" />
-        <node name="Var" />
+        <node name="MonOp" />
+        <node name="Ident" />
         <node name="Num" />
         <node name="Float" />
         <node name="Bool" />
+        <node name="FunCall" />
       </target>
     </nodeset>
       <!--
@@ -173,22 +177,7 @@
           </attributes>
       </node>
 
-      <node name="FunDec">
-          <description>Declaration of a function. (Without body) For header files.</description>
-          <sons>
-              <son name="FunHeader">
-                  <description>The header definitions of the function</description>
-                  <targets>
-                      <target mandatory="yes">
-                          <node name="FunHeader" />
-                          <phases>
-                              <all />
-                          </phases>
-                      </target>
-                  </targets>
-              </son>
-          </sons>
-      </node>
+      <!-- Removed FunDec for redundancy -->
 
       <node name="FunDef">
           <sons>
@@ -206,8 +195,7 @@
               <son name="FunBody">
                   <description>The body of the function</description>
                   <targets>
-                      <!-- @todo Should be mandatory or not? (Empty body) -->
-                      <target mandatory="yes">
+                      <target mandatory="no">
                           <node name="FunBody" />
                           <phases>
                               <all />
@@ -234,25 +222,11 @@
 
       <node name="FunHeader">
         <sons>
-            <son name="RetType">
-                <description>Return type of the function</description>
-                <!--
-                @todo How do we define a BasicType?
-                <targets>
-                    <target mandatory="yes">
-                        <set name="RetType" />
-                        <phases>
-                            <all />
-                        </phases>
-                    </target>
-                </targets>
-                -->
-            </son>
-            <son name="FunName">
+            <son name="Ident">
                 <description>Function name for the function</description>
                 <targets>
                     <target mandatory="yes">
-                        <node name="FunName" />
+                        <node name="Ident" />
                         <phases>
                             <all />
                         </phases>
@@ -260,13 +234,10 @@
                 </targets>
             </son>
         </sons>
-      </node>
 
-      <node name="FunName">
-          <sons></sons>
           <attributes>
-              <attribute name="Name">
-                  <type name="String">
+              <attribute name="RetType">
+                  <type name="Type">
                       <targets>
                           <target mandatory="yes">
                               <phases>
@@ -282,55 +253,43 @@
 
       <node name="GlobalDec">
           <description>Global declaration of a variable</description>
-          <son name="Type">
-              <description>Type of the param</description>
-              <!--
-              @todo How do we define a BasicType?
-              <targets>
-                  <target mandatory="yes">
-                      <set name="RetType" />
-                      <phases>
-                          <all />
-                      </phases>
-                  </target>
-              </targets>
-              -->
-          </son>
-          <son name="Var">
-              <description>Variable for the param</description>
-              <targets>
-                  <target mandatory="yes">
-                      <node name="Var" />
-                      <phases>
-                          <all />
-                      </phases>
-                  </target>
-              </targets>
-          </son>
-      </node>
-
-      <node name="GlobalDef">
-          <description>Global definition of a variable</description>
           <sons>
-              <son name="Type">
-                  <description>Type of the param</description>
-                  <!--
-                  @todo How do we define a BasicType?
+              <son name="Ident">
+                  <description>Variable for the param</description>
                   <targets>
                       <target mandatory="yes">
-                          <set name="RetType" />
+                          <node name="Ident" />
                           <phases>
                               <all />
                           </phases>
                       </target>
                   </targets>
-                  -->
               </son>
-              <son name="Var">
+          </sons>
+          <attributes>
+              <attribute name="Type">
+                  <type name="Type">
+                      <targets>
+                          <target mandatory="yes">
+                              <phases>
+                                  <all />
+                              </phases>
+                          </target>
+                      </targets>
+                  </type>
+              </attribute>
+          </attributes>
+
+      </node>
+
+      <node name="GlobalDef">
+          <description>Global definition of a variable</description>
+          <sons>
+              <son name="Ident">
                   <description>Variable for the param</description>
                   <targets>
                       <target mandatory="yes">
-                          <node name="Var" />
+                          <node name="Ident" />
                           <phases>
                               <all />
                           </phases>
@@ -353,19 +312,28 @@
 
 
           <attributes>
-              <attributes>
-                  <attribute name="export">
-                      <type name="Bool">
-                          <targets>
-                              <target mandatory="yes">
-                                  <phases>
-                                      <all />
-                                  </phases>
-                              </target>
-                          </targets>
-                      </type>
-                  </attribute>
-              </attributes>
+              <attribute name="Type">
+                  <type name="Type">
+                      <targets>
+                          <target mandatory="yes">
+                              <phases>
+                                  <all />
+                              </phases>
+                          </target>
+                      </targets>
+                  </type>
+              </attribute>
+              <attribute name="export">
+                  <type name="Bool">
+                      <targets>
+                          <target mandatory="yes">
+                              <phases>
+                                  <all />
+                              </phases>
+                          </target>
+                      </targets>
+                  </type>
+              </attribute>
           </attributes>
       </node>
 
@@ -399,25 +367,11 @@
 
       <node name="Param">
           <sons>
-              <son name="Type">
-                  <description>Type of the param</description>
-                  <!--
-                  @todo How do we define a BasicType?
-                  <targets>
-                      <target mandatory="yes">
-                          <set name="RetType" />
-                          <phases>
-                              <all />
-                          </phases>
-                      </target>
-                  </targets>
-                  -->
-              </son>
-              <son name="Var">
+              <son name="Ident">
                   <description>Variable for the param</description>
                   <targets>
                       <target mandatory="yes">
-                          <node name="Var" />
+                          <node name="Ident" />
                           <phases>
                               <all />
                           </phases>
@@ -425,6 +379,19 @@
                   </targets>
               </son>
           </sons>
+          <attributes>
+              <attribute name="Type">
+                  <type name="Type">
+                      <targets>
+                          <target mandatory="yes">
+                              <phases>
+                                  <all />
+                              </phases>
+                          </target>
+                      </targets>
+                  </type>
+              </attribute>
+          </attributes>
       </node>
     <!--
     ==================== CUSTOM NODES FOR STATEMENTS =========================
@@ -436,6 +403,17 @@
                   <targets>
                       <target mandatory="no">
                           <set name="VarDecs" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+              <son name="FunDefs">
+                  <description>variable declarations in sequence</description>
+                  <targets>
+                      <target mandatory="no">
+                          <set name="FunDefs" />
                           <phases>
                               <all />
                           </phases>
@@ -454,6 +432,36 @@
                   </targets>
               </son>
           </sons>
+      </node>
+
+      <node name="FunDefs">
+          <description>represents (sequence of) function declarations</description>
+          <sons>
+              <son name="FunDef">
+                  <description>first function declaration in sequence</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <set name="FunDef" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+              <son name="Next">
+                  <description>remaining statements in function declarations</description>
+                  <targets>
+                      <target mandatory="no">
+                          <node name="FunDefs" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+          </sons>
+          <attributes>
+          </attributes>
       </node>
 
       <node name="VarDecs">
@@ -489,25 +497,11 @@
       <node name="VarDec">
           <description>Declaration of a variable</description>
           <sons>
-              <son name="Type">
-                  <description>Type of the param</description>
-                  <!--
-                  @todo How do we define a BasicType?
-                  <targets>
-                      <target mandatory="yes">
-                          <set name="RetType" />
-                          <phases>
-                              <all />
-                          </phases>
-                      </target>
-                  </targets>
-                  -->
-              </son>
-              <son name="Var">
+              <son name="Ident">
                   <description>Variable for the param</description>
                   <targets>
                       <target mandatory="yes">
-                          <node name="Var" />
+                          <node name="Ident" />
                           <phases>
                               <all />
                           </phases>
@@ -527,6 +521,20 @@
                   </targets>
               </son>
           </sons>
+
+          <attributes>
+              <attribute name="Type">
+                  <type name="Type">
+                      <targets>
+                          <target mandatory="yes">
+                              <phases>
+                                  <all />
+                              </phases>
+                          </target>
+                      </targets>
+                  </type>
+              </attribute>
+          </attributes>
       </node>
 
       <node name="Block">
@@ -550,18 +558,302 @@
 
       <!-- @todo Assign already defined in PRE DEFINED -->
 
-      <node name="FunCall"></node>
-      <node name="IfElseStmt"></node>
-      <node name="WhileStmt"></node>
-      <node name="DoWhileStmt"></node>
-      <node name="ForStmt"></node>
-      <node name="ReturnStmt"></node>
+      <node name="FunCall">
+          <sons>
+              <son name="Ident">
+                  <description>Function name for the function</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <node name="Ident" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+              <son name="Exprs">
+                  <description>The arguments of the function call</description>
+                  <targets>
+                      <target mandatory="no">
+                          <node name="Exprs" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+          </sons>
+      </node>
+
+      <node name="IfElseStmt">
+          <sons>
+              <son name="Expr">
+                  <description>If the expression is true the IfBlock executes otherwise the ElseBlock</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <node name="Expr" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+              <son name="IfBlock">
+                  <description>The block that executes if the expression is true</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <node name="Block" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+              <son name="ElseBlock">
+                  <description>The block that executes if the expression is false</description>
+                  <targets>
+                      <target mandatory="no">
+                          <node name="Block" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+          </sons>
+      </node>
+
+      <node name="WhileStmt">
+          <description>Executes block while expression is true</description>
+          <sons>
+              <son name="Expr">
+                  <description>If the expression is true execute the while body</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <set name="Expr" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+              <son name="Block">
+                  <description>The block that executes if the expression is true</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <node name="Block" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+          </sons>
+      </node>
+
+      <node name="DoWhileStmt">
+          <description>Executes the block before checking the expression</description>
+          <sons>
+              <son name="Expr">
+                  <description>If the expression is true execute the while body</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <set name="Expr" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+              <son name="Block">
+                  <description>The block that executes if the expression is true</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <node name="Block" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+          </sons>
+      </node>
+
+      <node name="ForStmt">
+          <sons>
+              <son name="AssignVar">
+                  <description>Variable for the param</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <node name="Var" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+
+              <son name="AssignExpr">
+                  <description>right hand side expression for assign var</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <set name="Expr" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+
+              <son name="CompareExpr">
+                  <description><!-- @todo Hoe werkt deze?? --></description>
+                  <targets>
+                      <target mandatory="yes">
+                          <set name="Expr" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+
+              <son name="UpdateExpr">
+                  <description>Update variable every time the loop starts over</description>
+                  <targets>
+                      <target mandatory="no">
+                          <set name="Expr" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+
+              <son name="Block">
+                  <description>The block that executes if the expression is true</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <node name="Block" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+          </sons>
+      </node>
+
+      <node name="ReturnStmt">
+        <sons>
+            <son name="Expr">
+                <description>Update variable every time the loop starts over</description>
+                <targets>
+                    <target mandatory="no">
+                        <set name="Expr" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+        </sons>
+      </node>
+
+      <node name="Exprs">
+          <sons>
+              <son name="Expr">
+                  <description>first expression in sequence</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <set name="Expr" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+              <son name="Next">
+                  <description>remaining expressions in sequence</description>
+                  <targets>
+                      <target mandatory="no">
+                          <node name="Exprs" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+          </sons>
+      </node>
 
 
     <!--
     ================== PRE DEFINED NODES FOR EXPRESSIONS ====================
     -->
-      <node name="Expr"></node>
+
+      <node name="MonOp">
+          <description>represents unary operator application</description>
+          <sons>
+              <son name="Right">
+                  <description>right operand expression</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <set name="Expr" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+          </sons>
+          <attributes>
+              <description>operator type</description>
+              <attribute name="Op">
+                  <type name="MonOp">
+                      <targets>
+                          <target mandatory="yes">
+                              <any />
+                              <phases>
+                                  <all />
+                              </phases>
+                          </target>
+                      </targets>
+                  </type>
+              </attribute>
+          </attributes>
+      </node>
+
+      <node name="CastExpr">
+          <description>Cast an expression to another type</description>
+          <sons>
+              <son name="Expr">
+                  <description>Expression that needs to be casted</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <set name="Expr" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+          </sons>
+          <attributes>
+              <attributes>
+                  <attribute name="Type">
+                      <type name="Type">
+                          <targets>
+                              <target mandatory="yes">
+                                  <phases>
+                                      <all />
+                                  </phases>
+                              </target>
+                          </targets>
+                      </type>
+                  </attribute>
+              </attributes>
+          </attributes>
+      </node>
    <!--
    ==================== PRE DEFINED NODES FOR PROGRAM =======================
     -->
@@ -611,7 +903,7 @@
 	</description>
           <targets>
             <target mandatory="no">
-              <node name="VarLet" />
+              <node name="Ident" />
                 <phases>
                   <all />
                 </phases>
@@ -679,45 +971,9 @@
       </attributes>
     </node>
 <!--
- Node VarLet:
--->
-    <node name="VarLet">
-      <description>represents variable (identifier) in assignment position</description>
-      <sons>
-      </sons>
-      <attributes>
-        <attribute name="Name">
-        <description>Identifier in character string representation</description>
-          <type name="String">
-            <targets>
-              <target mandatory="yes">
-                <any />
-                <phases>
-                  <all />
-                </phases>
-              </target>
-            </targets>
-          </type>
-        </attribute>
-        <attribute name="Decl">
-        <description>Link to symbol table entry</description>
-          <type name="Link">
-            <targets>
-              <target mandatory="no">
-                <node name="SymbolTableEntry" />
-                <phases>
-                  <all />
-                </phases>
-              </target>
-            </targets>
-          </type>
-        </attribute>
-      </attributes>
-    </node>
-<!--
  Node Var:
 -->
-    <node name="Var">
+    <node name="Ident">
       <description>represents variable (identifier) in expression position</description>
       <sons>
       </sons>
