@@ -86,20 +86,12 @@
       -->
       <nodeset name="Declaration">
           <target>
-              <node name="FunDec" />
               <node name="FunDef" />
               <node name="GlobalDec" />
               <node name="GlobalDef" />
           </target>
       </nodeset>
 
-      <nodeset name="RetType">
-          <target>
-              <node name="VoidType">
-
-              </node>
-          </target>
-      </nodeset>
 
       <nodeset name="Stmt">
           <target>
@@ -233,8 +225,18 @@
                     </target>
                 </targets>
             </son>
+            <son name="Params">
+                <description>The parameters for the function</description>
+                <targets>
+                    <target mandatory="no">
+                        <node name="Params" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
         </sons>
-
           <attributes>
               <attribute name="RetType">
                   <type name="Type">
@@ -571,7 +573,7 @@
                       </target>
                   </targets>
               </son>
-              <son name="Exprs">
+              <son name="Args">
                   <description>The arguments of the function call</description>
                   <targets>
                       <target mandatory="no">
