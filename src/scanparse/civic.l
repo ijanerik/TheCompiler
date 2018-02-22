@@ -36,12 +36,14 @@
 ")"                        { FILTER( BRACKET_R); }
 ","                        { FILTER( COMMA); }
 ";"                        { FILTER( SEMICOLON); }
+"{"                        { FILTER( C_BRACKET_L); }
+"}"                        { FILTER( C_BRACKET_R); }
 
 "-"                        { FILTER( MINUS); }
 "+"                        { FILTER( PLUS);  }
 "*"                        { FILTER( STAR);  } 
 "/"                        { FILTER( SLASH);  } 
-"%"                        { FILTER( PERCENT);  } 
+"%"                        { FILTER( PERCENT);  }
 
 "<="                       { FILTER( LE);    }
 "<"                        { FILTER( LT);    } 
@@ -52,10 +54,19 @@
 "&&"                       { FILTER( AND);    }
 "||"                       { FILTER( OR);    }
 
-"="                        { FILTER( LET);    }
+"="                        { FILTER( LET); }
+"!"                        { FILTER( EXCL_MARK); }
 
 "true"                     { FILTER( TRUEVAL); }
 "false"                    { FILTER( FALSEVAL); }
+
+"void"                     { FILTER( TVOID); }
+"int"                      { FILTER( TINT); }
+"float"                    { FILTER( TFLOAT); }
+"bool"                     { FILTER( TBOOL); }
+
+"export"                   { FILTER( VAREXPORT); }
+"extern"                   { FILTER( VAREXTERN); }
 
 [A-Za-z][A-Za-z0-9_]*      { yylval.id = STRcpy(yytext);
                              FILTER( ID);
@@ -71,4 +82,5 @@
                            }
 
 [ \t]                      { global.col += yyleng;
-                           } 
+                           }
+
