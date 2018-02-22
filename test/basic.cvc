@@ -1,0 +1,6 @@
+int a = 1;
+int b = a;
+int c = (1 + b);
+int d = (-2);
+int e = ((int) 6);
+int f = (5);

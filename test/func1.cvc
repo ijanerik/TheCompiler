@@ -1,0 +1,5 @@
+int test = 3;
+int main();
+int main() {
+    test = 23;
+}

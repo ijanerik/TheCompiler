@@ -75,6 +75,7 @@
         <node name="BinOp" />
         <node name="MonOp" />
         <node name="Ident" />
+        <node name="CastExpr" />
         <node name="Num" />
         <node name="Float" />
         <node name="Bool" />
@@ -841,19 +842,17 @@
               </son>
           </sons>
           <attributes>
-              <attributes>
-                  <attribute name="Type">
-                      <type name="Type">
-                          <targets>
-                              <target mandatory="yes">
-                                  <phases>
-                                      <all />
-                                  </phases>
-                              </target>
-                          </targets>
-                      </type>
-                  </attribute>
-              </attributes>
+              <attribute name="Type">
+                  <type name="Type">
+                      <targets>
+                          <target mandatory="yes">
+                              <phases>
+                                  <all />
+                              </phases>
+                          </target>
+                      </targets>
+                  </type>
+              </attribute>
           </attributes>
       </node>
    <!--

@@ -26,31 +26,127 @@ static int yyerror( char *errname);
  int                 cint;
  float               cflt;
  binop               cbinop;
+ monop               cmonop;
+ cctype             ccctype;
  node               *node;
 }
 
-%token BRACKET_L BRACKET_R COMMA SEMICOLON
-%token MINUS PLUS STAR SLASH PERCENT LE LT GE GT EQ NE OR AND
+%token BRACKET_L BRACKET_R COMMA SEMICOLON C_BRACKET_L C_BRACKET_R
+%token MINUS PLUS STAR SLASH PERCENT LE LT GE GT EQ NE OR AND EXCL_MARK
 %token TRUEVAL FALSEVAL LET
+%token TBOOL TVOID TINT TFLOAT VAREXTERN EXPORT
+%token KIF KELSE KWHILE KDO KFOR KRETURN
 
 %token <cint> NUM
 %token <cflt> FLOAT
 %token <id> ID
 
-%type <node> intval floatval boolval constant expr
-%type <node> stmts stmt assign varlet program
+//%type <node> stmts stmt assign varlet program
+
 %type <cbinop> binop
+%type <cmonop> monop
+%type <ccctype> vartype
+%type <ccctype> rettype
+
+%type <node> ident intval floatval boolval constant expr
+%type <node> stmts stmt assign ifelsestmt block
+%type <node> program declarations declaration
+%type <node> globaldef fundef funheader funbody params param
 
 %start program
 
 %%
-
-program: stmts 
+// ------- PROGRAM DEFINITIONS ---------
+program: declarations
          {
            parseresult = $1;
          }
          ;
 
+declarations: declaration declarations
+        {
+          $$ = TBmakeDeclarations($1, $2);
+        }
+      | declaration
+        {
+          $$ = TBmakeDeclarations($1, NULL);
+        }
+        ;
+
+declaration: globaldef { $$ = $1; }
+         |   fundef { $$ = $1; }
+         |   stmts { $$ = $1; };
+         // @todo remove stmts (Kept for backward compatibility)
+
+// ----------- GLOBAL VARIABLE DEFINITIONS -----------
+globaldef: vartype ident LET expr SEMICOLON
+         {
+            $$ = TBmakeGlobaldef($1, FALSE, $2, $4);
+         }
+         | EXPORT vartype ident LET expr SEMICOLON
+         {
+            $$ = TBmakeGlobaldef($2, TRUE, $3, $5);
+         }
+         |
+         vartype ident SEMICOLON
+         {
+            $$ = TBmakeGlobaldef($1, FALSE, $2, NULL);
+         }
+         | EXPORT vartype ident SEMICOLON
+         {
+            $$ = TBmakeGlobaldef($2, TRUE, $3, NULL);
+         };
+
+// ----------- FUNCTION DEFINITIONS ---------------
+fundef: funheader C_BRACKET_L funbody C_BRACKET_R
+    {
+        $$ = TBmakeFundef(FALSE, $1, $3);
+    }
+    | EXPORT funheader C_BRACKET_L funbody C_BRACKET_R
+    {
+        $$ = TBmakeFundef(TRUE, $2, $4);
+    }
+    |
+    funheader SEMICOLON
+        {
+            $$ = TBmakeFundef(FALSE, $1, NULL);
+        }
+    ;
+
+funheader: rettype ident BRACKET_L params BRACKET_R
+    {
+        $$ = TBmakeFunheader($1, $2, $4);
+    }
+    |
+    rettype ident BRACKET_L BRACKET_R
+         {
+             $$ = TBmakeFunheader($1, $2, NULL);
+         }
+    ;
+
+params: param COMMA params
+        {
+          $$ = TBmakeParams($1, $3);
+        }
+      | param
+        {
+          $$ = TBmakeParams($1, NULL);
+        }
+        ;
+
+param: vartype ident
+    {
+        $$ = TBmakeParam($1, $2);
+    }
+
+// @todo add vardecs to funbody
+funbody: stmts
+    {
+        $$ = TBmakeFunbody(NULL, NULL, $1);
+    }
+    ;
+
+// ----------- STATEMENT DEFINITIONS --------------
 stmts: stmt stmts
         {
           $$ = TBmakeStmts( $1, $2);
@@ -65,33 +161,66 @@ stmt: assign
        {
          $$ = $1;
        }
+       |
+       ifelsestmt
+       {
+         $$ = $1;
+       }
        ;
 
-assign: varlet LET expr SEMICOLON
+
+assign: ident LET expr SEMICOLON
         {
           $$ = TBmakeAssign( $1, $3);
         }
         ;
 
-varlet: ID
+ifelsestmt: KIF BRACKET_L expr BRACKET_R block
         {
-          $$ = TBmakeIdent( STRcpy( $1));
+            $$ = TBmakeIfelsestmt($3, $5, NULL);
+        }
+        | KIF BRACKET_L expr BRACKET_R block KELSE block
+        {
+            $$ = TBmakeIfelsestmt($3, $5, $7);
         }
         ;
 
+block: C_BRACKET_L stmts C_BRACKET_R
+        {
+            $$ = TBmakeBlock($2);
+        }
+        |
+        stmt
+        {
+            $$ = TBmakeBlock(TBmakeStmts($1, NULL));
+        }
+        ;
 
+// ----------- EXPRESSION DEFINITIONS -----------
 expr: constant
-      {
+    {
         $$ = $1;
-      }
+    }
     | ID
-      {
+    {
         $$ = TBmakeIdent( STRcpy( $1));
-      }
+    }
+    | BRACKET_L expr BRACKET_R
+    {
+        $$ = $2;
+    }
     | BRACKET_L expr binop expr BRACKET_R
-      {
+    {
         $$ = TBmakeBinop( $3, $2, $4);
-      }
+    }
+    | BRACKET_L monop expr BRACKET_R
+    {
+        $$ = TBmakeMonop($2, $3);
+    }
+    | BRACKET_L BRACKET_L vartype BRACKET_R expr BRACKET_R
+    {
+        $$ = TBmakeCastexpr($3, $5);
+    }
     ;
 
 constant: floatval
@@ -143,7 +272,78 @@ binop: PLUS      { $$ = BO_add; }
      | OR        { $$ = BO_or; }
      | AND       { $$ = BO_and; }
      ;
-      
+
+monop: MINUS    { $$ = MO_neg; }
+     | EXCL_MARK { $$ = MO_not; }
+     ;
+
+vartype: TINT   { $$ = T_int; }
+     |   TFLOAT { $$ = T_float; }
+     |   TBOOL  { $$ = T_bool; }
+     ;
+
+rettype: TINT   { $$ = T_int; }
+     |   TFLOAT { $$ = T_float; }
+     |   TBOOL  { $$ = T_bool; }
+     |   TVOID  { $$ = T_void; }
+     ;
+
+
+ident: ID
+        {
+          $$ = TBmakeIdent( STRcpy( $1));
+        }
+        ;
+
+
+
+
+
+/*
+stmts: stmt stmts
+    {
+        $$ = TBmakeStmts( $1, $2);
+    }
+    | stmt
+    {
+        $$ = TBmakeStmts( $1, NULL);
+    }
+    ;
+
+stmt: assign
+    {
+        $$ = $1;
+    }
+    |
+    ;
+
+assign: varlet LET expr SEMICOLON
+        {
+          $$ = TBmakeAssign( $1, $3);
+        }
+        ;
+
+
+expr: constant
+      {
+        $$ = $1;
+      }
+    | ID
+      {
+        $$ = TBmakeIdent( STRcpy( $1));
+      }
+    | BRACKET_L expr binop expr BRACKET_R
+      {
+        $$ = TBmakeBinop( $3, $2, $4);
+      }
+    ;
+
+monop: ;
+cctype: ;
+*/
+
+
+
 %%
 
 static int yyerror( char *error)
