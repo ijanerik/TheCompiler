@@ -973,7 +973,7 @@
       </attributes>
     </node>
 <!--
- Node Var:
+ Node Ident:
 -->
     <node name="Ident">
       <description>represents variable (identifier) in expression position</description>
