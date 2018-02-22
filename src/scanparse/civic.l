@@ -72,7 +72,7 @@
 "for"                      { FILTER( KFOR); }
 "return"                   { FILTER( KRETURN); }
 
-"export"                   { FILTER( VAREXPORT); }
+"export"                   { FILTER( EXPORT); }
 "extern"                   { FILTER( VAREXTERN); }
 
 [A-Za-z][A-Za-z0-9_]*      { yylval.id = STRcpy(yytext);
