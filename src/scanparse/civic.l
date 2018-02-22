@@ -65,6 +65,13 @@
 "float"                    { FILTER( TFLOAT); }
 "bool"                     { FILTER( TBOOL); }
 
+"if"                       { FILTER( KIF); }
+"else"                     { FILTER( KELSE); }
+"while"                    { FILTER( KWHILE); }
+"do"                       { FILTER( KDO); }
+"for"                      { FILTER( KFOR); }
+"return"                   { FILTER( KRETURN); }
+
 "export"                   { FILTER( VAREXPORT); }
 "extern"                   { FILTER( VAREXTERN); }
 

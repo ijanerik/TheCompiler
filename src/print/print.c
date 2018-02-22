@@ -424,7 +424,18 @@ node *PRTwhilestmt(node *arg_node, info *arg_info) {
 }
 
 node *PRTifelsestmt(node *arg_node, info *arg_info) {
-    DBUG_ENTER("");
+    DBUG_ENTER("PRTifelsestmt");
+
+    printf("if(");
+    IFELSESTMT_EXPR(arg_node) = TRAVdo(IFELSESTMT_EXPR(arg_node), arg_info);
+    printf(") ");
+
+    IFELSESTMT_IFBLOCK(arg_node) = TRAVdo(IFELSESTMT_IFBLOCK(arg_node), arg_info);
+
+    if(IFELSESTMT_ELSEBLOCK(arg_node) != NULL) {
+        printf("else ");
+        IFELSESTMT_ELSEBLOCK(arg_node) = TRAVdo(IFELSESTMT_ELSEBLOCK(arg_node), arg_info);
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -436,7 +447,11 @@ node *PRTfuncall(node *arg_node, info *arg_info) {
 }
 
 node *PRTblock(node *arg_node, info *arg_info) {
-    DBUG_ENTER("");
+    DBUG_ENTER("PRTblock");
+
+    printf("{\n");
+    BLOCK_STMTS(arg_node) = TRAVdo(BLOCK_STMTS(arg_node), arg_info);
+    printf("}\n");
 
     DBUG_RETURN(arg_node);
 }
@@ -486,7 +501,7 @@ node *PRTparams(node *arg_node, info *arg_info) {
 node *PRTglobaldef(node *arg_node, info *arg_info) {
     char* tmp;
 
-    DBUG_ENTER("");
+    DBUG_ENTER("PRTglobaldef");
     if (GLOBALDEF_EXPORT(arg_node) == TRUE) {
         printf("export ");
     }
