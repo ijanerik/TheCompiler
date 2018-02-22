@@ -284,7 +284,7 @@ PRTvar (node * arg_node, info * arg_info)
 {
   DBUG_ENTER ("PRTvar");
 
-  printf( "%s", VAR_NAME( arg_node));
+  printf( "%s", IDENT_NAME( arg_node));
 
   DBUG_RETURN (arg_node);
 }
@@ -308,7 +308,7 @@ PRTvarlet (node * arg_node, info * arg_info)
 {
   DBUG_ENTER ("PRTvarlet");
 
-  printf( "%s", VARLET_NAME( arg_node));
+  //printf( "%s", VARLET_NAME( arg_node));
 
   DBUG_RETURN (arg_node);
 }
@@ -418,6 +418,150 @@ node
 
   DBUG_RETURN( syntaxtree);
 }
+
+/* OWN NODES */
+
+
+node *PRTident (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTcastexpr (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTmonop (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTexprs (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTreturnstmt (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTforstmt (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTdowhilestmt (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTwhilestmt (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTifelsestmt (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTfuncall (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTblock (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTvardec (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTvardecs (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTfundefs (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTfunbody (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTparam (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTparams (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTglobaldef (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTglobaldec (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTfunheader (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTfundef (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTdeclarations (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+node *PRTprogram (node * arg_node, info * arg_info)
+{
+  DBUG_ENTER ("");
+
+  DBUG_RETURN (arg_node);
+}
+
+
 
 /**
  * @}

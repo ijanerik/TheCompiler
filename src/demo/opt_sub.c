@@ -41,9 +41,9 @@ node *OSbinop (node *arg_node, info *arg_info)
   BINOP_RIGHT( arg_node) = TRAVdo( BINOP_RIGHT( arg_node), arg_info);
 
   if (BINOP_OP( arg_node) == BO_sub) {
-    if ((NODE_TYPE( BINOP_LEFT( arg_node)) == N_var)
-	&& (NODE_TYPE( BINOP_RIGHT( arg_node)) == N_var)
-	&& STReq( VAR_NAME( BINOP_LEFT( arg_node)), VAR_NAME( BINOP_RIGHT( arg_node)))) {
+    if ((NODE_TYPE( BINOP_LEFT( arg_node)) == N_ident)
+	&& (NODE_TYPE( BINOP_RIGHT( arg_node)) == N_ident)
+	&& STReq( IDENT_NAME( BINOP_LEFT( arg_node)), IDENT_NAME( BINOP_RIGHT( arg_node)))) {
       arg_node = FREEdoFreeTree( arg_node);
       arg_node = TBmakeNum( 0);
     }

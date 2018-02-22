@@ -24,4 +24,34 @@ extern node *PRTerror (node * arg_node, info * arg_info);
 
 extern node *PRTdoPrint( node *syntaxtree);
 
+extern node *PRTident (node * arg_node, info * arg_info);
+extern node *PRTcastexpr (node * arg_node, info * arg_info);
+extern node *PRTmonop (node * arg_node, info * arg_info);
+extern node *PRTexprs (node * arg_node, info * arg_info);
+extern node *PRTreturnstmt (node * arg_node, info * arg_info);
+extern node *PRTforstmt (node * arg_node, info * arg_info);
+extern node *PRTdowhilestmt (node * arg_node, info * arg_info);
+extern node *PRTwhilestmt (node * arg_node, info * arg_info);
+extern node *PRTifelsestmt (node * arg_node, info * arg_info);
+extern node *PRTfuncall (node * arg_node, info * arg_info);
+extern node *PRTblock (node * arg_node, info * arg_info);
+extern node *PRTvardec (node * arg_node, info * arg_info);
+extern node *PRTvardecs (node * arg_node, info * arg_info);
+extern node *PRTfundefs (node * arg_node, info * arg_info);
+extern node *PRTfunbody (node * arg_node, info * arg_info);
+extern node *PRTparam (node * arg_node, info * arg_info);
+extern node *PRTparams (node * arg_node, info * arg_info);
+extern node *PRTglobaldef (node * arg_node, info * arg_info);
+extern node *PRTglobaldec (node * arg_node, info * arg_info);
+extern node *PRTfunheader (node * arg_node, info * arg_info);
+extern node *PRTfundef (node * arg_node, info * arg_info);
+extern node *PRTdeclarations (node * arg_node, info * arg_info);
+extern node *PRTprogram (node * arg_node, info * arg_info);
+
+
+
+
+
+
+
 #endif /* _SAC_PRT_NODE_H_ */

@@ -75,7 +75,7 @@ assign: varlet LET expr SEMICOLON
 
 varlet: ID
         {
-          $$ = TBmakeVarlet( STRcpy( $1));
+          $$ = TBmakeIdent( STRcpy( $1));
         }
         ;
 
@@ -86,7 +86,7 @@ expr: constant
       }
     | ID
       {
-        $$ = TBmakeVar( STRcpy( $1));
+        $$ = TBmakeIdent( STRcpy( $1));
       }
     | BRACKET_L expr binop expr BRACKET_R
       {

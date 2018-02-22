@@ -404,7 +404,7 @@
                   <description>variable declarations in sequence</description>
                   <targets>
                       <target mandatory="no">
-                          <set name="VarDecs" />
+                          <node name="VarDecs" />
                           <phases>
                               <all />
                           </phases>
@@ -415,7 +415,7 @@
                   <description>variable declarations in sequence</description>
                   <targets>
                       <target mandatory="no">
-                          <set name="FunDefs" />
+                          <node name="FunDefs" />
                           <phases>
                               <all />
                           </phases>
@@ -426,7 +426,7 @@
                   <description>All the statements in the function body</description>
                   <targets>
                       <target mandatory="no">
-                          <set name="Stmts" />
+                          <node name="Stmts" />
                           <phases>
                               <all />
                           </phases>
@@ -443,7 +443,7 @@
                   <description>first function declaration in sequence</description>
                   <targets>
                       <target mandatory="yes">
-                          <set name="FunDef" />
+                          <node name="FunDef" />
                           <phases>
                               <all />
                           </phases>
@@ -473,7 +473,7 @@
                   <description>first variable declaration in sequence</description>
                   <targets>
                       <target mandatory="yes">
-                          <set name="VarDec" />
+                          <node name="VarDec" />
                           <phases>
                               <all />
                           </phases>
@@ -593,7 +593,7 @@
                   <description>If the expression is true the IfBlock executes otherwise the ElseBlock</description>
                   <targets>
                       <target mandatory="yes">
-                          <node name="Expr" />
+                          <set name="Expr" />
                           <phases>
                               <all />
                           </phases>
@@ -687,7 +687,7 @@
                   <description>Variable for the param</description>
                   <targets>
                       <target mandatory="yes">
-                          <node name="Var" />
+                          <node name="Ident" />
                           <phases>
                               <all />
                           </phases>
