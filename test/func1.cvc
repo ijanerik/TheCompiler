@@ -1,5 +1,13 @@
 int test = 3;
-int main();
-int main() {
+
+extern int main();
+
+int main(int test) { }
+
+export int main() {
+    int test;
+    int var = 2;
     test = 23;
+    tester();
+    texter(5,3);
 }
