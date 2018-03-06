@@ -21,7 +21,6 @@ extern node *PRTnum (node * arg_node, info * arg_info);
 extern node *PRTbool (node * arg_node, info * arg_info);
 extern node *PRTsymboltableentry (node * arg_node, info * arg_info);
 extern node *PRTerror (node * arg_node, info * arg_info);
-
 extern node *PRTdoPrint( node *syntaxtree);
 
 extern node *PRTident (node * arg_node, info * arg_info);
@@ -47,11 +46,5 @@ extern node *PRTfunheader (node * arg_node, info * arg_info);
 extern node *PRTfundef (node * arg_node, info * arg_info);
 extern node *PRTdeclarations (node * arg_node, info * arg_info);
 extern node *PRTprogram (node * arg_node, info * arg_info);
-
-
-
-
-
-
 
 #endif /* _SAC_PRT_NODE_H_ */

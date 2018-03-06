@@ -381,15 +381,46 @@ node
 
 
 /* OWN NODES */
+// @todo: Needs to handle expr
 node *PRTcastexpr(node *arg_node, info *arg_info) {
     DBUG_ENTER("");
 
+    switch (CASTEXPR_TYPE(arg_node)) {
+        case T_void:
+            printf("(void)");
+            break;
+        case T_int:
+            printf("(int)");
+            break;
+        case T_float:
+            printf("(float)");
+            break;
+        case T_bool:
+            printf("(bool)");
+            break;
+        default:
+            printf("(unknown)");
+            break;
+    }
+    printf(CASTEXPR_EXPR(arg_node));
     DBUG_RETURN(arg_node);
 }
 
+// @todo: Needs to handle expr
 node *PRTmonop(node *arg_node, info *arg_info) {
     DBUG_ENTER("");
 
+    switch (MONOP_OP(arg_node)) {
+        case MO_not:
+            printf("!");
+            break;
+        case MO_neg:
+            printf("-");
+            break;
+        default:
+            printf("mo_unknown");
+            break;
+    }
     DBUG_RETURN(arg_node);
 }
 
@@ -399,15 +430,19 @@ node *PRTexprs(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+// @todo: Needs to handle expr
 node *PRTreturnstmt(node *arg_node, info *arg_info) {
     DBUG_ENTER("");
-
+    printf("return %s\n;", "Expr");
     DBUG_RETURN(arg_node);
 }
 
+// @todo: Needs to handle expr
 node *PRTforstmt(node *arg_node, info *arg_info) {
     DBUG_ENTER("");
-
+    printf("FOR STMT");
+    //printf("for (%s = %s, %s, %s) {\n %s;\n }", "ASSIGN_VAR", "ASSIGN_EXPR",
+    //       "COMPARE_EXPR", "UPDATE_EXPR", "BLOCK");
     DBUG_RETURN(arg_node);
 }
 
