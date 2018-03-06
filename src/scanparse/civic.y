@@ -238,6 +238,7 @@ dowhilestmt: KDO block KWHILE BRACKET_L expr BRACKET_R SEMICOLON
             $$ = TBmakeDowhilestmt($5, $2);
         }
 
+// @todo Update expression also assign stmt
 forstmt: KFOR BRACKET_L TINT ident LET expr COMMA expr BRACKET_R block
         {
             $$ = TBmakeForstmt($4, $6, $8, NULL, $10);

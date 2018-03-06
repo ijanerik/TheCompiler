@@ -125,7 +125,7 @@ PRTbinop(node *arg_node, info *arg_info) {
 
     DBUG_ENTER("PRTbinop");
 
-    printf("( ");
+    printf("(");
 
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
 
@@ -381,9 +381,8 @@ node
 
 
 /* OWN NODES */
-// @todo: Needs to handle expr
 node *PRTcastexpr(node *arg_node, info *arg_info) {
-    DBUG_ENTER("");
+    DBUG_ENTER("PRTcastexpr");
 
     switch (CASTEXPR_TYPE(arg_node)) {
         case T_void:
@@ -402,14 +401,16 @@ node *PRTcastexpr(node *arg_node, info *arg_info) {
             printf("(unknown)");
             break;
     }
-    printf(CASTEXPR_EXPR(arg_node));
+
+    CASTEXPR_EXPR(arg_node) = TRAVdo(CASTEXPR_EXPR(arg_node), arg_info);
+
     DBUG_RETURN(arg_node);
 }
 
-// @todo: Needs to handle expr
 node *PRTmonop(node *arg_node, info *arg_info) {
-    DBUG_ENTER("");
+    DBUG_ENTER("PRTmonop");
 
+    printf("(");
     switch (MONOP_OP(arg_node)) {
         case MO_not:
             printf("!");
@@ -421,6 +422,10 @@ node *PRTmonop(node *arg_node, info *arg_info) {
             printf("mo_unknown");
             break;
     }
+
+    MONOP_RIGHT(arg_node) = TRAVdo(MONOP_RIGHT(arg_node), arg_info);
+    printf(")");
+
     DBUG_RETURN(arg_node);
 }
 
@@ -430,17 +435,30 @@ node *PRTexprs(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-// @todo: Needs to handle expr
 node *PRTreturnstmt(node *arg_node, info *arg_info) {
-    DBUG_ENTER("");
-    printf("return %s\n;", "Expr");
+    DBUG_ENTER("PRTreturnstmt");
+    printf("return ");
+    RETURNSTMT_EXPR(arg_node) = TRAVdo(RETURNSTMT_EXPR(arg_node), arg_info);
+    printf(";");
+
     DBUG_RETURN(arg_node);
 }
 
 // @todo: Needs to handle expr
 node *PRTforstmt(node *arg_node, info *arg_info) {
-    DBUG_ENTER("");
-    printf("FOR STMT");
+    DBUG_ENTER("PRTforstmt");
+    printf("for(int ");
+    FORSTMT_ASSIGNVAR(arg_node) = TRAVdo(FORSTMT_ASSIGNVAR(arg_node), arg_info);
+    printf(" = ");
+    FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), arg_info);
+    printf(", ");
+    FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), arg_info);
+    if(FORSTMT_UPDATEEXPR(arg_node) != NULL) {
+        printf(", ");
+        FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), arg_info);
+    }
+    printf(") ");
+    FORSTMT_BLOCK(arg_node) = TRAVdo(FORSTMT_BLOCK(arg_node), arg_info);
     //printf("for (%s = %s, %s, %s) {\n %s;\n }", "ASSIGN_VAR", "ASSIGN_EXPR",
     //       "COMPARE_EXPR", "UPDATE_EXPR", "BLOCK");
     DBUG_RETURN(arg_node);
