@@ -200,7 +200,7 @@ node *
 PRTfloat(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTfloat");
 
-    printf("FLOAT(%f)", FLOAT_VALUE(arg_node));
+    printf("%f", FLOAT_VALUE(arg_node));
 
     DBUG_RETURN(arg_node);
 }
@@ -223,7 +223,7 @@ node *
 PRTnum(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTnum");
 
-    printf("NUM(%i)", NUM_VALUE(arg_node));
+    printf("%i", NUM_VALUE(arg_node));
 
     DBUG_RETURN(arg_node);
 }
@@ -273,7 +273,7 @@ node *
 PRTident(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTident");
 
-    printf("IDENT(%s)", IDENT_NAME(arg_node));
+    printf("%s", IDENT_NAME(arg_node));
 
     DBUG_RETURN(arg_node);
 }
