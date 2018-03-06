@@ -1,0 +1,4 @@
+void fun() {
+    int b;
+    int c = 0;
+}

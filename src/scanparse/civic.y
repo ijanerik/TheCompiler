@@ -158,11 +158,11 @@ param: vartype ident
 funbody:
     C_BRACKET_L vardecs stmts C_BRACKET_R
     {
-        $$ = TBmakeFunbody(NULL, NULL, $2);
+        $$ = TBmakeFunbody($2, NULL, $3);
     }
     | C_BRACKET_L vardecs C_BRACKET_R
     {
-        $$ = TBmakeFunbody(NULL, NULL, $2);
+        $$ = TBmakeFunbody($2, NULL, NULL);
     }
     | C_BRACKET_L stmts C_BRACKET_R
     {
