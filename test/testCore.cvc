@@ -1,0 +1,47 @@
+export int gcd(int a, int b) {
+    while(a == b) {
+        if(a > b) {
+            a = a - b;
+        } else {
+            b = b - a;
+        }
+    }
+
+    return a;
+}
+
+export int fac(int n) {
+    int r = 1;
+
+    if(n < 0) {
+        r = 0;
+    } else {
+        for(int i = 1, n+1) {
+            r = r * i;
+        }
+    }
+
+    return r;
+}
+
+export int fib(int n) {
+    int fibo;
+
+    if (n <= 1) {
+        fibo = n;
+    } else {
+        fibo = fib(n-1) + fib(n-2);
+    }
+
+    return fibo;
+}
+
+export bool isprime(int n) {
+    bool is = true;
+
+    for(int i = 2, n/2+1) {
+        if(n%i == 0) is = false;
+    }
+
+    return is;
+}

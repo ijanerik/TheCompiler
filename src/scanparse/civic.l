@@ -29,6 +29,10 @@
 %option noyywrap
 %option nounput
 
+/* For MULTI/SINGLE line comments */
+%x ML_COMMENT
+%x SL_COMMENT
+
 
 %%
 
@@ -74,6 +78,16 @@
 
 "export"                   { FILTER( EXPORT); }
 "extern"                   { FILTER( VAREXTERN); }
+
+"/*"            { global.col += 2; BEGIN(ML_COMMENT); }
+<ML_COMMENT>"*/" { global.col += 2; BEGIN(INITIAL); }
+<ML_COMMENT>\n   { global.line += 1; global.col = 0; }
+<ML_COMMENT>.    { global.col += 1; }
+
+"//"            { global.col += 2; BEGIN(SL_COMMENT); }
+<SL_COMMENT>.    { global.col += 1; }
+<SL_COMMENT>\n   { global.line += 1; global.col = 0; BEGIN(INITIAL); }
+
 
 [A-Za-z][A-Za-z0-9_]*      { yylval.id = STRcpy(yytext);
                              FILTER( ID);

@@ -380,7 +380,8 @@ binop1: OR        { $$ = BO_or; };
 
 binop2: AND       { $$ = BO_and; };
 
-binop3: EQ        { $$ = BO_eq; };
+binop3: EQ        { $$ = BO_eq; }
+      | NE        { $$ = BO_ne; };
 
 binop4: LE        { $$ = BO_le; }
       | LT        { $$ = BO_lt; }
