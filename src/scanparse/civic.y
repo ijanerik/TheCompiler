@@ -43,12 +43,19 @@ static int yyerror( char *errname);
 
 //%type <node> stmts stmt assign varlet program
 
-%type <cbinop> binop
+//%type <cbinop> binop
+%type <cbinop> binop1
+%type <cbinop> binop2
+%type <cbinop> binop3
+%type <cbinop> binop4
+%type <cbinop> binop5
+%type <cbinop> binop6
 %type <cmonop> monop
 %type <ccctype> rettype
 %type <ccctype> vartype
 
-%type <node> ident intval floatval boolval constant expr exprs
+%type <node> ident intval floatval boolval constant exprs
+%type <node> expr expr2 expr3 expr4 expr5 expr6 expr7 expr8
 %type <node> stmts stmt assign ifelsestmt whilestmt dowhilestmt forstmt returnstmt block funcall
 %type <node> vardec vardecs
 %type <node> program declarations declaration
@@ -280,33 +287,41 @@ exprs: expr COMMA exprs {
             $$ = TBmakeExprs($1, NULL);
         }
 
-expr: constant
-    {
-        $$ = $1;
-    }
+/*
+expr: constant { $$ = $1; }
     | funcall { $$ = $1; }
-    | ID
-    {
-        $$ = TBmakeIdent( STRcpy( $1));
-    }
-    | BRACKET_L expr BRACKET_R
-    {
-        $$ = $2;
-    }
-    | BRACKET_L expr binop expr BRACKET_R
-    {
-        $$ = TBmakeBinop( $3, $2, $4);
-    }
-    | BRACKET_L monop expr BRACKET_R
-    {
-        $$ = TBmakeMonop($2, $3);
-    }
-    | BRACKET_L BRACKET_L vartype BRACKET_R expr BRACKET_R
-    {
-        $$ = TBmakeCastexpr($3, $5);
-    }
+    | ID { $$ = TBmakeIdent( STRcpy( $1)); }
+    | BRACKET_L expr BRACKET_R { $$ = $2; }
+    | BRACKET_L expr binop expr BRACKET_R { $$ = TBmakeBinop( $3, $2, $4); }
+    | BRACKET_L monop expr BRACKET_R { $$ = TBmakeMonop($2, $3); }
+    | BRACKET_L BRACKET_L vartype BRACKET_R expr BRACKET_R { $$ = TBmakeCastexpr($3, $5); }
     ;
+*/
 
+expr: expr binop1 expr2 { $$ = TBmakeBinop( $2, $1, $3); }
+     | expr2;
+
+expr2: expr2 binop2 expr3 { $$ = TBmakeBinop( $2, $1, $3); }
+     | expr3;
+
+expr3: expr3 binop3 expr4 { $$ = TBmakeBinop( $2, $1, $3); }
+     | expr4;
+
+expr4: expr4 binop4 expr5 { $$ = TBmakeBinop( $2, $1, $3); }
+     | expr5;
+
+expr5: expr5 binop5 expr6 { $$ = TBmakeBinop( $2, $1, $3); }
+    | expr6
+    ;
+expr6: expr6 binop6 expr7 { $$ = TBmakeBinop( $2, $1, $3); }
+     | expr7;
+expr7: monop expr7 { $$ = TBmakeMonop($1, $2); }
+     | BRACKET_L vartype BRACKET_R expr7 { $$ = TBmakeCastexpr($2, $4); }
+     | expr8;
+expr8: BRACKET_L expr BRACKET_R { $$ = $2; }
+     | constant { $$ = $1; }
+     | funcall { $$ = $1; }
+     | ID { $$ = TBmakeIdent( STRcpy( $1)); }
 
 constant: floatval
           {
@@ -344,6 +359,7 @@ boolval: TRUEVAL
          }
        ;
 
+/*
 binop: PLUS      { $$ = BO_add; }
      | MINUS     { $$ = BO_sub; }
      | STAR      { $$ = BO_mul; }
@@ -357,6 +373,26 @@ binop: PLUS      { $$ = BO_add; }
      | OR        { $$ = BO_or; }
      | AND       { $$ = BO_and; }
      ;
+*/
+
+binop1: OR        { $$ = BO_or; };
+
+binop2: AND       { $$ = BO_and; };
+
+binop3: EQ        { $$ = BO_eq; };
+
+binop4: LE        { $$ = BO_le; }
+      | LT        { $$ = BO_lt; }
+      | GE        { $$ = BO_ge; }
+      | GT        { $$ = BO_gt; };
+
+binop5: PLUS      { $$ = BO_add; }
+      | MINUS     { $$ = BO_sub; };
+
+binop6: STAR      { $$ = BO_mul; }
+      | SLASH     { $$ = BO_div; }
+      | PERCENT   { $$ = BO_mod; };
+
 
 monop: MINUS    { $$ = MO_neg; }
      | EXCL_MARK { $$ = MO_not; }
