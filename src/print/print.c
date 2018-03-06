@@ -28,9 +28,11 @@
  */
 struct INFO {
     bool firsterror;
+    int indents;
 };
 
 #define INFO_FIRSTERROR(n) ((n)->firsterror)
+#define INFO_INDENTS(n) ((n)->indents)
 
 static info *MakeInfo() {
     info *result;
@@ -38,6 +40,7 @@ static info *MakeInfo() {
     result = MEMmalloc(sizeof(info));
 
     INFO_FIRSTERROR(result) = FALSE;
+    INFO_INDENTS(result) = 0;
 
     return result;
 }
@@ -47,6 +50,12 @@ static info *FreeInfo(info *info) {
     info = MEMfree(info);
 
     return info;
+}
+
+static void printIndents(info *info) {
+    for(int i = 0; i < INFO_INDENTS(info); i++) {
+        printf("\t");
+    }
 }
 
 
@@ -92,6 +101,8 @@ PRTstmts(node *arg_node, info *arg_info) {
 node *
 PRTassign(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTassign");
+
+    printIndents(arg_info);
 
     if (ASSIGN_LET(arg_node) != NULL) {
         ASSIGN_LET(arg_node) = TRAVdo(ASSIGN_LET(arg_node), arg_info);
@@ -383,7 +394,7 @@ node
 /* OWN NODES */
 node *PRTcastexpr(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTcastexpr");
-
+    printf("(");
     switch (CASTEXPR_TYPE(arg_node)) {
         case T_int:
             printf("(int)");
@@ -400,6 +411,7 @@ node *PRTcastexpr(node *arg_node, info *arg_info) {
     }
 
     CASTEXPR_EXPR(arg_node) = TRAVdo(CASTEXPR_EXPR(arg_node), arg_info);
+    printf(")");
 
     DBUG_RETURN(arg_node);
 }
@@ -448,6 +460,9 @@ node *PRTreturnstmt(node *arg_node, info *arg_info) {
 // @todo: Needs to handle expr
 node *PRTforstmt(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTforstmt");
+
+    printIndents(arg_info);
+
     printf("for (int ");
     FORSTMT_ASSIGNVAR(arg_node) = TRAVdo(FORSTMT_ASSIGNVAR(arg_node), arg_info);
     printf(" = ");
@@ -522,7 +537,10 @@ node *PRTblock(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTblock");
 
     printf("{\n");
+    INFO_INDENTS(arg_info)++;
     BLOCK_STMTS(arg_node) = TRAVdo(BLOCK_STMTS(arg_node), arg_info);
+    INFO_INDENTS(arg_info)--;
+    printIndents(arg_info);
     printf("}\n");
 
     DBUG_RETURN(arg_node);
