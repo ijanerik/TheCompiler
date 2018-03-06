@@ -450,14 +450,14 @@ node *PRTexprs(node *arg_node, info *arg_info) {
 
 node *PRTreturnstmt(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTreturnstmt");
+    printIndents(arg_info);
     printf("return ");
     RETURNSTMT_EXPR(arg_node) = TRAVdo(RETURNSTMT_EXPR(arg_node), arg_info);
-    printf(";");
+    printf(";\n");
 
     DBUG_RETURN(arg_node);
 }
 
-// @todo: Needs to handle expr
 node *PRTforstmt(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTforstmt");
 
@@ -483,8 +483,11 @@ node *PRTforstmt(node *arg_node, info *arg_info) {
 node *PRTdowhilestmt(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTdowhilestm");
 
+    printIndents(arg_info);
     printf("do ");
     DOWHILESTMT_BLOCK(arg_node) = TRAVdo(DOWHILESTMT_BLOCK(arg_node), arg_info);
+
+    printIndents(arg_info);
     printf("while (");
     DOWHILESTMT_EXPR(arg_node) = TRAVdo(DOWHILESTMT_EXPR(arg_node), arg_info);
     printf(");");
@@ -497,6 +500,8 @@ node *PRTdowhilestmt(node *arg_node, info *arg_info) {
 node *PRTwhilestmt(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTwhilestmt");
 
+    printIndents(arg_info);
+
     printf("while (");
     WHILESTMT_EXPR(arg_node) = TRAVdo(WHILESTMT_EXPR(arg_node), arg_info);
     printf(")");
@@ -508,6 +513,7 @@ node *PRTwhilestmt(node *arg_node, info *arg_info) {
 node *PRTifelsestmt(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTifelsestmt");
 
+    printIndents(arg_info);
     printf("if(");
     IFELSESTMT_EXPR(arg_node) = TRAVdo(IFELSESTMT_EXPR(arg_node), arg_info);
     printf(") ");
@@ -515,6 +521,7 @@ node *PRTifelsestmt(node *arg_node, info *arg_info) {
     IFELSESTMT_IFBLOCK(arg_node) = TRAVdo(IFELSESTMT_IFBLOCK(arg_node), arg_info);
 
     if(IFELSESTMT_ELSEBLOCK(arg_node) != NULL) {
+        printIndents(arg_info);
         printf("else ");
         IFELSESTMT_ELSEBLOCK(arg_node) = TRAVdo(IFELSESTMT_ELSEBLOCK(arg_node), arg_info);
     }
@@ -548,6 +555,8 @@ node *PRTblock(node *arg_node, info *arg_info) {
 
 node *PRTvardec(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTvardec");
+
+    printIndents(arg_info);
 
     switch(VARDEC_TYPE(arg_node)) {
         case T_int:
@@ -598,7 +607,9 @@ node *PRTfundefs(node *arg_node, info *arg_info) {
 
 node *PRTfunbody(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTfunbody");
+    printIndents(arg_info);
     printf(" {\n");
+    INFO_INDENTS(arg_info)++;
     if (FUNBODY_VARDECS(arg_node) != NULL) {
         FUNBODY_VARDECS(arg_node) = TRAVdo(FUNBODY_VARDECS(arg_node), arg_info);
     }
@@ -606,6 +617,10 @@ node *PRTfunbody(node *arg_node, info *arg_info) {
     if (FUNBODY_STMTS(arg_node) != NULL) {
         FUNBODY_STMTS(arg_node) = TRAVdo(FUNBODY_STMTS(arg_node), arg_info);
     }
+
+    INFO_INDENTS(arg_info)--;
+
+    printIndents(arg_info);
     printf("}\n");
     DBUG_RETURN(arg_node);
 }
@@ -656,6 +671,8 @@ node *PRTglobaldef(node *arg_node, info *arg_info) {
     char* tmp;
 
     DBUG_ENTER("PRTglobaldef");
+
+
     if (GLOBALDEF_EXPORT(arg_node) == TRUE) {
         printf("export ");
     }
@@ -691,6 +708,7 @@ node *PRTglobaldef(node *arg_node, info *arg_info) {
 
 node *PRTglobaldec(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTglobaldec");
+
 
     switch (GLOBALDEC_TYPE(arg_node)) {
         case T_int:
@@ -744,6 +762,8 @@ node *PRTfunheader(node *arg_node, info *arg_info) {
 // todo add attribute
 node *PRTfundef(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTfundef");
+
+    printIndents(arg_info);
     
     if (FUNDEF_FUNBODY(arg_node) == NULL && FUNDEF_EXPORT(arg_node) == FALSE) {
         printf("extern ");

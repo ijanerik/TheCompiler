@@ -1,7 +1,11 @@
 export int gcd(int a, int b) {
+    gcd(2, 3);
+
+    dbc(3);
+
     while(a == b) {
         if(a > b) {
-            a = a - b;
+            a = a - b + dbc(3);
         } else {
             b = b - a;
         }
