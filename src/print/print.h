@@ -47,4 +47,8 @@ extern node *PRTfundef (node * arg_node, info * arg_info);
 extern node *PRTdeclarations (node * arg_node, info * arg_info);
 extern node *PRTprogram (node * arg_node, info * arg_info);
 
+//extern node *PRTsymboltables(node *arg_node, info *arg_info);
+extern node *PRTsymboltable(node *arg_node, info *arg_info);
+extern node *PRTsymboltableentry(node *arg_node, info *arg_info);
+
 #endif /* _SAC_PRT_NODE_H_ */

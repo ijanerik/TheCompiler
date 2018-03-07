@@ -289,24 +289,7 @@ PRTident(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-/** <!--******************************************************************-->
- *
- * @fn PRTsymboltableentry
- *
- * @brief Prints the node and its sons/attributes
- *
- * @param arg_node letrec node to process
- * @param arg_info pointer to info structure
- *
- * @return processed node
- *
- ***************************************************************************/
 
-node *PRTsymboltableentry(node *arg_node, info *arg_info) {
-    DBUG_ENTER("PRTsymboltableentry");
-
-    DBUG_RETURN(arg_node);
-}
 
 /** <!--******************************************************************-->
  *
@@ -799,6 +782,25 @@ node *PRTprogram(node *arg_node, info *arg_info) {
 
     DBUG_RETURN(arg_node);
 }
+
+// node *PRTsymboltables(node *arg_node, info *arg_info) {
+//     DBUG_ENTER("");
+
+//     DBUG_RETURN(arg_node);
+// }
+
+node *PRTsymboltable(node *arg_node, info *arg_info) {
+    DBUG_ENTER("PRTsymboltable");
+
+    DBUG_RETURN(arg_node);
+}
+
+node *PRTsymboltableentry(node *arg_node, info *arg_info) {
+    DBUG_ENTER("PRTsymboltableentry");
+
+    DBUG_RETURN(arg_node);
+}
+
 
 
 
