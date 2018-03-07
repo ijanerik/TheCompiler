@@ -1,1 +1,0 @@
-// Check if all the variables are correctly defined
