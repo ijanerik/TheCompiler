@@ -50,8 +50,14 @@ SUBPHASE( os,
           "Optimise subtraction",
           OSdoOptSub, 
           ALWAYS,
-          pet)   
-      
+          pet)
+
+SUBPHASE( ca,
+        "Context analysis on identifiers",
+        CANdoNames,
+        ALWAYS,
+        pet)
+
 ENDPHASE( pet) 
 
 

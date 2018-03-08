@@ -566,6 +566,12 @@ node *PRTvardec(node *arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node *PRTvarcall(node *arg_node, info *arg_info) {
+    DBUG_ENTER("PRTvarcall");
+    VARCALL_IDENT(arg_node) = TRAVdo(VARCALL_IDENT(arg_node), arg_info);
+    DBUG_RETURN(arg_node);
+}
+
 node *PRTvardecs(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTvardecs");
     

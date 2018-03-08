@@ -288,17 +288,6 @@ exprs: expr COMMA exprs {
             $$ = TBmakeExprs($1, NULL);
         }
 
-/*
-expr: constant { $$ = $1; }
-    | funcall { $$ = $1; }
-    | ID { $$ = TBmakeIdent( STRcpy( $1)); }
-    | BRACKET_L expr BRACKET_R { $$ = $2; }
-    | BRACKET_L expr binop expr BRACKET_R { $$ = TBmakeBinop( $3, $2, $4); }
-    | BRACKET_L monop expr BRACKET_R { $$ = TBmakeMonop($2, $3); }
-    | BRACKET_L BRACKET_L vartype BRACKET_R expr BRACKET_R { $$ = TBmakeCastexpr($3, $5); }
-    ;
-*/
-
 expr: expr binop1 expr2 { $$ = TBmakeBinop( $2, $1, $3); }
      | expr2;
 
@@ -322,7 +311,7 @@ expr7: monop expr7 { $$ = TBmakeMonop($1, $2); }
 expr8: BRACKET_L expr BRACKET_R { $$ = $2; }
      | constant { $$ = $1; }
      | funcall { $$ = $1; }
-     | ID { $$ = TBmakeIdent( STRcpy( $1)); }
+     | ID { $$ = TBmakeVarcall(TBmakeIdent( STRcpy( $1))); }
 
 constant: floatval
           {

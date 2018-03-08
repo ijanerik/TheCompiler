@@ -24,6 +24,7 @@ extern node *PRTerror (node * arg_node, info * arg_info);
 extern node *PRTdoPrint( node *syntaxtree);
 
 extern node *PRTident (node * arg_node, info * arg_info);
+extern node *PRTvarcall (node * arg_node, info * arg_info);
 extern node *PRTcastexpr (node * arg_node, info * arg_info);
 extern node *PRTmonop (node * arg_node, info * arg_info);
 extern node *PRTexprs (node * arg_node, info * arg_info);

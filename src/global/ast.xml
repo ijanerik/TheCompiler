@@ -62,6 +62,20 @@
         </travuser>
       </traversal>
 
+        <traversal id="CAN" name="Context Analysis Identiers" default="sons" include="ca_names.h">
+            <travuser>
+                <node name="VarDec" />
+                <node name="GlobalDec" />
+                <node name="GlobalDef" />
+                <node name="FunDef" />
+                <node name="Assign" />
+                <node name="VarCall" />
+                <node name="FunCall" />
+                <node name="Param" />
+                <node name="ForStmt" />
+            </travuser>
+        </traversal>
+
     </general>
   </phases>
 
@@ -74,7 +88,7 @@
       <target>
         <node name="BinOp" />
         <node name="MonOp" />
-        <node name="Ident" />
+        <node name="VarCall" />
         <node name="CastExpr" />
         <node name="Num" />
         <node name="Float" />
@@ -579,6 +593,22 @@
                   <targets>
                       <target mandatory="no">
                           <node name="Exprs" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+          </sons>
+      </node>
+
+      <node name="VarCall">
+          <sons>
+              <son name="Ident">
+                  <description>Variable name for the variable</description>
+                  <targets>
+                      <target mandatory="yes">
+                          <node name="Ident" />
                           <phases>
                               <all />
                           </phases>
