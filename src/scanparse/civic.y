@@ -31,10 +31,10 @@ static int yyerror( char *errname);
  node               *node;
 }
 
-%token BRACKET_L BRACKET_R COMMA SEMICOLON C_BRACKET_L C_BRACKET_R
+%token BRACKET_L BRACKET_R COMMA SEMICOLON C_BRACKET_L C_BRACKET_R S_BRACKET_L S_BRACKET_R 
 %token MINUS PLUS STAR SLASH PERCENT LE LT GE GT EQ NE OR AND EXCL_MARK
 %token TRUEVAL FALSEVAL LET
-%token TBOOL TVOID TINT TFLOAT VAREXTERN EXPORT
+%token TBOOL TVOID TINT TFLOAT EXTERN EXPORT
 %token KIF KELSE KWHILE KDO KFOR KRETURN
 
 %token <cint> NUM
@@ -55,11 +55,11 @@ static int yyerror( char *errname);
 %type <ccctype> vartype
 
 %type <node> ident intval floatval boolval constant exprs
-%type <node> expr expr2 expr3 expr4 expr5 expr6 expr7 expr8
+%type <node> expr expr2 expr3 expr4 expr5 expr6 expr7 expr8 arrexpr
 %type <node> stmts stmt assign ifelsestmt whilestmt dowhilestmt forstmt returnstmt block funcall
 %type <node> vardec vardecs
 %type <node> program declarations declaration
-%type <node> globaldef fundef funheader funbody params param
+%type <node> globaldef globaldec fundef funheader funbody params param
 
 %start program
 
@@ -82,28 +82,56 @@ declarations: declaration declarations
         ;
 
 declaration: globaldef { $$ = $1; }
+         |   globaldec { $$ = $1; }
          |   fundef { $$ = $1; }
-         |   stmt { $$ = $1; };
+         |   stmt { $$ = $1; }
+         ;
          // @todo remove stmts (Kept for backward compatibility)
 
 // ----------- GLOBAL VARIABLE DEFINITIONS -----------
+globaldec: EXTERN vartype ident SEMICOLON
+        {
+            $$ = TBmakeGlobaldec($2 $3, NULL);
+        }
+        | EXTERN vartype S_BRACKET_L ident S_BRACKET_R ident SEMICOLON
+        {
+            $$ = TBmakeGlobaldec($2 $6, $4);
+        }
+        ;
+
 globaldef: vartype ident LET expr SEMICOLON
          {
-            $$ = TBmakeGlobaldef($1, FALSE, $2, $4);
+            $$ = TBmakeGlobaldef($1, FALSE, $2, $4, NULL);
          }
          | EXPORT vartype ident LET expr SEMICOLON
          {
-            $$ = TBmakeGlobaldef($2, TRUE, $3, $5);
+            $$ = TBmakeGlobaldef($2, TRUE, $3, $5, NULL);
          }
-         |
-         vartype ident SEMICOLON
+         | vartype ident SEMICOLON
          {
-            $$ = TBmakeGlobaldef($1, FALSE, $2, NULL);
+            $$ = TBmakeGlobaldef($1, FALSE, $2, NULL, NULL);
          }
          | EXPORT vartype ident SEMICOLON
          {
-            $$ = TBmakeGlobaldef($2, TRUE, $3, NULL);
-         };
+            $$ = TBmakeGlobaldef($2, TRUE, $3, NULL, NULL);
+         }
+         | vartype  S_BRACKET_L expr S_BRACKET_R ident SEMICOLON
+         {
+            $$ = TBmakeGlobaldef($1, FALSE, $5, NULL, $3);
+         }
+         | EXPORT vartype  S_BRACKET_L expr S_BRACKET_R ident SEMICOLON
+         {
+            $$ = TBmakeGlobaldef($2, TRUE, $6, NULL, $4);
+         }
+         | vartype  S_BRACKET_L expr S_BRACKET_R ident LET arrexpr SEMICOLON 
+         {
+             $$ = TBmakeGlobaldef($1, FALSE, $5, $7, $3);
+         }
+         | EXPORT vartype  S_BRACKET_L expr S_BRACKET_R ident LET arrexpr SEMICOLON{}
+         {
+             $$ = TBmakeGlobaldef($2, TRUE, $6, $8, $4);
+         }
+         ;
 
 // ----------- FUNCTION DEFINITIONS ---------------
 fundef: funheader funbody
@@ -115,7 +143,7 @@ fundef: funheader funbody
         $$ = TBmakeFundef(TRUE, $2, $3);
     }
     |
-    VAREXTERN funheader SEMICOLON
+    EXTERN funheader SEMICOLON
     {
         $$ = TBmakeFundef(FALSE, $2, NULL);
     }
@@ -152,8 +180,13 @@ params: param COMMA params
 
 param: vartype ident
     {
-        $$ = TBmakeParam($1, $2);
+        $$ = TBmakeParam($1, $2, NULL);
     }
+    | vartype S_BRACKET_L ident S_BRACKET_R ident
+    {
+        $$ = TBmakeParam($1, $3, $5);
+    }
+    ;
 
 funbody:
     C_BRACKET_L vardecs stmts C_BRACKET_R
@@ -312,6 +345,8 @@ expr8: BRACKET_L expr BRACKET_R { $$ = $2; }
      | constant { $$ = $1; }
      | funcall { $$ = $1; }
      | ID { $$ = TBmakeVarcall(TBmakeIdent( STRcpy( $1))); }
+
+arrexpr: S_BRACKET_L exprs S_BRACKET_R {};
 
 constant: floatval
           {

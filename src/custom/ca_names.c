@@ -346,6 +346,8 @@ node *CANforstmt(node *arg_node, info *arg_info) {
     DBUG_RETURN( arg_node);
 }
 
+// @todo print symbol table
+
 /*
  * Traversal start function
  */

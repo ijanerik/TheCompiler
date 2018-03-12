@@ -282,6 +282,17 @@
                       </target>
                   </targets>
               </son>
+              <son name="ArrayIdent">
+                  <description>Variable for the param</description>
+                  <targets>
+                      <target mandatory="no">
+                          <node name="Ident" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
           </sons>
           <attributes>
               <attribute name="Type">
@@ -314,8 +325,20 @@
                   </targets>
               </son>
 
-              <son name="Expr">
+              <son name="Exprs">
                   <description>right hand side expression</description>
+                  <targets>
+                      <target mandatory="no">
+                          <node name="Exprs" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+
+              <son name="BracketExpr">
+                  <description>the expression in square brackets</description>
                   <targets>
                       <target mandatory="no">
                           <set name="Expr" />
@@ -388,6 +411,17 @@
                   <description>Variable for the param</description>
                   <targets>
                       <target mandatory="yes">
+                          <node name="Ident" />
+                          <phases>
+                              <all />
+                          </phases>
+                      </target>
+                  </targets>
+              </son>
+              <son name="ArrayIdent">
+                  <description>Array variable for the param</description>
+                  <targets>
+                      <target mandatory="no">
                           <node name="Ident" />
                           <phases>
                               <all />

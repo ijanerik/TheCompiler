@@ -42,6 +42,8 @@
 ";"                        { FILTER( SEMICOLON); }
 "{"                        { FILTER( C_BRACKET_L); }
 "}"                        { FILTER( C_BRACKET_R); }
+"["                        { FILTER( S_BRACKET_L); }
+"]"                        { FILTER( S_BRACKET_R); }
 
 "-"                        { FILTER( MINUS); }
 "+"                        { FILTER( PLUS);  }
@@ -77,7 +79,7 @@
 "return"                   { FILTER( KRETURN); }
 
 "export"                   { FILTER( EXPORT); }
-"extern"                   { FILTER( VAREXTERN); }
+"extern"                   { FILTER( EXTERN); }
 
 "/*"            { global.col += 2; BEGIN(ML_COMMENT); }
 <ML_COMMENT>"*/" { global.col += 2; BEGIN(INITIAL); }

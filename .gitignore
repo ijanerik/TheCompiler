@@ -1,1 +1,8 @@
 *.swp
+*.o
+src/framework/*.h
+src/framework/*.c
+src/scanparse/*.h
+src/scanparse/*.c
+src/scanparse/y.output
+bin/*
