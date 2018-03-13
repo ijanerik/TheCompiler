@@ -51,14 +51,6 @@ SUBPHASE( os,
           OSdoOptSub, 
           ALWAYS,
           pet)
-          
-/*
-SUBPHASE( ca,
-        "Context analysis on identifiers",
-        CANdoNames,
-        ALWAYS,
-        pet)
-*/
 
 ENDPHASE( pet) 
 
