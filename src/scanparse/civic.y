@@ -1,6 +1,5 @@
 %{
 
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -65,23 +64,26 @@ static int yyerror( char *errname);
 
 %%
 // ------- PROGRAM DEFINITIONS ---------
-program: declarations
-         {
-           parseresult = $1;
-         }
-         ;
+program:
+    declarations
+    {
+        parseresult = $1;
+    }
+    ;
 
-declarations: declaration declarations
-        {
-          $$ = TBmakeDeclarations($1, $2);
-        }
-      | declaration
-        {
-          $$ = TBmakeDeclarations($1, NULL);
-        }
-        ;
+declarations:
+    declaration declarations
+    {
+        $$ = TBmakeDeclarations($1, $2);
+    }
+    | declaration
+    {
+        $$ = TBmakeDeclarations($1, NULL);
+    }
+    ;
 
-declaration: globaldef { $$ = $1; }
+declaration:
+    globaldef { $$ = $1; }
     | globaldec { $$ = $1; }
     | fundef { $$ = $1; }
     | stmt { $$ = $1; }
@@ -89,7 +91,8 @@ declaration: globaldef { $$ = $1; }
     // @todo remove stmts (Kept for backward compatibility)
 
 // ----------- GLOBAL VARIABLE DEFINITIONS -----------
-globaldec: EXTERN vartype ident SEMICOLON
+globaldec:
+    EXTERN vartype ident SEMICOLON
     {
         $$ = TBmakeGlobaldec($2, $3, NULL);
     }
@@ -99,7 +102,8 @@ globaldec: EXTERN vartype ident SEMICOLON
     }
     ;
 
-globaldef: vartype ident LET exprs SEMICOLON
+globaldef:
+    vartype ident LET exprs SEMICOLON
     {
         $$ = TBmakeGlobaldef($1, FALSE, $2, $4, NULL);
     }
@@ -134,7 +138,8 @@ globaldef: vartype ident LET exprs SEMICOLON
     ;
 
 // ----------- FUNCTION DEFINITIONS ---------------
-fundef: funheader funbody
+fundef:
+    funheader funbody
     {
         $$ = TBmakeFundef(FALSE, $1, $2);
     }
@@ -150,7 +155,8 @@ fundef: funheader funbody
     ;
 
 // @todo How to nest vartypes en rettypes
-funheader: vartype ident BRACKET_L params BRACKET_R
+funheader:
+    vartype ident BRACKET_L params BRACKET_R
     {
         $$ = TBmakeFunheader($1, $2, $4);
     }
@@ -166,19 +172,22 @@ funheader: vartype ident BRACKET_L params BRACKET_R
     | rettype ident BRACKET_L BRACKET_R
     {
         $$ = TBmakeFunheader($1, $2, NULL);
-    };
+    }
+    ;
 
-params: param COMMA params
-        {
-          $$ = TBmakeParams($1, $3);
-        }
-      | param
-        {
-          $$ = TBmakeParams($1, NULL);
-        }
-        ;
+params:
+    param COMMA params
+    {
+        $$ = TBmakeParams($1, $3);
+    }
+    | param
+    {
+        $$ = TBmakeParams($1, NULL);
+    }
+    ;
 
-param: vartype ident
+param:
+    vartype ident
     {
         $$ = TBmakeParam($1, $2, NULL);
     }
@@ -208,7 +217,8 @@ funbody:
     ;
 
 // ----------- STATEMENT DEFINITIONS --------------
-vardecs: vardec vardecs 
+vardecs:
+    vardec vardecs 
     {
         $$ = TBmakeVardecs($1, $2);
     }
@@ -218,7 +228,8 @@ vardecs: vardec vardecs
     }
     ;
 
-vardec: vartype ident SEMICOLON
+vardec:
+    vartype ident SEMICOLON
     {
         $$ = TBmakeVardec($1, $2, NULL, NULL);
     }
@@ -236,13 +247,15 @@ vardec: vartype ident SEMICOLON
     }
     ;
 
-arrayindex: ident S_BRACKET_L expr S_BRACKET_R
+arrayindex:
+    ident S_BRACKET_L expr S_BRACKET_R
     {
         $$ = TBmakeArrayindex($1, $3);
     }
     ;
 
-stmts: stmt stmts
+stmts:
+    stmt stmts
     {
         $$ = TBmakeStmts($1, $2);
     }
@@ -252,95 +265,114 @@ stmts: stmt stmts
     }
     ;
 
-stmt:    assign { $$ = $1; }
-       | ifelsestmt { $$ = $1; }
-       | funcall SEMICOLON { $$ = $1; }
-       | whilestmt { $$ = $1; }
-       | dowhilestmt { $$ = $1; }
-       | forstmt { $$ = $1; }
-       | returnstmt { $$ = $1; }
-       ;
+stmt:
+    assign { $$ = $1; }
+    | ifelsestmt { $$ = $1; }
+    | funcall SEMICOLON { $$ = $1; }
+    | whilestmt { $$ = $1; }
+    | dowhilestmt { $$ = $1; }
+    | forstmt { $$ = $1; }
+    | returnstmt { $$ = $1; }
+    ;
 
 // ------------ STATEMENT FUNCTIONS ---------------
-assign: ident LET expr SEMICOLON
-        {
-          $$ = TBmakeAssign( $1, $3, NULL);
-        }
-        | ident S_BRACKET_L expr S_BRACKET_R LET expr SEMICOLON
-        {
-          $$ = TBmakeAssign( $1, $6, $3);
-        }
-        ;
+assign:
+    ident LET expr SEMICOLON
+    {
+        $$ = TBmakeAssign( $1, $3, NULL);
+    }
+    | ident S_BRACKET_L expr S_BRACKET_R LET expr SEMICOLON
+    {
+        $$ = TBmakeAssign( $1, $6, $3);
+    }
+    ;
 
-ifelsestmt: KIF BRACKET_L expr BRACKET_R block
-        {
-            $$ = TBmakeIfelsestmt($3, $5, NULL);
-        }
-        | KIF BRACKET_L expr BRACKET_R block KELSE block
-        {
-            $$ = TBmakeIfelsestmt($3, $5, $7);
-        }
-        ;
+ifelsestmt:
+    KIF BRACKET_L expr BRACKET_R block
+    {
+        $$ = TBmakeIfelsestmt($3, $5, NULL);
+    }
+    | KIF BRACKET_L expr BRACKET_R block KELSE block
+    {
+        $$ = TBmakeIfelsestmt($3, $5, $7);
+    }
+    ;
 
-whilestmt: KWHILE BRACKET_L expr BRACKET_R block
-        {
-            $$ = TBmakeWhilestmt($3, $5);
-        }
+whilestmt:
+    KWHILE BRACKET_L expr BRACKET_R block
+    {
+        $$ = TBmakeWhilestmt($3, $5);
+    }
 
-dowhilestmt: KDO block KWHILE BRACKET_L expr BRACKET_R SEMICOLON
-        {
-            $$ = TBmakeDowhilestmt($5, $2);
-        }
+dowhilestmt:
+    KDO block KWHILE BRACKET_L expr BRACKET_R SEMICOLON
+    {
+        $$ = TBmakeDowhilestmt($5, $2);
+    }
+    ;
 
 // @todo Update expression also assign stmt
-forstmt: KFOR BRACKET_L TINT ident LET expr COMMA expr BRACKET_R block
-        {
-            $$ = TBmakeForstmt($4, $6, $8, NULL, $10);
-        }
-        |
-        KFOR BRACKET_L TINT ident LET expr COMMA expr COMMA expr BRACKET_R block
-        {
-            $$ = TBmakeForstmt($4, $6, $8, $10, $12);
-        }
-        ;
+forstmt:
+    KFOR BRACKET_L TINT ident LET expr COMMA expr BRACKET_R block
+    {
+        $$ = TBmakeForstmt($4, $6, $8, NULL, $10);
+    }
+    |
+    KFOR BRACKET_L TINT ident LET expr COMMA expr COMMA expr BRACKET_R block
+    {
+        $$ = TBmakeForstmt($4, $6, $8, $10, $12);
+    }
+    ;
 
-returnstmt: KRETURN expr SEMICOLON {
-            $$ = TBmakeReturnstmt($2);
-        }
-        | KRETURN SEMICOLON
-        {
-            $$ = TBmakeReturnstmt(NULL);
-        };
+returnstmt:
+    KRETURN expr SEMICOLON 
+    {
+        $$ = TBmakeReturnstmt($2);
+    }
+    | KRETURN SEMICOLON
+    {
+        $$ = TBmakeReturnstmt(NULL);
+    }
+    ;
 
-block: C_BRACKET_L stmts C_BRACKET_R
-        {
-            $$ = TBmakeBlock($2);
-        }
-        | C_BRACKET_L C_BRACKET_R
-        {
-           $$ = TBmakeBlock(NULL);
-        }
-        |
-        stmt
-        {
-            $$ = TBmakeBlock(TBmakeStmts($1, NULL));
-        }
-        ;
+block:
+    C_BRACKET_L stmts C_BRACKET_R
+    {
+        $$ = TBmakeBlock($2);
+    }
+    | C_BRACKET_L C_BRACKET_R
+    {
+        $$ = TBmakeBlock(NULL);
+    }
+    |
+    stmt
+    {
+        $$ = TBmakeBlock(TBmakeStmts($1, NULL));
+    }
+    ;
 
-funcall: ident BRACKET_L exprs BRACKET_R {
-            $$ = TBmakeFuncall($1, $3);
-        }
-        | ident BRACKET_L BRACKET_R {
-            $$ = TBmakeFuncall($1, NULL);
-        }
+funcall:
+    ident BRACKET_L exprs BRACKET_R
+    {
+        $$ = TBmakeFuncall($1, $3);
+    }
+    | ident BRACKET_L BRACKET_R
+    {
+        $$ = TBmakeFuncall($1, NULL);
+    }
+    ;
 
 // ----------- EXPRESSION DEFINITIONS -----------
-exprs: expr COMMA exprs {
-            $$ = TBmakeExprs($1, $3);
-        }
-        | expr {
-            $$ = TBmakeExprs($1, NULL);
-        }
+exprs:
+    expr COMMA exprs
+    {
+        $$ = TBmakeExprs($1, $3);
+    }
+    | expr
+    {
+        $$ = TBmakeExprs($1, NULL);
+    }
+    ;
 
 expr: expr binop1 expr2 { $$ = TBmakeBinop( $2, $1, $3); }
      | expr2;
@@ -368,105 +400,99 @@ expr8: BRACKET_L expr BRACKET_R { $$ = $2; }
      | arrayindex { $$ = $1; }
      | ID { $$ = TBmakeVarcall(TBmakeIdent( STRcpy( $1))); };
 
-arrexpr: S_BRACKET_L exprs S_BRACKET_R 
-        {
-            $$ = TBmakeExprs(NULL, $2);
-        }
-        | expr
-        {
-            $$ = TBmakeExprs($1, NULL);
-        }
-        ;
+arrexpr:
+    S_BRACKET_L exprs S_BRACKET_R 
+    {
+        $$ = TBmakeExprs(NULL, $2);
+    }
+    | expr
+    {
+        $$ = TBmakeExprs($1, NULL);
+    }
+    ;
 
-constant: floatval
-          {
-            $$ = $1;
-          }
-        | intval
-          {
-            $$ = $1;
-          }
-        | boolval
-          {
-            $$ = $1;
-          }
-        ;
+constant:
+    floatval
+    {
+        $$ = $1;
+    }
+    | intval
+    {
+        $$ = $1;
+    }
+    | boolval
+    {
+        $$ = $1;
+    }
+    ;
 
-floatval: FLOAT
-           {
-             $$ = TBmakeFloat( $1);
-           }
-         ;
+floatval: 
+    FLOAT
+    {
+        $$ = TBmakeFloat( $1);
+    }
+    ;
 
-intval: NUM
-        {
-          $$ = TBmakeNum( $1);
-        }
-      ;
+intval:
+    NUM
+    {
+        $$ = TBmakeNum( $1);
+    }
+    ;
 
-boolval: TRUEVAL
-         {
-           $$ = TBmakeBool( TRUE);
-         }
-       | FALSEVAL
-         {
-           $$ = TBmakeBool( FALSE);
-         }
-       ;
-
-/*
-binop: PLUS      { $$ = BO_add; }
-     | MINUS     { $$ = BO_sub; }
-     | STAR      { $$ = BO_mul; }
-     | SLASH     { $$ = BO_div; }
-     | PERCENT   { $$ = BO_mod; }
-     | LE        { $$ = BO_le; }
-     | LT        { $$ = BO_lt; }
-     | GE        { $$ = BO_ge; }
-     | GT        { $$ = BO_gt; }
-     | EQ        { $$ = BO_eq; }
-     | OR        { $$ = BO_or; }
-     | AND       { $$ = BO_and; }
-     ;
-*/
+boolval:
+    TRUEVAL
+    {
+        $$ = TBmakeBool( TRUE);
+    }
+    | FALSEVAL
+    {
+        $$ = TBmakeBool( FALSE);
+    }
+    ;
 
 binop1: OR        { $$ = BO_or; };
 
 binop2: AND       { $$ = BO_and; };
 
-binop3: EQ        { $$ = BO_eq; }
-      | NE        { $$ = BO_ne; };
+binop3:
+    EQ        { $$ = BO_eq; }
+    | NE        { $$ = BO_ne; };
 
-binop4: LE        { $$ = BO_le; }
-      | LT        { $$ = BO_lt; }
-      | GE        { $$ = BO_ge; }
-      | GT        { $$ = BO_gt; };
+binop4:
+    LE        { $$ = BO_le; }
+    | LT        { $$ = BO_lt; }
+    | GE        { $$ = BO_ge; }
+    | GT        { $$ = BO_gt; };
 
-binop5: PLUS      { $$ = BO_add; }
-      | MINUS     { $$ = BO_sub; };
+binop5:
+    PLUS      { $$ = BO_add; }
+    | MINUS     { $$ = BO_sub; };
 
-binop6: STAR      { $$ = BO_mul; }
-      | SLASH     { $$ = BO_div; }
-      | PERCENT   { $$ = BO_mod; };
+binop6:
+    STAR      { $$ = BO_mul; }
+    | SLASH     { $$ = BO_div; }
+    | PERCENT   { $$ = BO_mod; };
 
 
-monop: MINUS    { $$ = MO_neg; }
-     | EXCL_MARK { $$ = MO_not; }
-     ;
+monop:
+    MINUS    { $$ = MO_neg; }
+    | EXCL_MARK { $$ = MO_not; }
+    ;
 
-vartype: TINT   { $$ = T_int; }
-     |   TFLOAT { $$ = T_float; }
-     |   TBOOL  { $$ = T_bool; };
+vartype:
+    TINT   { $$ = T_int; }
+    |   TFLOAT { $$ = T_float; }
+    |   TBOOL  { $$ = T_bool; };
 
 rettype: TVOID  { $$ = T_void; };
 
-ident: ID
-        {
-          $$ = TBmakeIdent( STRcpy( $1));
-        }
-        ;
-
-
+ident:
+    ID
+    {
+        $$ = TBmakeIdent( STRcpy( $1));
+    }
+    ;
 
 %%
 
