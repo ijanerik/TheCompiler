@@ -268,7 +268,6 @@
           </attributes>
       </node>
 
-
       <node name="GlobalDec">
           <description>Global declaration of a variable</description>
           <sons>
@@ -308,7 +307,6 @@
                   </type>
               </attribute>
           </attributes>
-
       </node>
 
       <node name="GlobalDef">
@@ -998,37 +996,49 @@
 <!--
  Node Assign:
 -->
-     <node name="Assign">
-      <description>represents assignment statement</description>
-      <sons>
+<node name="Assign">
+    <description>represents assignment statement</description>
+    <sons>
         <son name="Let">
-        <description>
-         left hand side variable; can be missing to represent procedure calls
-	</description>
-          <targets>
+            <description>
+                left hand side variable; can be missing to represent procedure calls
+            </description>
+            <targets>
             <target mandatory="no">
-              <node name="Ident" />
+                <node name="Ident" />
                 <phases>
-                  <all />
+                    <all />
                 </phases>
-             </target>
-          </targets>
+                </target>
+            </targets>
         </son>
         <son name="Expr">
-        <description>right hand side expression</description>
-          <targets>
-            <target mandatory="yes">
-              <set name="Expr" />
-                <phases>
-                  <all />
-                </phases>
-             </target>
-          </targets>
+            <description>right hand side expression</description>
+            <targets>
+                <target mandatory="yes">
+                    <set name="Expr" />
+                    <phases>
+                        <all />
+                    </phases>
+                </target>
+            </targets>
         </son>
-      </sons>
-      <attributes>
-      </attributes>
-    </node>
+        <!-- when the variable is an array -->
+        <son name="Index">
+        <description></description>
+            <targets>
+                <target mandatory="no">
+                <set name="Expr" />
+                    <phases>
+                    <all />
+                    </phases>
+                </target>
+            </targets>
+        </son>
+    </sons>
+<attributes>
+</attributes>
+</node>
 <!--
  Node BinOp:
 -->

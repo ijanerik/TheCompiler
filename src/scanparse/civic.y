@@ -91,19 +91,19 @@ declaration: globaldef { $$ = $1; }
 // ----------- GLOBAL VARIABLE DEFINITIONS -----------
 globaldec: EXTERN vartype ident SEMICOLON
     {
-        $$ = TBmakeGlobaldec($2 $3, NULL);
+        $$ = TBmakeGlobaldec($2, $3, NULL);
     }
     | EXTERN vartype S_BRACKET_L ident S_BRACKET_R ident SEMICOLON
     {
-        $$ = TBmakeGlobaldec($2 $6, $4);
+        $$ = TBmakeGlobaldec($2, $6, $4);
     }
     ;
 
-globaldef: vartype ident LET expr SEMICOLON
+globaldef: vartype ident LET exprs SEMICOLON
     {
         $$ = TBmakeGlobaldef($1, FALSE, $2, $4, NULL);
     }
-    | EXPORT vartype ident LET expr SEMICOLON
+    | EXPORT vartype ident LET exprs SEMICOLON
     {
         $$ = TBmakeGlobaldef($2, TRUE, $3, $5, NULL);
     }
@@ -220,7 +220,7 @@ vardecs: vardec vardecs
 
 vardec: vartype ident SEMICOLON
     {
-        $$ = TBmakeVardec($1, $2, NULL);
+        $$ = TBmakeVardec($1, $2, NULL, NULL);
     }
     | vartype S_BRACKET_L expr S_BRACKET_R ident SEMICOLON
     {
@@ -264,7 +264,11 @@ stmt:    assign { $$ = $1; }
 // ------------ STATEMENT FUNCTIONS ---------------
 assign: ident LET expr SEMICOLON
         {
-          $$ = TBmakeAssign( $1, $3);
+          $$ = TBmakeAssign( $1, $3, NULL);
+        }
+        | ident S_BRACKET_L expr S_BRACKET_R LET expr SEMICOLON
+        {
+          $$ = TBmakeAssign( $1, $6, $3);
         }
         ;
 
@@ -367,7 +371,12 @@ expr8: BRACKET_L expr BRACKET_R { $$ = $2; }
 arrexpr: S_BRACKET_L exprs S_BRACKET_R 
         {
             $$ = TBmakeExprs(NULL, $2);
-        };
+        }
+        | expr
+        {
+            $$ = TBmakeExprs($1, NULL);
+        }
+        ;
 
 constant: floatval
           {

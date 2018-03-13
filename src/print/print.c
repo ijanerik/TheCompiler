@@ -539,30 +539,30 @@ node *PRTblock(node *arg_node, info *arg_info) {
 node *PRTvardec(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTvardec");
 
-    printIndents(arg_info);
+    // printIndents(arg_info);
 
-    switch(VARDEC_TYPE(arg_node)) {
-        case T_int:
-            printf("int");
-            break;
-        case T_float:
-            printf("float");
-            break;
-        case T_bool:
-            printf("bool");
-            break;
-        default:
-            printf("unknown");
-            break; 
-    }
-    printf(" ");
-    VARDEC_IDENT(arg_node) = TRAVdo(VARDEC_IDENT(arg_node), arg_info);
+    // switch(VARDEC_TYPE(arg_node)) {
+    //     case T_int:
+    //         printf("int");
+    //         break;
+    //     case T_float:
+    //         printf("float");
+    //         break;
+    //     case T_bool:
+    //         printf("bool");
+    //         break;
+    //     default:
+    //         printf("unknown");
+    //         break; 
+    // }
+    // printf(" ");
+    // VARDEC_IDENT(arg_node) = TRAVdo(VARDEC_IDENT(arg_node), arg_info);
     
-    if (VARDEC_EXPR(arg_node)) {
-        printf(" = ");
-        VARDEC_EXPR(arg_node) = TRAVdo(VARDEC_EXPR(arg_node), arg_info);
-    }
-    printf(";\n");
+    // if (VARDEC_EXPR(arg_node)) {
+    //     printf(" = ");
+    //     VARDEC_EXPR(arg_node) = TRAVdo(VARDEC_EXPR(arg_node), arg_info);
+    // }
+    // printf(";\n");
     DBUG_RETURN(arg_node);
 }
 
@@ -661,6 +661,7 @@ node *PRTglobaldef(node *arg_node, info *arg_info) {
 
     DBUG_ENTER("PRTglobaldef");
 
+    bool is_array = GLOBALDEF_ARRAYLENGTH(arg_node) != NULL;
 
     if (GLOBALDEF_EXPORT(arg_node) == TRUE) {
         printf("export ");
@@ -682,12 +683,28 @@ node *PRTglobaldef(node *arg_node, info *arg_info) {
     }
     printf("%s ", tmp);
 
-    GLOBALDEF_IDENT(arg_node) = TRAVdo(GLOBALDEF_IDENT(arg_node), arg_info);
+    if (is_array) {
+        printf("[");
+        GLOBALDEF_ARRAYLENGTH(arg_node) = TRAVdo(GLOBALDEF_ARRAYLENGTH(arg_node), arg_info);
+        printf("] ");
+    }
 
+    GLOBALDEF_IDENT(arg_node) = TRAVdo(GLOBALDEF_IDENT(arg_node), arg_info);
 
     if (GLOBALDEF_EXPRS(arg_node) != NULL) {
         printf(" = ");
-        GLOBALDEF_EXPRS(arg_node) = TRAVdo(GLOBALDEF_EXPRS(arg_node), arg_info);
+        
+        if (EXPRS_EXPR(GLOBALDEF_EXPRS(arg_node)) != NULL) {
+            GLOBALDEF_EXPRS(arg_node) = TRAVdo(EXPRS_EXPR(GLOBALDEF_EXPRS(arg_node)), arg_info);
+        }
+        else if (EXPRS_NEXT(GLOBALDEF_EXPRS(arg_node)) != NULL) {
+            
+            if (is_array) { printf("["); }
+            GLOBALDEF_EXPRS(arg_node) = TRAVdo(EXPRS_NEXT(
+                                               GLOBALDEF_EXPRS(arg_node))
+                                               , arg_info);
+            if (is_array) { printf("]"); }
+        }
     }
 
     printf(";");
@@ -698,24 +715,30 @@ node *PRTglobaldef(node *arg_node, info *arg_info) {
 node *PRTglobaldec(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTglobaldec");
 
+    printf("extern ");
+    switch (GLOBALDEC_TYPE(arg_node)) {
+        case T_int:
+            printf("int");
+            break;
+        case T_float:
+            printf("float");
+            break;
+        case T_bool:
+            printf("bool");
+            break;
+        default:
+            printf("unknown");
+            break; 
+    }
+    printf(" ");
+    if (GLOBALDEC_ARRAYLENGTH(arg_node) != NULL) {
+        printf("[");
+        GLOBALDEC_ARRAYLENGTH(arg_node) = TRAVdo(GLOBALDEC_ARRAYLENGTH(arg_node), arg_info);
+        printf("] ");
+    }
+    GLOBALDEC_IDENT(arg_node) = TRAVdo(GLOBALDEC_IDENT(arg_node), arg_info);
 
-    // switch (GLOBALDEC_TYPE(arg_node)) {
-    //     case T_int:
-    //         printf("int");
-    //         break;
-    //     case T_float:
-    //         printf("float");
-    //         break;
-    //     case T_bool:
-    //         printf("bool");
-    //         break;
-    //     default:
-    //         printf("unknown");
-    //         break; 
-    // }
-    // printf(" ");
-    // GLOBALDEC_IDENT(arg_node) = TRAVdo(GLOBALDEC_IDENT(arg_node), arg_info);
-    // printf(";\n");
+    printf(";\n");
     DBUG_RETURN(arg_node);
 }
 
