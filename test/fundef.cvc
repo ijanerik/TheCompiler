@@ -1,5 +1,5 @@
 extern int bar(int a);
 
-int foo(int a, bool b, float c) {
+int foo(int[x] a, bool[y] b, float c) {
     int a = 0;
 }

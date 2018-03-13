@@ -224,9 +224,9 @@ vardec: vartype ident SEMICOLON
     }
     | vartype S_BRACKET_L expr S_BRACKET_R ident SEMICOLON
     {
-        $$ = TBmakeVardec($1, $5, NULL, NULL);
+        $$ = TBmakeVardec($1, $5, NULL, $3);
     } 
-    | vartype ident LET expr SEMICOLON 
+    | vartype ident LET exprs SEMICOLON 
     {
         $$ = TBmakeVardec($1, $2, $4, NULL);
     } 

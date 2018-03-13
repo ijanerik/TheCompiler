@@ -1,4 +1,6 @@
-void fun() {
-    int b;
-    int c = 0;
+void fun(int a) {
+    int [1] b;
+    int [a] b = [1, 2];
+    int [10] ones = 1;
+    int c;
 }

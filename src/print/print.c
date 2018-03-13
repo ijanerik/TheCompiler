@@ -104,10 +104,15 @@ PRTassign(node *arg_node, info *arg_info) {
 
     printIndents(arg_info);
 
-    if (ASSIGN_LET(arg_node) != NULL) {
-        ASSIGN_LET(arg_node) = TRAVdo(ASSIGN_LET(arg_node), arg_info);
-        printf(" = ");
+    ASSIGN_LET(arg_node) = TRAVdo(ASSIGN_LET(arg_node), arg_info);
+
+    if (ASSIGN_INDEX(arg_node) != NULL) {
+        printf(" [");
+         ASSIGN_INDEX(arg_node) = TRAVdo(ASSIGN_INDEX(arg_node), arg_info);
+        printf("] ");
     }
+    
+    printf(" = ");
 
     ASSIGN_EXPR(arg_node) = TRAVdo(ASSIGN_EXPR(arg_node), arg_info);
 
@@ -539,30 +544,51 @@ node *PRTblock(node *arg_node, info *arg_info) {
 node *PRTvardec(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTvardec");
 
-    // printIndents(arg_info);
+    printIndents(arg_info);
 
-    // switch(VARDEC_TYPE(arg_node)) {
-    //     case T_int:
-    //         printf("int");
-    //         break;
-    //     case T_float:
-    //         printf("float");
-    //         break;
-    //     case T_bool:
-    //         printf("bool");
-    //         break;
-    //     default:
-    //         printf("unknown");
-    //         break; 
-    // }
-    // printf(" ");
-    // VARDEC_IDENT(arg_node) = TRAVdo(VARDEC_IDENT(arg_node), arg_info);
+    bool is_array = VARDEC_ARRAYLENGTH(arg_node) != NULL;
+
+    switch(VARDEC_TYPE(arg_node)) {
+        case T_int:
+            printf("int");
+            break;
+        case T_float:
+            printf("float");
+            break;
+        case T_bool:
+            printf("bool");
+            break;
+        default:
+            printf("unknown");
+            break; 
+    }
+    printf(" ");
+
+    if (is_array) {
+        printf("[");
+        VARDEC_ARRAYLENGTH(arg_node) = TRAVdo(VARDEC_ARRAYLENGTH(arg_node), arg_info);
+        printf("] ");
+    }
+
+    VARDEC_IDENT(arg_node) = TRAVdo(VARDEC_IDENT(arg_node), arg_info);
     
-    // if (VARDEC_EXPR(arg_node)) {
-    //     printf(" = ");
-    //     VARDEC_EXPR(arg_node) = TRAVdo(VARDEC_EXPR(arg_node), arg_info);
-    // }
-    // printf(";\n");
+    if (VARDEC_EXPRS(arg_node) != NULL) {
+        printf(" = ");
+        
+        if (EXPRS_EXPR(VARDEC_EXPRS(arg_node)) != NULL) {
+            VARDEC_EXPRS(arg_node) = TRAVdo(EXPRS_EXPR(VARDEC_EXPRS(arg_node)), arg_info);
+        }
+        else if (EXPRS_NEXT(VARDEC_EXPRS(arg_node)) != NULL) {
+            
+            if (is_array) { printf("["); }
+            VARDEC_EXPRS(arg_node) = TRAVdo(EXPRS_NEXT(
+                                               VARDEC_EXPRS(arg_node))
+                                               , arg_info);
+            if (is_array) { printf("]"); }
+        }
+    }
+
+    printf(";\n");
     DBUG_RETURN(arg_node);
 }
 
@@ -632,6 +658,12 @@ node *PRTparam(node *arg_node, info *arg_info) {
             break; 
     }
     printf(" ");
+    if (PARAM_ARRAYLENGTH(arg_node) != NULL) {
+        printf("[");
+        PARAM_ARRAYLENGTH(arg_node) = TRAVdo(PARAM_ARRAYLENGTH(arg_node), arg_info);
+        printf("] ");
+    }
+
     PARAM_IDENT(arg_node) = TRAVdo(PARAM_IDENT(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
@@ -832,6 +864,11 @@ node *PRTsymboltableentry(node *arg_node, info *arg_info) {
 
 node *PRTarrayindex(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTarrayindex");
+
+    ARRAYINDEX_IDENT(arg_node) = TRAVdo(ARRAYINDEX_IDENT(arg_node), arg_info);
+    printf("[");
+    ARRAYINDEX_INDEX(arg_node) = TRAVdo(ARRAYINDEX_INDEX(arg_node), arg_info);
+    printf("]");
 
     DBUG_RETURN(arg_node);
 }

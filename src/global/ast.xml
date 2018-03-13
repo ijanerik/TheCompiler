@@ -1000,15 +1000,13 @@
     <description>represents assignment statement</description>
     <sons>
         <son name="Let">
-            <description>
-                left hand side variable; can be missing to represent procedure calls
-            </description>
+            <description></description>
             <targets>
-            <target mandatory="no">
-                <node name="Ident" />
-                <phases>
-                    <all />
-                </phases>
+                <target mandatory="yes">
+                    <node name="Ident" />
+                    <phases>
+                        <all />
+                    </phases>
                 </target>
             </targets>
         </son>
