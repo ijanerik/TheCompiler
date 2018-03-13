@@ -685,9 +685,9 @@ node *PRTglobaldef(node *arg_node, info *arg_info) {
     GLOBALDEF_IDENT(arg_node) = TRAVdo(GLOBALDEF_IDENT(arg_node), arg_info);
 
 
-    if (GLOBALDEF_EXPR(arg_node) != NULL) {
+    if (GLOBALDEF_EXPRS(arg_node) != NULL) {
         printf(" = ");
-        GLOBALDEF_EXPR(arg_node) = TRAVdo(GLOBALDEF_EXPR(arg_node), arg_info);
+        GLOBALDEF_EXPRS(arg_node) = TRAVdo(GLOBALDEF_EXPRS(arg_node), arg_info);
     }
 
     printf(";");
@@ -699,23 +699,23 @@ node *PRTglobaldec(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTglobaldec");
 
 
-    switch (GLOBALDEC_TYPE(arg_node)) {
-        case T_int:
-            printf("int");
-            break;
-        case T_float:
-            printf("float");
-            break;
-        case T_bool:
-            printf("bool");
-            break;
-        default:
-            printf("unknown");
-            break; 
-    }
-    printf(" ");
-    GLOBALDEC_IDENT(arg_node) = TRAVdo(GLOBALDEC_IDENT(arg_node), arg_info);
-    printf(";\n");
+    // switch (GLOBALDEC_TYPE(arg_node)) {
+    //     case T_int:
+    //         printf("int");
+    //         break;
+    //     case T_float:
+    //         printf("float");
+    //         break;
+    //     case T_bool:
+    //         printf("bool");
+    //         break;
+    //     default:
+    //         printf("unknown");
+    //         break; 
+    // }
+    // printf(" ");
+    // GLOBALDEC_IDENT(arg_node) = TRAVdo(GLOBALDEC_IDENT(arg_node), arg_info);
+    // printf(";\n");
     DBUG_RETURN(arg_node);
 }
 
@@ -803,6 +803,12 @@ node *PRTsymboltable(node *arg_node, info *arg_info) {
 
 node *PRTsymboltableentry(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTsymboltableentry");
+
+    DBUG_RETURN(arg_node);
+}
+
+node *PRTarrayindex(node *arg_node, info *arg_info) {
+    DBUG_ENTER("PRTarrayindex");
 
     DBUG_RETURN(arg_node);
 }

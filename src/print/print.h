@@ -51,5 +51,5 @@ extern node *PRTprogram (node * arg_node, info * arg_info);
 //extern node *PRTsymboltables(node *arg_node, info *arg_info);
 extern node *PRTsymboltable(node *arg_node, info *arg_info);
 extern node *PRTsymboltableentry(node *arg_node, info *arg_info);
-
+extern node *PRTarrayindex(node *arg_node, info *arg_info);
 #endif /* _SAC_PRT_NODE_H_ */

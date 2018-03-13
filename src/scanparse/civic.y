@@ -57,7 +57,7 @@ static int yyerror( char *errname);
 %type <node> ident intval floatval boolval constant exprs
 %type <node> expr expr2 expr3 expr4 expr5 expr6 expr7 expr8 arrexpr
 %type <node> stmts stmt assign ifelsestmt whilestmt dowhilestmt forstmt returnstmt block funcall
-%type <node> vardec vardecs
+%type <node> vardec vardecs arrayindex
 %type <node> program declarations declaration
 %type <node> globaldef globaldec fundef funheader funbody params param
 
@@ -82,56 +82,56 @@ declarations: declaration declarations
         ;
 
 declaration: globaldef { $$ = $1; }
-         |   globaldec { $$ = $1; }
-         |   fundef { $$ = $1; }
-         |   stmt { $$ = $1; }
-         ;
-         // @todo remove stmts (Kept for backward compatibility)
+    | globaldec { $$ = $1; }
+    | fundef { $$ = $1; }
+    | stmt { $$ = $1; }
+    ;
+    // @todo remove stmts (Kept for backward compatibility)
 
 // ----------- GLOBAL VARIABLE DEFINITIONS -----------
 globaldec: EXTERN vartype ident SEMICOLON
-        {
-            $$ = TBmakeGlobaldec($2 $3, NULL);
-        }
-        | EXTERN vartype S_BRACKET_L ident S_BRACKET_R ident SEMICOLON
-        {
-            $$ = TBmakeGlobaldec($2 $6, $4);
-        }
-        ;
+    {
+        $$ = TBmakeGlobaldec($2 $3, NULL);
+    }
+    | EXTERN vartype S_BRACKET_L ident S_BRACKET_R ident SEMICOLON
+    {
+        $$ = TBmakeGlobaldec($2 $6, $4);
+    }
+    ;
 
 globaldef: vartype ident LET expr SEMICOLON
-         {
-            $$ = TBmakeGlobaldef($1, FALSE, $2, $4, NULL);
-         }
-         | EXPORT vartype ident LET expr SEMICOLON
-         {
-            $$ = TBmakeGlobaldef($2, TRUE, $3, $5, NULL);
-         }
-         | vartype ident SEMICOLON
-         {
-            $$ = TBmakeGlobaldef($1, FALSE, $2, NULL, NULL);
-         }
-         | EXPORT vartype ident SEMICOLON
-         {
-            $$ = TBmakeGlobaldef($2, TRUE, $3, NULL, NULL);
-         }
-         | vartype  S_BRACKET_L expr S_BRACKET_R ident SEMICOLON
-         {
-            $$ = TBmakeGlobaldef($1, FALSE, $5, NULL, $3);
-         }
-         | EXPORT vartype  S_BRACKET_L expr S_BRACKET_R ident SEMICOLON
-         {
-            $$ = TBmakeGlobaldef($2, TRUE, $6, NULL, $4);
-         }
-         | vartype  S_BRACKET_L expr S_BRACKET_R ident LET arrexpr SEMICOLON 
-         {
-             $$ = TBmakeGlobaldef($1, FALSE, $5, $7, $3);
-         }
-         | EXPORT vartype  S_BRACKET_L expr S_BRACKET_R ident LET arrexpr SEMICOLON{}
-         {
-             $$ = TBmakeGlobaldef($2, TRUE, $6, $8, $4);
-         }
-         ;
+    {
+        $$ = TBmakeGlobaldef($1, FALSE, $2, $4, NULL);
+    }
+    | EXPORT vartype ident LET expr SEMICOLON
+    {
+        $$ = TBmakeGlobaldef($2, TRUE, $3, $5, NULL);
+    }
+    | vartype ident SEMICOLON
+    {
+        $$ = TBmakeGlobaldef($1, FALSE, $2, NULL, NULL);
+    }
+    | EXPORT vartype ident SEMICOLON
+    {
+        $$ = TBmakeGlobaldef($2, TRUE, $3, NULL, NULL);
+    }
+    | vartype  S_BRACKET_L expr S_BRACKET_R ident SEMICOLON
+    {
+        $$ = TBmakeGlobaldef($1, FALSE, $5, NULL, $3);
+    }
+    | EXPORT vartype  S_BRACKET_L expr S_BRACKET_R ident SEMICOLON
+    {
+        $$ = TBmakeGlobaldef($2, TRUE, $6, NULL, $4);
+    }
+    | vartype  S_BRACKET_L expr S_BRACKET_R ident LET arrexpr SEMICOLON 
+    {
+        $$ = TBmakeGlobaldef($1, FALSE, $5, $7, $3);
+    }
+    | EXPORT vartype  S_BRACKET_L expr S_BRACKET_R ident LET arrexpr SEMICOLON{}
+    {
+        $$ = TBmakeGlobaldef($2, TRUE, $6, $8, $4);
+    }
+    ;
 
 // ----------- FUNCTION DEFINITIONS ---------------
 fundef: funheader funbody
@@ -208,32 +208,49 @@ funbody:
     ;
 
 // ----------- STATEMENT DEFINITIONS --------------
-vardecs: vardec vardecs {
-            $$ = TBmakeVardecs($1, $2);
-        }
-        |
-        vardec {
-            $$ = TBmakeVardecs($1, NULL);
-        }
-        ;
+vardecs: vardec vardecs 
+    {
+        $$ = TBmakeVardecs($1, $2);
+    }
+    | vardec
+    {
+        $$ = TBmakeVardecs($1, NULL);
+    }
+    ;
 
-vardec: vartype ident SEMICOLON {
-            $$ = TBmakeVardec($1, $2, NULL);
-        }
-        |
-        vartype ident LET expr SEMICOLON {
-            $$ = TBmakeVardec($1, $2, $4);
-        };
+vardec: vartype ident SEMICOLON
+    {
+        $$ = TBmakeVardec($1, $2, NULL);
+    }
+    | vartype S_BRACKET_L expr S_BRACKET_R ident SEMICOLON
+    {
+        $$ = TBmakeVardec($1, $5, NULL, NULL);
+    } 
+    | vartype ident LET expr SEMICOLON 
+    {
+        $$ = TBmakeVardec($1, $2, $4, NULL);
+    } 
+    |  vartype S_BRACKET_L expr S_BRACKET_R ident LET arrexpr SEMICOLON 
+    {
+        $$ = TBmakeVardec($1, $5, $7, $3);
+    }
+    ;
+
+arrayindex: ident S_BRACKET_L expr S_BRACKET_R
+    {
+        $$ = TBmakeArrayindex($1, $3);
+    }
+    ;
 
 stmts: stmt stmts
-        {
-          $$ = TBmakeStmts( $1, $2);
-        }
-      | stmt
-        {
-          $$ = TBmakeStmts( $1, NULL);
-        }
-        ;
+    {
+        $$ = TBmakeStmts($1, $2);
+    }
+    | stmt
+    {
+        $$ = TBmakeStmts($1, NULL);
+    }
+    ;
 
 stmt:    assign { $$ = $1; }
        | ifelsestmt { $$ = $1; }
@@ -344,9 +361,13 @@ expr7: monop expr7 { $$ = TBmakeMonop($1, $2); }
 expr8: BRACKET_L expr BRACKET_R { $$ = $2; }
      | constant { $$ = $1; }
      | funcall { $$ = $1; }
-     | ID { $$ = TBmakeVarcall(TBmakeIdent( STRcpy( $1))); }
+     | arrayindex { $$ = $1; }
+     | ID { $$ = TBmakeVarcall(TBmakeIdent( STRcpy( $1))); };
 
-arrexpr: S_BRACKET_L exprs S_BRACKET_R {};
+arrexpr: S_BRACKET_L exprs S_BRACKET_R 
+        {
+            $$ = TBmakeExprs(NULL, $2);
+        };
 
 constant: floatval
           {
