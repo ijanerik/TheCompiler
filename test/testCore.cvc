@@ -44,7 +44,9 @@ export bool isprime(int n) {
     bool is = true;
 
     for(int i = 2, n/2+1) {
-        if(n%i == 0) is = false;
+        if(n%i == 0) {
+            is = false;
+        }
     }
 
     return is;

@@ -61,6 +61,21 @@
             <node name="BinOp" />
         </travuser>
         </traversal>
+
+        <traversal id="CAN" name="Context Analysis Identiers" default="sons" include="ca_names.h">
+            <travuser>
+                <node name="VarDec" />
+                <node name="GlobalDec" />
+                <node name="GlobalDef" />
+                <node name="FunDef" />
+                <node name="Assign" />
+                <node name="VarCall" />
+                <node name="FunCall" />
+                <node name="Param" />
+                <node name="ForStmt" />
+                <node name="ArrayIndex" />
+            </travuser>
+        </traversal>
     </general>
 </phases>
 

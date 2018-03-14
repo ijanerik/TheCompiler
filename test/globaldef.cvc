@@ -1,5 +1,5 @@
 int a = 2, 3;
-int [a] b = [1, 2];
+int [a[c[1]]] b = [1, 2];
 int [10] ones = 1;
 
 export int c = 20;
