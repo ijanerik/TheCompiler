@@ -200,19 +200,19 @@ param:
 funbody:
     C_BRACKET_L vardecs stmts C_BRACKET_R
     {
-        $$ = TBmakeFunbody($2, NULL, $3);
+        $$ = TBmakeFunbody($2, NULL, $3, NULL);
     }
     | C_BRACKET_L vardecs C_BRACKET_R
     {
-        $$ = TBmakeFunbody($2, NULL, NULL);
+        $$ = TBmakeFunbody($2, NULL, NULL, NULL);
     }
     | C_BRACKET_L stmts C_BRACKET_R
     {
-        $$ = TBmakeFunbody(NULL, NULL, $2);
+        $$ = TBmakeFunbody(NULL, NULL, $2, NULL);
     }
     | C_BRACKET_L C_BRACKET_R
       {
-          $$ = TBmakeFunbody(NULL, NULL, NULL);
+          $$ = TBmakeFunbody(NULL, NULL, NULL, NULL);
       }
     ;
 
@@ -338,16 +338,16 @@ returnstmt:
 block:
     C_BRACKET_L stmts C_BRACKET_R
     {
-        $$ = TBmakeBlock($2);
+        $$ = TBmakeBlock($2, NULL);
     }
     | C_BRACKET_L C_BRACKET_R
     {
-        $$ = TBmakeBlock(NULL);
+        $$ = TBmakeBlock(NULL, NULL);
     }
     |
     stmt
     {
-        $$ = TBmakeBlock(TBmakeStmts($1, NULL));
+        $$ = TBmakeBlock(TBmakeStmts($1, NULL), NULL);
     }
     ;
 

@@ -6,3 +6,6 @@ src/scanparse/*.h
 src/scanparse/*.c
 src/scanparse/y.output
 bin/*
+cmake-build-debug/*
+.idea/*
+make_track

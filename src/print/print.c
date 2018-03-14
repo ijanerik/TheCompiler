@@ -533,6 +533,15 @@ node *PRTblock(node *arg_node, info *arg_info) {
 
     printf("{\n");
     INFO_INDENTS(arg_info)++;
+
+    // Print symbol table
+    printIndents(arg_info);
+    printf("/** SYMBOL TABLE **\n");
+    BLOCK_SYMBOLTABLE(arg_node) = TRAVdo(BLOCK_SYMBOLTABLE(arg_node), arg_info);
+
+    printIndents(arg_info);
+    printf(" */\n");
+
     BLOCK_STMTS(arg_node) = TRAVdo(BLOCK_STMTS(arg_node), arg_info);
     INFO_INDENTS(arg_info)--;
     printIndents(arg_info);
@@ -625,6 +634,16 @@ node *PRTfunbody(node *arg_node, info *arg_info) {
     printIndents(arg_info);
     printf(" {\n");
     INFO_INDENTS(arg_info)++;
+
+    // Print symbol table
+    printIndents(arg_info);
+    printf("/** SYMBOL TABLE **\n");
+    FUNBODY_SYMBOLTABLE(arg_node) = TRAVdo(FUNBODY_SYMBOLTABLE(arg_node), arg_info);
+
+    printIndents(arg_info);
+    printf(" */\n");
+
+    // Var declarations
     if (FUNBODY_VARDECS(arg_node) != NULL) {
         FUNBODY_VARDECS(arg_node) = TRAVdo(FUNBODY_VARDECS(arg_node), arg_info);
     }
@@ -841,23 +860,34 @@ node *PRTdeclarations(node *arg_node, info *arg_info) {
 node *PRTprogram(node *arg_node, info *arg_info) {
     DBUG_ENTER("");
 
+    printIndents(arg_info);
+    printf("/** SYMBOL TABLE **\n");
+    PROGRAM_SYMBOLTABLE(arg_node) = TRAVdo(PROGRAM_SYMBOLTABLE(arg_node), arg_info);
+
+    printIndents(arg_info);
+    printf(" */\n");
+
     DBUG_RETURN(arg_node);
 }
 
-// node *PRTsymboltables(node *arg_node, info *arg_info) {
-//     DBUG_ENTER("");
-
-//     DBUG_RETURN(arg_node);
-// }
-
 node *PRTsymboltable(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTsymboltable");
+
+    SYMBOLTABLE_SYMBOLTABLEENTRY(arg_node) = TRAVdo(SYMBOLTABLE_SYMBOLTABLEENTRY(arg_node), arg_info);
+
+    if(SYMBOLTABLE_NEXT(arg_node) != NULL) {
+        SYMBOLTABLE_NEXT(arg_node) = TRAVdo(SYMBOLTABLE_NEXT(arg_node), arg_info);
+    }
+
 
     DBUG_RETURN(arg_node);
 }
 
 node *PRTsymboltableentry(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTsymboltableentry");
+
+    printIndents(arg_info);
+    printf(" * %s \n", SYMBOLTABLEENTRY_NAME(arg_node));
 
     DBUG_RETURN(arg_node);
 }

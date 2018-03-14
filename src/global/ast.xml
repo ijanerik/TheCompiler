@@ -124,6 +124,18 @@
                     </target>
                 </targets>
             </son>
+
+            <son name="SymbolTable">
+                <description>The symbol table from the global stack</description>
+                <targets>
+                    <target mandatory="no">
+                        <node name="SymbolTable" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
         </sons>
         <attributes>
         </attributes>
@@ -442,11 +454,24 @@
                     </target>
                 </targets>
             </son>
+
             <son name="Stmts">
                 <description>Statements in sequence</description>
                 <targets>
                     <target mandatory="no">
                         <node name="Stmts" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+
+            <son name="SymbolTable">
+                <description>The symbol table from the global stack</description>
+                <targets>
+                    <target mandatory="no">
+                        <node name="SymbolTable" />
                         <phases>
                             <all />
                         </phases>
@@ -610,6 +635,18 @@
                 <targets>
                     <target mandatory="no">
                         <node name="Stmts" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+
+            <son name="SymbolTable">
+                <description>The symbol table from the global stack</description>
+                <targets>
+                    <target mandatory="no">
+                        <node name="SymbolTable" />
                         <phases>
                             <all />
                         </phases>
@@ -1191,6 +1228,17 @@
         </attribute>
         <attribute name="Type">
             <type name="Type">
+                <targets>
+                    <target mandatory="yes">
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </type>
+        </attribute>
+        <attribute name="IsArray">
+            <type name="Bool">
                 <targets>
                     <target mandatory="yes">
                         <phases>
