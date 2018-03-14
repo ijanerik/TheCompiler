@@ -308,6 +308,20 @@
                     </targets>
                 </type>
             </attribute>
+
+            <attribute name="Link">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
         </attributes>
     </node>
 
@@ -365,6 +379,20 @@
                 <type name="Bool">
                     <targets>
                         <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
                             <phases>
                                 <all />
                             </phases>
@@ -434,6 +462,19 @@
                 <type name="Type">
                     <targets>
                         <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
                             <phases>
                                 <all />
                             </phases>
@@ -586,6 +627,19 @@
             </son>
         </sons>
         <attributes>
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
         </attributes>
     </node>
 
@@ -632,6 +686,20 @@
                 <type name="Type">
                     <targets>
                         <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
                             <phases>
                                 <all />
                             </phases>
@@ -872,6 +940,22 @@
                 </targets>
             </son>
         </sons>
+
+        <attributes>
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+        </attributes>
     </node>
 
     <!-- ReturnStmt -->
@@ -1054,6 +1138,19 @@
             </son>
         </sons>
         <attributes>
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
         </attributes>
     </node>
 
@@ -1117,19 +1214,6 @@
                 </phases>
                 </target>
             </targets>
-            </type>
-        </attribute>
-        <attribute name="Decl">
-        <description>Link to symbol table entry</description>
-            <type name="Link">
-                <targets>
-                    <target mandatory="no">
-                        <node name="SymbolTableEntry" />
-                        <phases>
-                            <all />
-                        </phases>
-                    </target>
-                </targets>
             </type>
         </attribute>
     </attributes>
