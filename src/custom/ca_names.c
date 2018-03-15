@@ -130,6 +130,7 @@ node *CANglobaldec(node *arg_node, info *arg_info)
 
 
     // Check symbol table
+    /*
     if (!searchSymbolTable(INFO_GLOBAL_TABLE(arg_info), IDENT_NAME(ident), &entry, is_array)) {
         addSymbolTableEntry(INFO_GLOBAL_TABLE(arg_info),
                             IDENT_NAME(ident), GLOBALDEC_TYPE(arg_node));
@@ -137,6 +138,7 @@ node *CANglobaldec(node *arg_node, info *arg_info)
     else {
         throwError(ERROR_RE_DEC_VAR);
     }
+     */
 
     DBUG_RETURN( arg_node);
 }
