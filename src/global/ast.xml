@@ -56,11 +56,36 @@
                 </travuser>
             </traversal>
 
+<<<<<<< HEAD
             <traversal id="OS" name="Optimise subtraction" default="sons" include="opt_sub.h">
                 <travuser>
                     <node name="BinOp" />
                 </travuser>
             </traversal>
+=======
+        <traversal id="OS" name="Optimise subtraction" default="sons" include="opt_sub.h">
+        <travuser>
+            <node name="BinOp" />
+        </travuser>
+        </traversal>
+
+        <traversal id="CAN" name="Context Analysis Identiers" default="sons" include="ca_names.h">
+            <travuser>
+                <node name="VarDec" />
+                <node name="GlobalDec" />
+                <node name="GlobalDef" />
+                <node name="FunDef" />
+                <node name="Assign" />
+                <node name="VarCall" />
+                <node name="FunCall" />
+                <node name="Param" />
+                <node name="ForStmt" />
+                <node name="ArrayIndex" />
+            </travuser>
+        </traversal>
+    </general>
+</phases>
+>>>>>>> master
 
             <traversal id="CAN" name="Context Analysis Identiers" default="sons" include="ca_names.h">
                 <travuser>
@@ -241,17 +266,30 @@
                             </phases>
                         </target>
                     </targets>
+<<<<<<< HEAD
                 </son>
                 <son name="Params">
                     <description>The parameters for the function</description>
                     <targets>
                         <target mandatory="no">
                             <node name="Params" />
+=======
+                </type>
+            </attribute>
+
+            <attribute name="Link">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+>>>>>>> master
                             <phases>
                                 <all />
                             </phases>
                         </target>
                     </targets>
+<<<<<<< HEAD
                 </son>
             </sons>
             <attributes>
@@ -268,6 +306,12 @@
                 </attribute>
             </attributes>
         </node>
+=======
+                </type>
+            </attribute>
+        </attributes>
+    </node>
+>>>>>>> master
 
         <!-- GlobalDec -->
         <node name="GlobalDec">
@@ -350,17 +394,30 @@
                             </phases>
                         </target>
                     </targets>
+<<<<<<< HEAD
                 </son>
                 <son name="ArrayLength">
                     <description>the expression in square brackets</description>
                     <targets>
                         <target mandatory="no">
                             <set name="Expr" />
+=======
+                </type>
+            </attribute>
+
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+>>>>>>> master
                             <phases>
                                 <all />
                             </phases>
                         </target>
                     </targets>
+<<<<<<< HEAD
                 </son>
             </sons>
             <attributes>
@@ -386,6 +443,12 @@
                         </targets>
                     </type>
                 </attribute>
+=======
+                </type>
+            </attribute>
+        </attributes>
+    </node>
+>>>>>>> master
 
                 <attribute name="SymbolTableEntry">
                     <description>Link to symbol table entry</description>
@@ -444,17 +507,29 @@
                             </phases>
                         </target>
                     </targets>
+<<<<<<< HEAD
                 </son>
                 <son name="ArrayLength">
                     <description>Array length of param</description>
                     <targets>
                         <target mandatory="no">
                             <node name="Ident" />
+=======
+                </type>
+            </attribute>
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+>>>>>>> master
                             <phases>
                                 <all />
                             </phases>
                         </target>
                     </targets>
+<<<<<<< HEAD
                 </son>
             </sons>
             <attributes>
@@ -484,6 +559,12 @@
                 </attribute>
             </attributes>
         </node>
+=======
+                </type>
+            </attribute>
+        </attributes>
+    </node>
+>>>>>>> master
 
         <!-- FunBody -->
         <node name="FunBody">
@@ -599,6 +680,7 @@
             </attributes>
         </node>
 
+<<<<<<< HEAD
         <!-- Array Index -->
         <node name="ArrayIndex">
             <description></description>
@@ -608,11 +690,48 @@
                     <targets>
                         <target mandatory="yes">
                             <node name="Ident" />
+=======
+    <!-- Array Index -->
+    <node name="ArrayIndex">
+        <description></description>
+        <sons>
+            <son name="Ident">
+                <description></description>
+                <targets>
+                    <target mandatory="yes">
+                        <node name="Ident" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+            <son name="Index">
+                <description></description>
+                <targets>
+                    <target mandatory="yes">
+                        <set name="Expr" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+        </sons>
+        <attributes>
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+>>>>>>> master
                             <phases>
                                 <all />
                             </phases>
                         </target>
                     </targets>
+<<<<<<< HEAD
                 </son>
                 <son name="Index">
                     <description></description>
@@ -642,6 +761,12 @@
                 </attribute>
             </attributes>
         </node>
+=======
+                </type>
+            </attribute>
+        </attributes>
+    </node>
+>>>>>>> master
 
         <!-- VarDec -->
         <node name="VarDec">
@@ -679,6 +804,7 @@
                             </phases>
                         </target>
                     </targets>
+<<<<<<< HEAD
                 </son>
             </sons>
             <attributes>
@@ -693,6 +819,26 @@
                         </targets>
                     </type>
                 </attribute>
+=======
+                </type>
+            </attribute>
+
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+        </attributes>
+    </node>
+>>>>>>> master
 
                 <attribute name="SymbolTableEntry">
                     <description>Link to symbol table entry</description>
@@ -941,6 +1087,7 @@
                 </son>
             </sons>
 
+<<<<<<< HEAD
             <attributes>
                 <attribute name="SymbolTableEntry">
                     <description>Link to symbol table entry</description>
@@ -957,6 +1104,84 @@
                 </attribute>
             </attributes>
         </node>
+=======
+    <!-- ForStmt -->
+    <node name="ForStmt">
+        <sons>
+            <son name="AssignVar">
+                <description>Variable for the param</description>
+                <targets>
+                    <target mandatory="yes">
+                        <node name="Ident" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+            <son name="AssignExpr">
+                <description>right hand side expression for assign var</description>
+                <targets>
+                    <target mandatory="yes">
+                        <set name="Expr" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+            <son name="CompareExpr">
+                <description><!-- @todo Hoe werkt deze?? --></description>
+                <targets>
+                    <target mandatory="yes">
+                        <set name="Expr" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+            <son name="UpdateExpr">
+                <description>Update variable every time the loop starts over</description>
+                <targets>
+                    <target mandatory="no">
+                        <set name="Expr" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+            <son name="Block">
+                <description>The block that executes if the expression is true</description>
+                <targets>
+                    <target mandatory="yes">
+                        <node name="Block" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+        </sons>
+
+        <attributes>
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+        </attributes>
+    </node>
+>>>>>>> master
 
         <!-- ReturnStmt -->
         <node name="ReturnStmt">
@@ -1098,6 +1323,7 @@
             </attributes>
         </node>
 
+<<<<<<< HEAD
         <!-- Node Assign -->
         <node name="Assign">
             <description>represents assignment statement</description>
@@ -1130,11 +1356,60 @@
                     <targets>
                         <target mandatory="no">
                             <set name="Expr" />
+=======
+    <!-- Node Assign -->
+    <node name="Assign">
+        <description>represents assignment statement</description>
+        <sons>
+            <son name="Let">
+                <description></description>
+                <targets>
+                    <target mandatory="yes">
+                        <node name="Ident" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+            <son name="Expr">
+                <description>right hand side expression</description>
+                <targets>
+                    <target mandatory="yes">
+                        <set name="Expr" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+            <!-- when the variable is an array -->
+            <son name="Index">
+                <description></description>
+                <targets>
+                    <target mandatory="no">
+                    <set name="Expr" />
+                        <phases>
+                        <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+        </sons>
+        <attributes>
+            <attribute name="SymbolTableEntry">
+                <description>Link to symbol table entry</description>
+                <type name="Link">
+                    <targets>
+                        <target mandatory="no">
+                            <node name="SymbolTableEntry" />
+>>>>>>> master
                             <phases>
                                 <all />
                             </phases>
                         </target>
                     </targets>
+<<<<<<< HEAD
                 </son>
             </sons>
             <attributes>
@@ -1153,6 +1428,12 @@
                 </attribute>
             </attributes>
         </node>
+=======
+                </type>
+            </attribute>
+        </attributes>
+    </node>
+>>>>>>> master
 
         <!-- Node BinOp -->
         <node name="BinOp">
@@ -1198,6 +1479,7 @@
             </attributes>
         </node>
 
+<<<<<<< HEAD
         <!-- Node Ident -->
         <node name="Ident">
             <description>represents variable (identifier) in expression position</description>
@@ -1218,6 +1500,28 @@
                 </attribute>
             </attributes>
         </node>
+=======
+<!-- Node Ident -->
+<node name="Ident">
+    <description>represents variable (identifier) in expression position</description>
+    <sons>
+    </sons>
+    <attributes>
+        <attribute name="Name">
+        <description>Identifier in character string representation</description>
+            <type name="String">
+            <targets>
+                <target mandatory="yes">
+                <phases>
+                    <all />
+                </phases>
+                </target>
+            </targets>
+            </type>
+        </attribute>
+    </attributes>
+</node>
+>>>>>>> master
 
         <!-- Node Num -->
         <node name="Num">

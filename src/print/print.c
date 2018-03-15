@@ -535,12 +535,14 @@ node *PRTblock(node *arg_node, info *arg_info) {
     INFO_INDENTS(arg_info)++;
 
     // Print symbol table
-    printIndents(arg_info);
-    printf("/** SYMBOL TABLE **\n");
-    BLOCK_SYMBOLTABLE(arg_node) = TRAVdo(BLOCK_SYMBOLTABLE(arg_node), arg_info);
+    if(BLOCK_SYMBOLTABLE(arg_node) != NULL) {
+        printIndents(arg_info);
+        printf("/** SYMBOL TABLE **\n");
+        BLOCK_SYMBOLTABLE(arg_node) = TRAVdo(BLOCK_SYMBOLTABLE(arg_node), arg_info);
+        printIndents(arg_info);
+        printf(" */\n");
+    }
 
-    printIndents(arg_info);
-    printf(" */\n");
 
     BLOCK_STMTS(arg_node) = TRAVdo(BLOCK_STMTS(arg_node), arg_info);
     INFO_INDENTS(arg_info)--;
@@ -638,7 +640,9 @@ node *PRTfunbody(node *arg_node, info *arg_info) {
     // Print symbol table
     printIndents(arg_info);
     printf("/** SYMBOL TABLE **\n");
-    FUNBODY_SYMBOLTABLE(arg_node) = TRAVdo(FUNBODY_SYMBOLTABLE(arg_node), arg_info);
+    if(FUNBODY_SYMBOLTABLE(arg_node) != NULL) {
+        FUNBODY_SYMBOLTABLE(arg_node) = TRAVdo(FUNBODY_SYMBOLTABLE(arg_node), arg_info);
+    }
 
     printIndents(arg_info);
     printf(" */\n");
@@ -862,7 +866,9 @@ node *PRTprogram(node *arg_node, info *arg_info) {
 
     printIndents(arg_info);
     printf("/** SYMBOL TABLE **\n");
-    PROGRAM_SYMBOLTABLE(arg_node) = TRAVdo(PROGRAM_SYMBOLTABLE(arg_node), arg_info);
+    if(PROGRAM_SYMBOLTABLE(arg_node) != NULL) {
+        PROGRAM_SYMBOLTABLE(arg_node) = TRAVdo(PROGRAM_SYMBOLTABLE(arg_node), arg_info);
+    }
 
     printIndents(arg_info);
     printf(" */\n");
