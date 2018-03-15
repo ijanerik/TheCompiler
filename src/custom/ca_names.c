@@ -22,6 +22,8 @@
 #include "memory.h"
 #include "ctinfo.h"
 
+#include "st_utils.h"
+
 
 /*
  * INFO structure
@@ -45,6 +47,8 @@ struct INFO {
 #define INFO_GLOBAL_TABLE(n) ((n)->table_stack[0])
 #define INFO_TABLE_STACK(n) ((n)->table_stack)
 #define INFO_CURRENT_TABLE(n) ((n)->table_stack[(n)->index])
+#define INFO_ADD_TABLE(n, symboltable) ((n)->table_stack[++(n)->index] = symboltable)
+#define INFO_REMOVE_TABLE(n) ((n)->table_stack[(n)->index--] = NULL)
 
 
 /*
@@ -59,7 +63,7 @@ static info *MakeInfo(void)
 
     result = (info *)MEMmalloc(sizeof(info));
 
-    INFO_INDEX(result) = 0;
+    INFO_INDEX(result) = -1;
 
     DBUG_RETURN( result);
 }
@@ -81,6 +85,26 @@ void throwError(char *msg) {
 /*
  * Traversal functions
  */
+node *CANprogram(node *arg_node, info *arg_info)
+{
+    DBUG_ENTER("CANprogram");
+
+    if(PROGRAM_SYMBOLTABLE(arg_node) = NULL) {
+        PROGRAM_SYMBOLTABLE(arg_node) = TBmakeSymboltable(NULL, NULL);
+    }
+
+    printf("Stack: %i\n", INFO_INDEX(arg_info));
+    INFO_ADD_TABLE(arg_node, PROGRAM_SYMBOLTABLE(arg_node));
+    printf("Stack: %i\n", INFO_INDEX(arg_info));
+
+    PROGRAM_DECLARATIONS(arg_node) = TRAVdo(PROGRAM_DECLARATIONS(arg_node), arg_info);
+
+    printf("Stack: %i\n", INFO_INDEX(arg_info));
+    INFO_REMOVE_TABLE(arg_node);
+    printf("Stack: %i\n", INFO_INDEX(arg_info));
+
+    DBUG_RETURN( arg_node);
+}
 
 // @todo Traverse other order by calling declarations
 
@@ -90,6 +114,7 @@ node *CANvardec(node *arg_node, info *arg_info)
     node* ident = VARDEC_IDENT(arg_node);
 
     printf("VAR DEC: %s \n", IDENT_NAME(ident));
+    printf("Stack: %i\n", INFO_INDEX(arg_info));
 
     if(VARDEC_EXPRS(arg_node) != NULL) {
         VARDEC_EXPRS(arg_node) = TRAVdo(VARDEC_EXPRS(arg_node), arg_info);
@@ -98,6 +123,8 @@ node *CANvardec(node *arg_node, info *arg_info)
     if(VARDEC_ARRAYLENGTH(arg_node) != NULL) {
         VARDEC_ARRAYLENGTH(arg_node) = TRAVdo(VARDEC_ARRAYLENGTH(arg_node), arg_info);
     }
+
+    //addSymbolTableEntry(INFO_CURRENT_TABLE(arg_info), IDENT_NAME(VARDEC_IDENT(arg_node)), VARDEC_TYPE(arg_node));
 
     /*
     if (!searchSymbolTables(arg_info, IDENT_NAME(ident), NULL)) {
@@ -123,6 +150,7 @@ node *CANglobaldec(node *arg_node, info *arg_info)
         printf("[]");
     }
     printf(" \n");
+    printf("Stack: %i\n", INFO_INDEX(arg_info));
 
     if(is_array) {
         GLOBALDEC_ARRAYLENGTH(arg_node) = TRAVdo(GLOBALDEC_ARRAYLENGTH(arg_node), arg_info);
@@ -136,6 +164,7 @@ node *CANglobaldec(node *arg_node, info *arg_info)
                             IDENT_NAME(ident), GLOBALDEC_TYPE(arg_node));
     }
     else {
+        throwError(ERROR_RE_DEC_VAR);
         throwError(ERROR_RE_DEC_VAR);
     }
      */
@@ -154,6 +183,7 @@ node *CANglobaldef(node *arg_node, info *arg_info)
         printf("[]");
     }
     printf("\n");
+    printf("Stack: %i\n", INFO_INDEX(arg_info));
 
     if(GLOBALDEF_ARRAYLENGTH(arg_node) != NULL) {
         GLOBALDEF_ARRAYLENGTH(arg_node) = TRAVdo(GLOBALDEF_ARRAYLENGTH(arg_node), arg_info);
@@ -210,6 +240,7 @@ node *CANvarcall(node *arg_node, info *arg_info)
     //node* entry;
 
     printf("VARIABLE CALL: %s \n", IDENT_NAME(ident));
+    printf("Stack: %i\n", INFO_INDEX(arg_info));
 
     /*
     if (searchSymbolTable(INFO_GLOBAL_TABLE(arg_info), IDENT_NAME(ident), &entry)) {

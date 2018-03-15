@@ -26,4 +26,5 @@ src/custom/ca_names.o src/custom/.ca_names.d: $(PROJECT_ROOT)/Makefile.Config sr
   /usr/include/sys/resource.h /usr/include/sys/_types/_timeval.h \
   /usr/include/sys/_types/_wchar_t.h src/framework/memory.h \
   src/framework/ctinfo.h \
-  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/stdarg.h
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.0.0/include/stdarg.h \
+  src/custom/st_utils.h

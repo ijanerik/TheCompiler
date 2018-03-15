@@ -33,6 +33,7 @@ extern node *CANfuncall(node *arg_node, info *arg_info);
 extern node *CANparam(node *arg_node, info *arg_info);
 extern node *CANforstmt(node *arg_node, info *arg_info);
 extern node *CANarrayindex(node *arg_node, info *arg_info);
+extern node *CANprogram(node *arg_node, info *arg_info);
 
 #endif
 

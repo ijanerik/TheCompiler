@@ -8,25 +8,8 @@ bool addSymbolTableEntry(node* symbol_table, char* name, cctype type, bool is_ar
     while (SYMBOLTABLE_NEXT(symbol_table) != NULL) {
         symbol_table = SYMBOLTABLE_NEXT(symbol_table);
     }
-    // @todo Not sure if this works, node_basic.c as guideline
 
-    // Allocate a new symboltable node
-    /*
-    node* table = MakeEmptyNode ();
-    NODE_TYPE (table) = N_symboltable;
-    table->sons.N_symboltable = MEMmalloc (sizeof (struct SONS_N_SYMBOLTABLE));
 
-    // Allocate a new symboltableentry node
-    node* entry = MakeEmptyNode ();
-    NODE_TYPE (entry) = N_symboltableentry;
-    table->sons.N_symboltableentry = MEMmalloc (sizeof (struct SONS_N_SYMBOLTABLEENTRY));
-
-    // Add a new entry to the symbol table
-    SYMBOLTABLE_NEXT(symbol_table) = table;
-    SYMBOLTABLE_SYMBOLTABLEENTRY(table) = entry;
-    SYMBOLTABLEENTRY_NAME(entry) = name;
-    SYMBOLTABLEENTRY_TYPE(entry) = type;
-     */
 
     return 1;
 }
