@@ -1,5 +1,8 @@
 *.swp
 *.o
+*/*/*.d
+*.png
+*.html
 src/framework/*.h
 src/framework/*.c
 src/scanparse/*.h
