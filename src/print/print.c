@@ -637,16 +637,6 @@ node *PRTfunbody(node *arg_node, info *arg_info) {
     printf(" {\n");
     INFO_INDENTS(arg_info)++;
 
-    // Print symbol table
-    printIndents(arg_info);
-    printf("/** SYMBOL TABLE **\n");
-    if(FUNBODY_SYMBOLTABLE(arg_node) != NULL) {
-        FUNBODY_SYMBOLTABLE(arg_node) = TRAVdo(FUNBODY_SYMBOLTABLE(arg_node), arg_info);
-    }
-
-    printIndents(arg_info);
-    printf(" */\n");
-
     // Var declarations
     if (FUNBODY_VARDECS(arg_node) != NULL) {
         FUNBODY_VARDECS(arg_node) = TRAVdo(FUNBODY_VARDECS(arg_node), arg_info);
@@ -832,6 +822,13 @@ node *PRTfundef(node *arg_node, info *arg_info) {
 
     printIndents(arg_info);
     
+    // Print symbol table
+    printf("/** SYMBOL TABLE **\n");
+    if(FUNDEF_SYMBOLTABLE(arg_node) != NULL) {
+        FUNDEF_SYMBOLTABLE(arg_node) = TRAVdo(FUNDEF_SYMBOLTABLE(arg_node), arg_info);
+    }
+    printf(" */\n");
+
     if (FUNDEF_FUNBODY(arg_node) == NULL && FUNDEF_EXPORT(arg_node) == FALSE) {
         printf("extern ");
         FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
@@ -869,9 +866,14 @@ node *PRTprogram(node *arg_node, info *arg_info) {
     if(PROGRAM_SYMBOLTABLE(arg_node) != NULL) {
         PROGRAM_SYMBOLTABLE(arg_node) = TRAVdo(PROGRAM_SYMBOLTABLE(arg_node), arg_info);
     }
-
     printIndents(arg_info);
     printf(" */\n");
+    
+    if(PROGRAM_DECLARATIONS(arg_node) != NULL) {
+        PROGRAM_DECLARATIONS(arg_node) = TRAVdo(PROGRAM_DECLARATIONS(arg_node), arg_info);
+    }
+
+    
 
     DBUG_RETURN(arg_node);
 }
@@ -879,12 +881,13 @@ node *PRTprogram(node *arg_node, info *arg_info) {
 node *PRTsymboltable(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTsymboltable");
 
-    SYMBOLTABLE_SYMBOLTABLEENTRY(arg_node) = TRAVdo(SYMBOLTABLE_SYMBOLTABLEENTRY(arg_node), arg_info);
+    if(SYMBOLTABLE_SYMBOLTABLEENTRY(arg_node) != NULL) {
+        SYMBOLTABLE_SYMBOLTABLEENTRY(arg_node) = TRAVdo(SYMBOLTABLE_SYMBOLTABLEENTRY(arg_node), arg_info);
+    }
 
     if(SYMBOLTABLE_NEXT(arg_node) != NULL) {
         SYMBOLTABLE_NEXT(arg_node) = TRAVdo(SYMBOLTABLE_NEXT(arg_node), arg_info);
     }
-
 
     DBUG_RETURN(arg_node);
 }
@@ -893,7 +896,25 @@ node *PRTsymboltableentry(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTsymboltableentry");
 
     printIndents(arg_info);
-    printf(" * %s \n", SYMBOLTABLEENTRY_NAME(arg_node));
+
+    
+    char* type;
+    switch (SYMBOLTABLEENTRY_TYPE(arg_node)) {
+        case T_float:
+            type = "float";
+            break;
+        case T_int:
+            type = "int";
+            break;
+        case T_bool:
+            type = "bool";
+            break;
+        default:
+            DBUG_ASSERT(0, "unknown/incorrect returntype detected!");
+    }
+    
+    printf(" * %s %s %d\n", SYMBOLTABLEENTRY_NAME(arg_node), type,
+           SYMBOLTABLEENTRY_ISARRAY(arg_node));
 
     DBUG_RETURN(arg_node);
 }

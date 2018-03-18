@@ -32,16 +32,6 @@
 # required to use the compiler construction framework for the purpose
 # of the above mentioned course are not permitted.
 #
-# The developer disclaims all warranties with regard to this software,
-# including all implied warranties of merchantability and fitness.  In no
-# event shall the developer be liable for any special, indirect or
-# consequential damages or any damages whatsoever resulting from loss of
-# use, data, or profits, whether in an action of contract, negligence, or
-# other tortuous action, arising out of or in connection with the use or
-# performance of this software. The entire risk as to the quality and
-# performance of this software is with you. Should this software prove
-# defective, you assume the cost of all servicing, repair, or correction.
-#
 # ---------------------------------------------------------------------------
 #
 
@@ -76,9 +66,7 @@ TARGET = $(notdir $(PWD))
 # Dummy rules
 #
 
-.PHONY: clean all devel prod
-
-
+.PHONY: clean all devel prod 
 
 ###############################################################################
 #

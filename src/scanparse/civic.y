@@ -57,17 +57,24 @@ static int yyerror( char *errname);
 %type <node> expr expr2 expr3 expr4 expr5 expr6 expr7 expr8 arrexpr
 %type <node> stmts stmt assign ifelsestmt whilestmt dowhilestmt forstmt returnstmt block funcall
 %type <node> vardec vardecs arrayindex
-%type <node> program declarations declaration
+%type <node> program declarations declaration start
 %type <node> globaldef globaldec fundef funheader funbody params param
 
-%start program
+%start start
 
 %%
 // ------- PROGRAM DEFINITIONS ---------
+start:
+    program
+    {
+        parseresult = $1;
+    }
+    ;
+
 program:
     declarations
     {
-        parseresult = $1;
+        $$ = TBmakeProgram($1, NULL);
     }
     ;
 
@@ -141,16 +148,16 @@ globaldef:
 fundef:
     funheader funbody
     {
-        $$ = TBmakeFundef(FALSE, $1, $2);
+        $$ = TBmakeFundef(FALSE, $1, $2, NULL);
     }
     | EXPORT funheader funbody
     {
-        $$ = TBmakeFundef(TRUE, $2, $3);
+        $$ = TBmakeFundef(TRUE, $2, $3, NULL);
     }
     |
     EXTERN funheader SEMICOLON
     {
-        $$ = TBmakeFundef(FALSE, $2, NULL);
+        $$ = TBmakeFundef(FALSE, $2, NULL, NULL);
     }
     ;
 
@@ -193,26 +200,26 @@ param:
     }
     | vartype S_BRACKET_L ident S_BRACKET_R ident
     {
-        $$ = TBmakeParam($1, $3, $5);
+        $$ = TBmakeParam($1, $5, $3);
     }
     ;
 
 funbody:
     C_BRACKET_L vardecs stmts C_BRACKET_R
     {
-        $$ = TBmakeFunbody($2, NULL, $3, NULL);
+        $$ = TBmakeFunbody($2, NULL, $3);
     }
     | C_BRACKET_L vardecs C_BRACKET_R
     {
-        $$ = TBmakeFunbody($2, NULL, NULL, NULL);
+        $$ = TBmakeFunbody($2, NULL, NULL);
     }
     | C_BRACKET_L stmts C_BRACKET_R
     {
-        $$ = TBmakeFunbody(NULL, NULL, $2, NULL);
+        $$ = TBmakeFunbody(NULL, NULL, $2);
     }
     | C_BRACKET_L C_BRACKET_R
       {
-          $$ = TBmakeFunbody(NULL, NULL, NULL, NULL);
+          $$ = TBmakeFunbody(NULL, NULL, NULL);
       }
     ;
 
