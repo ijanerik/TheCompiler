@@ -2,14 +2,14 @@
  *
  * Module: ca_names
  *
- * Prefix: CAN
+ * Prefix: CAV
  *
  * Description:
  *
  *****************************************************************************/
 
 
-#include "ca_names.h"
+#include "ca_variables.h"
 
 #define ERROR_REDEC_VAR "Variable %s is already declared"
 #define ERROR_UNDEC_VAR "Variable %s is not declared"
@@ -20,7 +20,7 @@
  * Traversal functions
  */
  //@todo remove all symboltables
-node *CANprogram(node *arg_node, symboltables *tables)
+node *CAVprogram(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CANprogram");
 
@@ -39,9 +39,9 @@ node *CANprogram(node *arg_node, symboltables *tables)
 
 // @todo Traverse other order by calling declarations
 
-node *CANvardec(node *arg_node, symboltables *tables)
+node *CAVvardec(node *arg_node, symboltables *tables)
 {
-    DBUG_ENTER("CANvardec");
+    DBUG_ENTER("CAVvardec");
     node* ident = VARDEC_IDENT(arg_node);
 
     //printf("VAR DEC: %s \n", IDENT_NAME(ident));
@@ -72,9 +72,9 @@ node *CANvardec(node *arg_node, symboltables *tables)
     DBUG_RETURN( arg_node);
 }
 
-node *CANglobaldec(node *arg_node, symboltables *tables)
+node *CAVglobaldec(node *arg_node, symboltables *tables)
 {
-    DBUG_ENTER("CANglobaldec");
+    DBUG_ENTER("CAVglobaldec");
     node* ident = GLOBALDEC_IDENT(arg_node);
     //node* entry;
     bool is_array = GLOBALDEC_ARRAYLENGTH(arg_node) != NULL;
@@ -103,9 +103,9 @@ node *CANglobaldec(node *arg_node, symboltables *tables)
     DBUG_RETURN( arg_node);
 }
 
-node *CANglobaldef(node *arg_node, symboltables *tables)
+node *CAVglobaldef(node *arg_node, symboltables *tables)
 {
-    DBUG_ENTER("CANglobaldef");
+    DBUG_ENTER("CAVglobaldef");
     node* ident = GLOBALDEF_IDENT(arg_node);
     bool is_array = GLOBALDEF_ARRAYLENGTH(arg_node) != NULL;
     
@@ -131,9 +131,9 @@ node *CANglobaldef(node *arg_node, symboltables *tables)
     DBUG_RETURN( arg_node);
 }
 
-node *CANfundef(node *arg_node, symboltables *tables)
+node *CAVfundef(node *arg_node, symboltables *tables)
 {
-    DBUG_ENTER("CANfundef");
+    DBUG_ENTER("CAVfundef");
     node* ident = FUNHEADER_IDENT(FUNDEF_FUNHEADER(arg_node));
 
     if(FUNDEF_SYMBOLTABLE(arg_node) == NULL) {
@@ -153,9 +153,9 @@ node *CANfundef(node *arg_node, symboltables *tables)
 }
 
 
-node* CANfunbody(node *arg_node, symboltables *tables)
+node* CAVfunbody(node *arg_node, symboltables *tables)
 {
-    DBUG_ENTER("CANfunbody");
+    DBUG_ENTER("CAVfunbody");
     //printf("FUNCTION BODY\n");
 
     if(FUNBODY_VARDECS(arg_node) != NULL) {
@@ -171,9 +171,9 @@ node* CANfunbody(node *arg_node, symboltables *tables)
     DBUG_RETURN( arg_node);
 }
 
-node *CANvarcall(node *arg_node, symboltables *tables)
+node *CAVvarcall(node *arg_node, symboltables *tables)
 {
-    DBUG_ENTER("CANvarcall");
+    DBUG_ENTER("CAVvarcall");
     node* ident = VARCALL_IDENT(arg_node);
     //node* entry;
 
@@ -186,9 +186,9 @@ node *CANvarcall(node *arg_node, symboltables *tables)
     DBUG_RETURN( arg_node);
 }
 
-node *CANparam(node *arg_node, symboltables *tables)
+node *CAVparam(node *arg_node, symboltables *tables)
 {
-    DBUG_ENTER("CANparam");
+    DBUG_ENTER("CAVparam");
     node* ident = PARAM_IDENT(arg_node);
     node* array_length = PARAM_ARRAYLENGTH(arg_node);
     bool is_array = PARAM_ARRAYLENGTH(arg_node) != NULL;
@@ -216,8 +216,8 @@ node *CANparam(node *arg_node, symboltables *tables)
     DBUG_RETURN( arg_node);
 }
 
-node *CANarrayindex(node *arg_node, symboltables *tables) {
-    DBUG_ENTER("CANarrayindex");
+node *CAVarrayindex(node *arg_node, symboltables *tables) {
+    DBUG_ENTER("CAVarrayindex");
     node* ident = ARRAYINDEX_IDENT(arg_node);
    
     if (!searchSymbolTables(tables, IDENT_NAME(ident), NULL, NULL)) {
@@ -231,9 +231,9 @@ node *CANarrayindex(node *arg_node, symboltables *tables) {
     DBUG_RETURN( arg_node);
 }
 
-node *CANfuncall(node *arg_node, symboltables *tables)
+node *CAVfuncall(node *arg_node, symboltables *tables)
 {
-    DBUG_ENTER("CANfuncall");
+    DBUG_ENTER("CAVfuncall");
     node* ident = FUNCALL_IDENT(arg_node);
 
     if(FUNCALL_ARGS(arg_node) != NULL) {
@@ -244,8 +244,8 @@ node *CANfuncall(node *arg_node, symboltables *tables)
 }
 
 
-node *CANassign(node *arg_node, symboltables *tables) {
-    DBUG_ENTER("CANassign");
+node *CAVassign(node *arg_node, symboltables *tables) {
+    DBUG_ENTER("CAVassign");
     node* ident = ASSIGN_LET(arg_node);
     //node* entry;
 
@@ -265,8 +265,8 @@ node *CANassign(node *arg_node, symboltables *tables) {
     DBUG_RETURN( arg_node);
 }
 
-node *CANforstmt(node *arg_node, symboltables *tables) {
-    DBUG_ENTER("CANforstmt");
+node *CAVforstmt(node *arg_node, symboltables *tables) {
+    DBUG_ENTER("CAVforstmt");
     node* ident = FORSTMT_ASSIGNVAR(arg_node);
 
     FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), tables);
@@ -288,15 +288,15 @@ node *CANforstmt(node *arg_node, symboltables *tables) {
  * Traversal start function
  */
 
-node *CANdoNames( node *syntaxtree)
+node *CAVdoVariables( node *syntaxtree)
 {
     symboltables *tables;
 
-    DBUG_ENTER("CANdoNames");
+    DBUG_ENTER("CAVdoNames");
 
     tables = MakeSymboltables();
 
-    TRAVpush(TR_can);
+    TRAVpush(TR_cav);
     syntaxtree = TRAVdo( syntaxtree, tables);
     TRAVpop();
 

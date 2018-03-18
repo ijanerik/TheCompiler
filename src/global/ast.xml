@@ -62,7 +62,7 @@
             </travuser>
         </traversal>
 
-        <traversal id="CAN" name="Context Analysis Identiers" default="sons" include="ca_names.h">
+        <traversal id="CAV" name="Context Analysis Variables" default="sons" include="ca_variables.h">
             <travuser>
                 <node name="VarDec" />
                 <node name="GlobalDec" />

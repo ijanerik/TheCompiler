@@ -35,9 +35,9 @@ PHASE( pet,
        ALWAYS)
 
 
-SUBPHASE( can, 
-          "Context analysis names",
-          CANdoNames, 
+SUBPHASE( cav, 
+          "Context analysis variables",
+          CAVdoVariables, 
           ALWAYS,
           pet)
 
