@@ -1,0 +1,15 @@
+int k = 2;
+int l = 3;
+int f = l;
+int[f] m;
+
+int b(int[k] c, int[l] b) {
+    int d;
+    int f;
+    int e = f;
+    d = m[2];
+}
+
+void p() {
+    
+}

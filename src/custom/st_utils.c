@@ -66,7 +66,9 @@ bool searchSymbolTable(node* symbol_table, char* name, node* symbol_entry) {
 bool searchSymbolTables(symboltables* tables, char* name, node* symbol_entry, int* scope) {
     for (int i = 0; i <= SYMBOLTABLES_INDEX(tables); i++) {
         if (searchSymbolTable(SYMBOLTABLES_GET_TABLE(tables, i), name, symbol_entry)){
-            *scope = i; 
+            if (scope != NULL) {
+                *scope = i; 
+            }
             return true;
         }
     }

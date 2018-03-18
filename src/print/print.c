@@ -809,8 +809,11 @@ node *PRTfunheader(node *arg_node, info *arg_info) {
     printf(" ");
 
     FUNHEADER_IDENT(arg_node) = TRAVdo(FUNHEADER_IDENT(arg_node), arg_info);
+    
     printf("(");
-    FUNHEADER_PARAMS(arg_node) = TRAVdo(FUNHEADER_PARAMS(arg_node), arg_info);
+    if (FUNHEADER_PARAMS(arg_node) != NULL) {
+        FUNHEADER_PARAMS(arg_node) = TRAVdo(FUNHEADER_PARAMS(arg_node), arg_info);
+    } 
     printf(")");
 
     DBUG_RETURN(arg_node);

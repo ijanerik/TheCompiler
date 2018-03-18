@@ -1,7 +1,0 @@
-int a;
-
-int b(int[k] c, int[l] b) {
-    int d;
-    int f;
-    int e = f;
-}
