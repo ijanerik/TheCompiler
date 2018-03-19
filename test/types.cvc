@@ -1,0 +1,10 @@
+int b;
+int c = 2 + 2;
+bool a = true;
+
+int f(int i) {
+    bool l;
+    int k = false;
+    bool bb = false;
+    l = bb;
+}

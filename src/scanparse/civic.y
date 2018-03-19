@@ -93,9 +93,7 @@ declaration:
     globaldef { $$ = $1; }
     | globaldec { $$ = $1; }
     | fundef { $$ = $1; }
-    | stmt { $$ = $1; }
     ;
-    // @todo remove stmts (Kept for backward compatibility)
 
 // ----------- GLOBAL VARIABLE DEFINITIONS -----------
 globaldec:

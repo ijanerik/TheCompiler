@@ -30,8 +30,8 @@ ENDPHASE( ld)
 /******************************************************************************/
 
 
-PHASE( pet,
-       "Perform example transformations",
+PHASE( ast,
+       "Perform AST transformations",
        ALWAYS)
 
 
@@ -39,9 +39,15 @@ SUBPHASE( cav,
           "Context analysis variables",
           CAVdoVariables, 
           ALWAYS,
-          pet)
+          ast)
 
-ENDPHASE( pet) 
+SUBPHASE( tcv, 
+          "Type checking variables",
+          TCVdoVariables, 
+          ALWAYS,
+          ast)
+
+ENDPHASE( ast) 
 
 
 /******************************************************************************/

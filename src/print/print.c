@@ -556,7 +556,6 @@ node *PRTvardec(node *arg_node, info *arg_info) {
     DBUG_ENTER("PRTvardec");
 
     printIndents(arg_info);
-
     bool is_array = VARDEC_ARRAYLENGTH(arg_node) != NULL;
 
     switch(VARDEC_TYPE(arg_node)) {
