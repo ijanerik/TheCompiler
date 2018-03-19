@@ -1,6 +1,6 @@
 /*****************************************************************************
  *
- * Module: ca_names
+ * Module: ca_variables
  *
  * Prefix: CAV
  *
@@ -292,7 +292,7 @@ node *CAVdoVariables( node *syntaxtree)
 {
     symboltables *tables;
 
-    DBUG_ENTER("CAVdoNames");
+    DBUG_ENTER("CAVdoVariables");
 
     tables = MakeSymboltables();
 
