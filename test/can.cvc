@@ -9,7 +9,3 @@ int b(int[k] c, int[l] b) {
     int e = f;
     d = m[2];
 }
-
-void p() {
-    
-}

@@ -41,9 +41,9 @@ symboltables* MakeSymboltables(void);
 symboltables* FreeSymboltables(symboltables *tables);
 
 // @todo Not sure about cctype here
-bool addSymbolTableEntry(node* symbol_table, char* name, cctype type, bool is_array);
-bool searchSymbolTable(node* symbol_table, char* name, node* symbol_entry);
-bool searchSymbolTables(symboltables* tables, char* name, node* symbol_entry, int* scope);
+node* addSymbolTableEntry(node* symbol_table, char* name, cctype type, bool is_array);
+node* searchSymbolTable(node* symbol_table, char* name);
+node* searchSymbolTables(symboltables* tables, char* name, int* scope);
 
 
 #define true 1

@@ -43,7 +43,9 @@ node *CAVvardec(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CAVvardec");
     node* ident = VARDEC_IDENT(arg_node);
-
+    int scope = SYMBOLTABLES_INDEX(tables);
+    node* entry = searchSymbolTables(tables, IDENT_NAME(ident), &scope);
+    
     //printf("VAR DEC: %s \n", IDENT_NAME(ident));
     //printf("Stack: %i\n", SYMBOLTABLES_INDEX(tables));
 
@@ -57,11 +59,12 @@ node *CAVvardec(node *arg_node, symboltables *tables)
         VARDEC_ARRAYLENGTH(arg_node) = TRAVdo(VARDEC_ARRAYLENGTH(arg_node), tables);
     }
 
-    int scope = SYMBOLTABLES_INDEX(tables);
-    if (!searchSymbolTables(tables, IDENT_NAME(ident), NULL, &scope)) {
-        addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                            IDENT_NAME(VARDEC_IDENT(arg_node)),
-                            VARDEC_TYPE(arg_node), is_array);
+    
+    if (entry == NULL) {
+        entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
+                                    IDENT_NAME(VARDEC_IDENT(arg_node)),
+                                    VARDEC_TYPE(arg_node), is_array);
+        VARDEC_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else if(scope < SYMBOLTABLES_INDEX(tables)) {
         CTIwarn(WARNING_SHADOW_VAR, IDENT_NAME(ident));
@@ -75,26 +78,20 @@ node *CAVvardec(node *arg_node, symboltables *tables)
 node *CAVglobaldec(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CAVglobaldec");
+    
     node* ident = GLOBALDEC_IDENT(arg_node);
-    //node* entry;
+    node* entry = searchSymbolTables(tables, IDENT_NAME(ident), NULL);
     bool is_array = GLOBALDEC_ARRAYLENGTH(arg_node) != NULL;
 
-    //printf("GLOBAL DEC: %s", IDENT_NAME(ident));
-    if(is_array) {
-        printf("[]");
-    }
-
-    if (!searchSymbolTables(tables, IDENT_NAME(ident), NULL, NULL)) {
-        addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                            IDENT_NAME(ident),
-                            GLOBALDEC_TYPE(arg_node), is_array);
+    if (entry == NULL) {
+        entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
+                                    IDENT_NAME(ident),
+                                    GLOBALDEC_TYPE(arg_node), is_array);
+        GLOBALDEC_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
         CTIerror(ERROR_REDEC_VAR, IDENT_NAME(ident));
     }
-
-    //printf(" \n");
-    //printf("Stack: %i\n", SYMBOLTABLES_INDEX(tables));
 
     if(is_array) {
         GLOBALDEC_ARRAYLENGTH(arg_node) = TRAVdo(GLOBALDEC_ARRAYLENGTH(arg_node), tables);
@@ -106,7 +103,9 @@ node *CAVglobaldec(node *arg_node, symboltables *tables)
 node *CAVglobaldef(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CAVglobaldef");
+
     node* ident = GLOBALDEF_IDENT(arg_node);
+    node* entry = searchSymbolTables(tables, IDENT_NAME(ident), NULL);
     bool is_array = GLOBALDEF_ARRAYLENGTH(arg_node) != NULL;
     
     //printf("Stack: %i\n", SYMBOLTABLES_INDEX(tables));
@@ -119,10 +118,11 @@ node *CAVglobaldef(node *arg_node, symboltables *tables)
         GLOBALDEF_EXPRS(arg_node) = TRAVdo(GLOBALDEF_EXPRS(arg_node), tables);
     }
 
-    if (!searchSymbolTables(tables, IDENT_NAME(ident), NULL, NULL)) {
-        addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                            IDENT_NAME(ident),
-                            GLOBALDEF_TYPE(arg_node), is_array);
+    if (entry == NULL) {
+        entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
+                                    IDENT_NAME(ident),
+                                    GLOBALDEF_TYPE(arg_node), is_array);
+        GLOBALDEF_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
         CTIerror(ERROR_REDEC_VAR, IDENT_NAME(ident));
@@ -134,7 +134,6 @@ node *CAVglobaldef(node *arg_node, symboltables *tables)
 node *CAVfundef(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CAVfundef");
-    node* ident = FUNHEADER_IDENT(FUNDEF_FUNHEADER(arg_node));
 
     if(FUNDEF_SYMBOLTABLE(arg_node) == NULL) {
        FUNDEF_SYMBOLTABLE(arg_node) = TBmakeSymboltable(NULL, NULL);
@@ -156,7 +155,6 @@ node *CAVfundef(node *arg_node, symboltables *tables)
 node* CAVfunbody(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CAVfunbody");
-    //printf("FUNCTION BODY\n");
 
     if(FUNBODY_VARDECS(arg_node) != NULL) {
         FUNBODY_VARDECS(arg_node) = TRAVdo(FUNBODY_VARDECS(arg_node), tables);
@@ -174,59 +172,63 @@ node* CAVfunbody(node *arg_node, symboltables *tables)
 node *CAVvarcall(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CAVvarcall");
+
     node* ident = VARCALL_IDENT(arg_node);
-    //node* entry;
-
-    //printf("VARIABLE CALL: %s \n", IDENT_NAME(ident));
-    //printf("Stack: %i\n", SYMBOLTABLES_INDEX(tables));
-
-    if (!searchSymbolTables(tables, IDENT_NAME(ident), NULL, NULL)) {
+    node* entry = searchSymbolTables(tables, IDENT_NAME(ident), NULL);
+    
+    if (entry != NULL) {
+        VARCALL_SYMBOLTABLEENTRY(arg_node) = entry;
+    } else {
         CTIerror(ERROR_UNDEC_VAR, IDENT_NAME(ident));
     }
+
     DBUG_RETURN( arg_node);
 }
 
 node *CAVparam(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CAVparam");
+
     node* ident = PARAM_IDENT(arg_node);
     node* array_length = PARAM_ARRAYLENGTH(arg_node);
+    node* entry = searchSymbolTables(tables, IDENT_NAME(ident), NULL);
     bool is_array = PARAM_ARRAYLENGTH(arg_node) != NULL;
 
-    // printf("PARAM DEF: %s \n", IDENT_NAME(ident));
-
+    // @todo arrays as parameters are weird
     if(is_array) {
+        node* array_entry = searchSymbolTables(tables, IDENT_NAME(array_length), NULL);
         PARAM_ARRAYLENGTH(arg_node) = TRAVdo(PARAM_ARRAYLENGTH(arg_node), tables);
-        if (!searchSymbolTables(tables, IDENT_NAME(array_length), NULL, NULL)) {
+        if (!array_entry) {
             CTIerror(ERROR_UNDEC_VAR, IDENT_NAME(array_length));
         }
     }
     
-    if (!searchSymbolTables(tables, IDENT_NAME(ident), NULL, NULL)) {
-        addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                            IDENT_NAME(ident),
-                            PARAM_TYPE(arg_node), is_array);
+    if (entry == NULL) {
+        entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
+                                    IDENT_NAME(ident),
+                                    PARAM_TYPE(arg_node), is_array);
+        PARAM_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
         CTIerror(ERROR_REDEC_VAR, IDENT_NAME(ident));
     }
-    
-
 
     DBUG_RETURN( arg_node);
 }
 
 node *CAVarrayindex(node *arg_node, symboltables *tables) {
     DBUG_ENTER("CAVarrayindex");
+
     node* ident = ARRAYINDEX_IDENT(arg_node);
+    node* entry = searchSymbolTables(tables, IDENT_NAME(ident), NULL);
    
-    if (!searchSymbolTables(tables, IDENT_NAME(ident), NULL, NULL)) {
+    if (entry != NULL) {
+        ARRAYINDEX_SYMBOLTABLEENTRY(arg_node) = entry;
+    }
+    else {
         CTIerror(ERROR_UNDEC_VAR, IDENT_NAME(ident));
     }
-
-    if(ARRAYINDEX_INDEX(arg_node) != NULL) {
-        ARRAYINDEX_INDEX(arg_node) = TRAVdo(ARRAYINDEX_INDEX(arg_node), tables);
-    }
+    ARRAYINDEX_INDEX(arg_node) = TRAVdo(ARRAYINDEX_INDEX(arg_node), tables);
 
     DBUG_RETURN( arg_node);
 }
@@ -234,7 +236,6 @@ node *CAVarrayindex(node *arg_node, symboltables *tables) {
 node *CAVfuncall(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CAVfuncall");
-    node* ident = FUNCALL_IDENT(arg_node);
 
     if(FUNCALL_ARGS(arg_node) != NULL) {
         FUNCALL_ARGS(arg_node) = TRAVdo(FUNCALL_ARGS(arg_node), tables);
@@ -246,14 +247,15 @@ node *CAVfuncall(node *arg_node, symboltables *tables)
 
 node *CAVassign(node *arg_node, symboltables *tables) {
     DBUG_ENTER("CAVassign");
-    node* ident = ASSIGN_LET(arg_node);
-    //node* entry;
 
-    // printf("ASSIGN: %s \n", IDENT_NAME(ident));
+    node* ident = ASSIGN_LET(arg_node);
+    node* entry = searchSymbolTables(tables, IDENT_NAME(ident), NULL);
 
     ASSIGN_EXPR(arg_node) = TRAVdo(ASSIGN_EXPR(arg_node), tables);
 
-    if (!searchSymbolTables(tables, IDENT_NAME(ident), NULL, NULL)) {
+    if (entry != NULL) {
+        ASSIGN_SYMBOLTABLEENTRY(arg_node) = entry;
+    } else {
         CTIerror(ERROR_UNDEC_VAR, IDENT_NAME(ident));
     }
 
@@ -261,13 +263,11 @@ node *CAVassign(node *arg_node, symboltables *tables) {
         ASSIGN_INDEX(arg_node) = TRAVdo(ASSIGN_INDEX(arg_node), tables);
     }
 
-
     DBUG_RETURN( arg_node);
 }
 
 node *CAVforstmt(node *arg_node, symboltables *tables) {
     DBUG_ENTER("CAVforstmt");
-    node* ident = FORSTMT_ASSIGNVAR(arg_node);
 
     FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), tables);
 
