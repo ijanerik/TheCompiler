@@ -1,0 +1,13 @@
+int test = 0;
+
+int test() {
+
+    int test2() {
+
+    }
+    func(test);
+}
+
+int fun() {
+    func();
+}

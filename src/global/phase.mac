@@ -41,6 +41,12 @@ SUBPHASE( cav,
           ALWAYS,
           pet)
 
+SUBPHASE( caf,
+        "Context analysis functions",
+        CAFdoFunctions,
+        ALWAYS,
+        pet)
+
 ENDPHASE( pet) 
 
 

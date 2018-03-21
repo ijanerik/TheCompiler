@@ -77,6 +77,14 @@
                 <node name="Program" />
             </travuser>
         </traversal>
+
+        <traversal id="CAF" name="Context Analysis Functions" default="sons" include="ca_functions.h">
+            <travuser>
+                <node name="FunDef" />
+                <node name="FunCall" />
+                <node name="Program" />
+            </travuser>
+        </traversal>
     </general>
 </phases>
 

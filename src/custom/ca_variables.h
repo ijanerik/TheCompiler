@@ -1,3 +1,7 @@
+#ifndef _CA_VARS_H_
+#define _CA_VARS_H_
+
+
 #include "st_utils.h"
 
 #include "types.h"
@@ -21,3 +25,5 @@ node *CAVfuncall(node *arg_node, symboltables *tables);
 node *CAVassign(node *arg_node, symboltables *tables);
 node *CAVforstmt(node *arg_node, symboltables *tables);
 node *CAVdoVariables(node *syntaxtree);
+
+#endif
