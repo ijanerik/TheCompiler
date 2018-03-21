@@ -14,5 +14,6 @@ node* TCVnum(node *arg_node, info *arg_info);
 node* TCVbinop(node *arg_node, info *arg_info);
 node* TCVvardec(node *arg_node, info *arg_info);
 node* TCVassign(node *arg_node, info *arg_info);
+node* TCVcastexpr(node *arg_node, info *arg_info);
 node* TCVdoVariables( node *syntaxtree);
 

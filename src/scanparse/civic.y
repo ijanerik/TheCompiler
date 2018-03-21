@@ -108,13 +108,13 @@ globaldec:
     ;
 
 globaldef:
-    vartype ident LET exprs SEMICOLON
+    vartype ident LET expr SEMICOLON
     {
-        $$ = TBmakeGlobaldef($1, FALSE, $2, $4, NULL);
+        $$ = TBmakeGlobaldef($1, FALSE, $2, TBmakeExprs($4, NULL), NULL);
     }
-    | EXPORT vartype ident LET exprs SEMICOLON
+    | EXPORT vartype ident LET expr SEMICOLON
     {
-        $$ = TBmakeGlobaldef($2, TRUE, $3, $5, NULL);
+        $$ = TBmakeGlobaldef($2, TRUE, $3, TBmakeExprs($5, NULL), NULL);
     }
     | vartype ident SEMICOLON
     {
@@ -139,6 +139,14 @@ globaldef:
     | EXPORT vartype  S_BRACKET_L expr S_BRACKET_R ident LET arrexpr SEMICOLON{}
     {
         $$ = TBmakeGlobaldef($2, TRUE, $6, $8, $4);
+    }
+    | vartype  S_BRACKET_L expr S_BRACKET_R ident LET expr SEMICOLON 
+    {
+        $$ = TBmakeGlobaldef($1, FALSE, $5, TBmakeExprs($7, NULL), $3);
+    }
+    | EXPORT vartype  S_BRACKET_L expr S_BRACKET_R ident LET expr SEMICOLON{}
+    {
+        $$ = TBmakeGlobaldef($2, TRUE, $6, TBmakeExprs($8, NULL), $4);
     }
     ;
 
@@ -406,13 +414,13 @@ expr8: BRACKET_L expr BRACKET_R { $$ = $2; }
      | ID { $$ = TBmakeVarcall(TBmakeIdent( STRcpy( $1))); };
 
 arrexpr:
-    S_BRACKET_L exprs S_BRACKET_R 
+    S_BRACKET_L S_BRACKET_R 
     {
-        $$ = TBmakeExprs(NULL, $2);
+        $$ = TBmakeExprs(NULL, NULL);
     }
-    | expr
+    | S_BRACKET_L exprs S_BRACKET_R 
     {
-        $$ = TBmakeExprs($1, NULL);
+        $$ = $2;
     }
     ;
 

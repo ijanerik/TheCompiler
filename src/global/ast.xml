@@ -80,13 +80,14 @@
 
         <traversal id="TCV" name="Type Checking Variables" default="sons" include="tc_variables.h">
             <travuser>
-                <node name="Vardec" />
+                <node name="VarDec" />
                 <node name="GlobalDef" />
                 <node name="BinOp" />
                 <node name="Num" />
                 <node name="Float" />
                 <node name="Bool" />
                 <node name="Assign" />
+                <node name="CastExpr" />
             </travuser>
         </traversal>
 

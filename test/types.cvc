@@ -1,10 +1,14 @@
+int[5] ss = [1,2,3,4,5];
 int b;
-int c = 2 + 2;
 bool a = true;
 
-int f(int i) {
-    bool l;
-    int k = false;
-    bool bb = false;
-    l = bb;
+int f(int u) {
+    bool l = true && false;
+    int k;
+    bool bb;
+    l = bb + (bool)3;
+}
+
+void g() {
+
 }

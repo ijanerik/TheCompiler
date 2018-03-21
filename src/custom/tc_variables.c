@@ -11,6 +11,7 @@
  *****************************************************************************/
 
 #include "tc_variables.h"
+#include "errors.h"
 
 struct INFO {
   cctype current_type;
@@ -19,8 +20,6 @@ struct INFO {
 #define INFO_SET_TYPE(n, type)  ((n)->current_type = type)
 #define INFO_GET_TYPE(n)  ((n)->current_type)
 
-#define ERROR_TYPE_GLOBDEF "Variable %s does not match inferred type of the expression"
-#define ERROR_TYPE_BINOP "Both sides of the expression do not have the same type"
 char* cctypeToString(cctype type) {
     char* str;
     switch (type) {
@@ -38,7 +37,6 @@ char* cctypeToString(cctype type) {
     }
     return str;
 }
-
 
 static info *MakeInfo(void)
 {
@@ -62,6 +60,7 @@ static info *FreeInfo( info *info)
 
   DBUG_RETURN( info);
 }
+
 cctype type_inference(node* expr, info *arg_info)
 {
     TRAVdo(expr, arg_info);
@@ -75,7 +74,6 @@ node *TCVglobaldef (node *arg_node, info *arg_info)
     node* entry = GLOBALDEF_SYMBOLTABLEENTRY(arg_node);
     cctype declared_type = SYMBOLTABLEENTRY_TYPE(entry);
     
-    //@todo fix this global def stuff with int i = 1,2,3;
     node* exprs = GLOBALDEF_EXPRS(arg_node);
 
     if (exprs != NULL ) {
@@ -83,7 +81,10 @@ node *TCVglobaldef (node *arg_node, info *arg_info)
         cctype inferred_type = type_inference(expr, arg_info);
 
         if (declared_type != inferred_type){
-            CTIerror(ERROR_TYPE_GLOBDEF, SYMBOLTABLEENTRY_NAME(entry));
+            CTIerror(ERROR_TYPE_GLOBDEF, arg_node->lineno + 1,
+                                         SYMBOLTABLEENTRY_NAME(entry),
+                                         cctypeToString(declared_type),
+                                         cctypeToString(inferred_type));
         }
     } 
 
@@ -93,23 +94,23 @@ node *TCVglobaldef (node *arg_node, info *arg_info)
 node *TCVvardec(node *arg_node, info *arg_info)
 {
     DBUG_ENTER("TCVvardec");
-
-    CTIwarn("INDSIDE VARDEC\n");
     
-    // node* entry = VARDEC_SYMBOLTABLEENTRY(arg_node);
-    // cctype declared_type = SYMBOLTABLEENTRY_TYPE(entry);
-    
-    // //@todo fix this vardec stuff with int i = 1,2,3;
-    // node* exprs = VARDEC_EXPRS(arg_node);
+    node* entry = VARDEC_SYMBOLTABLEENTRY(arg_node);
+    cctype declared_type = SYMBOLTABLEENTRY_TYPE(entry);
 
-    // if (exprs != NULL ) {
-    //     node* expr = EXPRS_EXPR(exprs);
-    //     cctype inferred_type = type_inference(expr, arg_info);
+    node* exprs = VARDEC_EXPRS(arg_node);
 
-    //     if (declared_type != inferred_type){
-    //         CTIerror(ERROR_TYPE_GLOBDEF, SYMBOLTABLEENTRY_NAME(entry));
-    //     }
-    // } 
+    if (exprs != NULL ) {
+        node* expr = EXPRS_EXPR(exprs);
+        cctype inferred_type = type_inference(expr, arg_info);
+
+        if (declared_type != inferred_type){
+            CTIerror(ERROR_TYPE_GLOBDEF, arg_node->lineno + 1,
+                                         SYMBOLTABLEENTRY_NAME(entry),
+                                         cctypeToString(declared_type),
+                                         cctypeToString(inferred_type));
+        }
+    } 
 
     DBUG_RETURN( arg_node);
 }
@@ -121,14 +122,16 @@ node *TCVassign(node *arg_node, info *arg_info)
     node* entry = ASSIGN_SYMBOLTABLEENTRY(arg_node);
     cctype declared_type = SYMBOLTABLEENTRY_TYPE(entry);
     
-    //@todo fix this vardec stuff with int i = 1,2,3;
     node* expr = ASSIGN_EXPR(arg_node);
 
     if (expr != NULL ) {
         cctype inferred_type = type_inference(expr, arg_info);
 
         if (declared_type != inferred_type){
-            CTIerror(ERROR_TYPE_GLOBDEF, SYMBOLTABLEENTRY_NAME(entry));
+            CTIerror(ERROR_TYPE_GLOBDEF, arg_node->lineno + 1,
+                                         SYMBOLTABLEENTRY_NAME(entry),
+                                         cctypeToString(declared_type),
+                                         cctypeToString(inferred_type));
         }
     } 
 
@@ -173,7 +176,9 @@ node* TCVbinop(node *arg_node, info *arg_info)
     cctype t2 = INFO_GET_TYPE(arg_info);
 
     if (t1 != t2) {
-        CTIerror(ERROR_TYPE_BINOP);
+        CTIerror(ERROR_TYPE_BINOP, arg_node->lineno + 1, cctypeToString(t1),
+                                                         cctypeToString(t2));
+        INFO_SET_TYPE(arg_info, T_unknown);
     }
     else {
         INFO_SET_TYPE(arg_info, t1);
@@ -182,19 +187,16 @@ node* TCVbinop(node *arg_node, info *arg_info)
     DBUG_RETURN( arg_node);
 }
 
-// node *TCVfundef(node *arg_node, info *arg_info)
-// {
-//     DBUG_ENTER("TCVfundef");
-//     DBUG_RETURN( arg_node);
-// }
+node *TCVcastexpr(node *arg_node, info *arg_info)
+{
+    DBUG_ENTER("TCVbinop");
 
-// node *TCVfunbody(node *arg_node, info *arg_info)
-// {
-//     DBUG_ENTER("TCVbody");
-//     DBUG_RETURN( arg_node);
-// }
+    //cctype type = type_inference(CASTEXPR_EXPR(arg_node), arg_info);
+    //CASTEXPR_TYPE(arg_node) = type;
+    INFO_SET_TYPE(arg_info, CASTEXPR_TYPE(arg_node));
 
-
+    DBUG_RETURN( arg_node);
+}
 
 node *TCVdoVariables( node *syntaxtree)
 {
