@@ -10,11 +10,7 @@
 
 
 #include "ca_variables.h"
-
-#define ERROR_REDEC_VAR "Variable %s is already declared"
-#define ERROR_UNDEC_VAR "Variable %s is not declared"
-#define WARNING_SHADOW_VAR "Variable %s is shadowed"
-
+#include "errors.h"
 
 /*
  * Traversal functions

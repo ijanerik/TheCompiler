@@ -1,14 +1,8 @@
 int[5] ss = [1,2,3,4,5];
-int b;
-bool a = true;
 
 int f(int u) {
-    bool l = true && false;
-    int k;
-    bool bb;
-    l = bb + (bool)3;
-}
-
-void g() {
-
+    bool a = true;
+    bool b = false;
+    bool c = true;
+    bool l = a && b || c;
 }

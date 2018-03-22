@@ -47,6 +47,12 @@ SUBPHASE( tcv,
           ALWAYS,
           ast)
 
+SUBPHASE( bo, 
+          "Boolean operations",
+          BOdoOperations, 
+          ALWAYS,
+          ast)
+
 ENDPHASE( ast) 
 
 

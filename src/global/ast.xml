@@ -91,6 +91,12 @@
             </travuser>
         </traversal>
 
+        <traversal id="BO" name="Boolean Operations" default="sons" include="bo_operations.h">
+            <travuser>
+                <node name="BinOp" />
+            </travuser>
+        </traversal>
+
     </general>
 </phases>
 
@@ -102,6 +108,7 @@
     <nodeset name="Expr">
         <target>
             <node name="BinOp" />
+            <node name="CondExpr" />
             <node name="MonOp" />
             <node name="VarCall" />
             <node name="CastExpr" />
@@ -1177,6 +1184,45 @@
                     </type>
                 </attribute>
             </attributes>
+        </node>
+
+        <!-- Node CondExpr -->
+        <node name="CondExpr">
+            <sons>
+                <son name="True">
+                    <description></description>
+                    <targets>
+                        <target mandatory="yes">
+                            <set name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="False">
+                    <description></description>
+                    <targets>
+                        <target mandatory="yes">
+                            <set name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+                <son name="Expr">
+                    <description></description>
+                    <targets>
+                        <target mandatory="yes">
+                            <set name="Expr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
+            </sons>
         </node>
 
         <!-- Node BinOp -->
