@@ -799,6 +799,21 @@
                     </targets>
                 </son>
             </sons>
+            <attributes>
+                <attribute name="SymbolTableEntry">
+                    <description>Link to symbol table entry</description>
+                    <type name="Link">
+                        <targets>
+                            <target mandatory="no">
+                                <node name="SymbolTableEntry" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+            </attributes>
         </node>
 
         <!-- VarCall -->

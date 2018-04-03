@@ -5,9 +5,9 @@ int test() {
     int test2() {
 
     }
-    func(test);
+    fun(test);
 }
 
-int fun() {
-    func();
+int test() {
+    fun();
 }
