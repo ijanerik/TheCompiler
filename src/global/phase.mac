@@ -53,6 +53,12 @@ SUBPHASE( bo,
           ALWAYS,
           ast)
 
+SUBPHASE( boc, 
+          "Boolean Casts",
+          BOCdoCasts, 
+          ALWAYS,
+          ast)
+
 ENDPHASE( ast) 
 
 
