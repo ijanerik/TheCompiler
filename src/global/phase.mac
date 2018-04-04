@@ -53,6 +53,13 @@ SUBPHASE( bo,
           ALWAYS,
           ast)
 
+
+SUBPHASE( caf,
+        "Context analysis functions",
+        CAFdoFunctions,
+        ALWAYS,
+        ast)
+
 ENDPHASE( ast) 
 
 

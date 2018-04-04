@@ -58,7 +58,7 @@ static int yyerror( char *errname);
 %type <node> stmts stmt assign ifelsestmt whilestmt dowhilestmt forstmt returnstmt block funcall
 %type <node> vardec vardecs arrayindex
 %type <node> program declarations declaration start
-%type <node> globaldef globaldec fundef funheader funbody params param
+%type <node> globaldef globaldec fundef fundefs funheader funbody params param
 
 %start start
 
@@ -223,10 +223,33 @@ funbody:
     {
         $$ = TBmakeFunbody(NULL, NULL, $2);
     }
+    | C_BRACKET_L vardecs fundefs stmts C_BRACKET_R
+    {
+        $$ = TBmakeFunbody($2, $3, $4);
+    }
+    | C_BRACKET_L vardecs fundefs C_BRACKET_R
+    {
+        $$ = TBmakeFunbody($2, $3, NULL);
+    }
+    | C_BRACKET_L fundefs stmts C_BRACKET_R
+    {
+        $$ = TBmakeFunbody(NULL, $2, $3);
+    }
     | C_BRACKET_L C_BRACKET_R
       {
           $$ = TBmakeFunbody(NULL, NULL, NULL);
       }
+    ;
+
+fundefs:
+    fundef fundefs
+    {
+        $$ = TBmakeFundefs($1, $2);
+    }
+    | fundef
+    {
+        $$ = TBmakeFundefs($1, NULL);
+    }
     ;
 
 // ----------- STATEMENT DEFINITIONS --------------

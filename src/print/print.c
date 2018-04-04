@@ -77,9 +77,13 @@ node*
 PRTstmts(node*arg_node, info *arg_info) {
     DBUG_ENTER("PRTstmts");
 
-    STMTS_STMT(arg_node) = TRAVdo(STMTS_STMT(arg_node), arg_info);
+    if(STMTS_STMT(arg_node) != NULL) {
+        STMTS_STMT(arg_node) = TRAVdo(STMTS_STMT(arg_node), arg_info);
+    }
 
-    STMTS_NEXT(arg_node) = TRAVopt(STMTS_NEXT(arg_node), arg_info);
+    if(STMTS_NEXT(arg_node) != NULL) {
+        STMTS_NEXT(arg_node) = TRAVopt(STMTS_NEXT(arg_node), arg_info);
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -522,7 +526,9 @@ node* PRTfuncall(node* arg_node, info *arg_info) {
     
     FUNCALL_IDENT(arg_node) = TRAVdo(FUNCALL_IDENT(arg_node), arg_info);
     printf("(");
-    FUNCALL_ARGS(arg_node) = TRAVdo(FUNCALL_ARGS(arg_node), arg_info);
+    if(FUNCALL_ARGS(arg_node) != NULL) {
+        FUNCALL_ARGS(arg_node) = TRAVdo(FUNCALL_ARGS(arg_node), arg_info);
+    }
     printf(")");
 
     DBUG_RETURN(arg_node);
@@ -610,8 +616,10 @@ node* PRTvarcall(node* arg_node, info *arg_info) {
 
 node* PRTvardecs(node* arg_node, info *arg_info) {
     DBUG_ENTER("PRTvardecs");
-    
-    VARDECS_VARDEC(arg_node) = TRAVdo(VARDECS_VARDEC(arg_node), arg_info);
+
+    if (VARDECS_VARDEC(arg_node) != NULL) {
+        VARDECS_VARDEC(arg_node) = TRAVdo(VARDECS_VARDEC(arg_node), arg_info);
+    }
     
     if (VARDECS_NEXT(arg_node) != NULL) {
         VARDECS_NEXT(arg_node) = TRAVdo(VARDECS_NEXT(arg_node), arg_info);
@@ -622,7 +630,10 @@ node* PRTvardecs(node* arg_node, info *arg_info) {
 
 node* PRTfundefs(node* arg_node, info *arg_info) {
     DBUG_ENTER("PRTfundefs");
-    FUNDEFS_FUNDEF(arg_node) = TRAVdo(FUNDEFS_FUNDEF(arg_node), arg_info);
+
+    if(FUNDEFS_FUNDEF(arg_node) != NULL) {
+        FUNDEFS_FUNDEF(arg_node) = TRAVdo(FUNDEFS_FUNDEF(arg_node), arg_info);
+    }
 
     if (FUNDEFS_NEXT(arg_node) != NULL) {
         FUNDEFS_NEXT(arg_node) = TRAVdo(FUNDEFS_NEXT(arg_node), arg_info);
@@ -639,6 +650,10 @@ node* PRTfunbody(node* arg_node, info *arg_info) {
     // Var declarations
     if (FUNBODY_VARDECS(arg_node) != NULL) {
         FUNBODY_VARDECS(arg_node) = TRAVdo(FUNBODY_VARDECS(arg_node), arg_info);
+    }
+
+    if (FUNBODY_FUNDEFS(arg_node) != NULL) {
+        FUNBODY_FUNDEFS(arg_node) = TRAVdo(FUNBODY_FUNDEFS(arg_node), arg_info);
     }
 
     if (FUNBODY_STMTS(arg_node) != NULL) {
@@ -829,20 +844,28 @@ node* PRTfundef(node* arg_node, info *arg_info) {
     if(FUNDEF_SYMBOLTABLE(arg_node) != NULL) {
         FUNDEF_SYMBOLTABLE(arg_node) = TRAVdo(FUNDEF_SYMBOLTABLE(arg_node), arg_info);
     }
+    printIndents(arg_info);
     printf(" */\n");
 
     if (FUNDEF_FUNBODY(arg_node) == NULL && FUNDEF_EXPORT(arg_node) == FALSE) {
+        printIndents(arg_info);
         printf("extern ");
         FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
         printf(";\n");
         DBUG_RETURN(arg_node);
+    } else {
+        printIndents(arg_info);
+        if (FUNDEF_EXPORT(arg_node)) {
+            printf("export ");
+        }
+        if (FUNDEF_FUNHEADER(arg_node) != NULL) {
+            FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
+        }
+
+        if (FUNDEF_FUNBODY(arg_node) != NULL) {
+            FUNDEF_FUNBODY(arg_node) = TRAVdo(FUNDEF_FUNBODY(arg_node), arg_info);
+        }
     }
-    
-    if (FUNDEF_EXPORT(arg_node)) {
-        printf("export ");
-    }
-    FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
-    FUNDEF_FUNBODY(arg_node) = TRAVdo(FUNDEF_FUNBODY(arg_node), arg_info);
 
     DBUG_RETURN(arg_node);
 }
