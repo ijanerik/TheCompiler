@@ -6,6 +6,8 @@
 #include "dbug.h"
 #include "memory.h"
 
+#include "constants_table.h"
+
 
 struct INFO {
   int index [32];
@@ -26,23 +28,7 @@ struct INFO {
 #define INFO_NEW_CONSTANTS_INDEX(n)  ((n)->constants_index++)
 #define INFO_CONSTANTS_INDEX(n)  ((n)->constants_index)
 
-node* findConstant(cctype type, void* value, node* table) {
-    while (table != NULL) {
-        bool b = CONSTANTSTABLE_BOOL(table);
-        int i = CONSTANTSTABLE_INT(table);
-        float f = CONSTANTSTABLE_FLOAT(table);
-        int index = CONSTANTSTABLE_INDEX(table);
-        
-        if ((type == T_bool && *((bool*)value) == b) ||
-            (type == T_int && *((int*)value) == i) || 
-            (type == T_float && *((float*)value) == f)) {
-                return table;
-        }
-        
-        table = CONSTANTSTABLE_NEXT(table);
-    }
-    return NULL;
-}
+
 
 static info *MakeInfo(void)
 {

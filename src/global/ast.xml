@@ -109,6 +109,15 @@
                 <node name="Bool" />
             </travuser>
         </traversal>
+
+        <traversal id="GBC" name="Generate Byte Code" default="sons" include="gen_byte_code.h">
+            <travuser>
+                <node name="Assign" />
+                <node name="Num" />
+                <node name="VarCall" />
+                <node name="BinOp" />
+            </travuser>
+        </traversal>
     </general>
 </phases>
 

@@ -64,7 +64,7 @@ PHASE( cg,
        ALWAYS)
 
 SUBPHASE( gt, "Generate tables for code generation", GTdoGenTables, ALWAYS, cg)
-SUBPHASE( prt, "Generating byte code", GBCdoGenByteCode, ALWAYS, cg)      
+SUBPHASE( gbc, "Generating byte code", GBCdoGenByteCode, ALWAYS, cg)      
 SUBPHASE( prt_ast, "Print ast", PRTdoPrint, ALWAYS, cg)      
 
 SUBPHASE( frtr, 
