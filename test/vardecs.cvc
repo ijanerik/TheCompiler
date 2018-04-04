@@ -1,6 +1,8 @@
+int b = 2;
+float d;
+
 void fun(int a) {
-    int [1] b;
-    int [a] b = [1, 2];
-    int [10] ones = 1;
-    int c;
+    int c = 1;
+
+    
 }

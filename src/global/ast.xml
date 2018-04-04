@@ -97,6 +97,15 @@
             </travuser>
         </traversal>
 
+        <traversal id="GGT" name="Generate Global Table" default="sons" include="gen_global_table.h">
+            <travuser>
+                <node name="VarDec" />
+                <node name="GlobalDec" />
+                <node name="GlobalDef" />
+                <node name="Param" />
+                <node name="FunDef" />
+            </travuser>
+        </traversal>
     </general>
 </phases>
 
@@ -1409,6 +1418,17 @@
                 </attribute>
                 <attribute name="IsArray">
                     <type name="Bool">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="Index">
+                    <type name="Int">
                         <targets>
                             <target mandatory="yes">
                                 <phases>

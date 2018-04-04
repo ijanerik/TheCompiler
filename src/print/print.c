@@ -915,8 +915,10 @@ node* PRTsymboltableentry(node* arg_node, info *arg_info) {
             DBUG_ASSERT(0, "unknown/incorrect returntype detected!");
     }
     
-    printf(" * %s %s %d\n", SYMBOLTABLEENTRY_NAME(arg_node), type,
-           SYMBOLTABLEENTRY_ISARRAY(arg_node));
+    printf(" * %s %s %d %d\n", SYMBOLTABLEENTRY_NAME(arg_node),
+                               type,
+                               SYMBOLTABLEENTRY_ISARRAY(arg_node),
+                               SYMBOLTABLEENTRY_INDEX(arg_node));
 
     DBUG_RETURN(arg_node);
 }
