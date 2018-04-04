@@ -9,4 +9,7 @@ extern node* GGTglobaldef(node* arg_node, info *arg_info);
 extern node* GGTparam(node* arg_node, info *arg_info);
 extern node* GGTfundef(node* arg_node, info *arg_info);
 
+extern node* GGTnum(node* arg_node, info *arg_info);
+extern node* GGTfloat(node* arg_node, info *arg_info);
+extern node* GGTbool(node* arg_node, info *arg_info);
 #endif

@@ -59,7 +59,8 @@ node *CAVvardec(node *arg_node, symboltables *tables)
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
                                     IDENT_NAME(VARDEC_IDENT(arg_node)),
-                                    VARDEC_TYPE(arg_node), is_array);
+                                    VARDEC_TYPE(arg_node), is_array,
+                                    SYMBOLTABLES_INDEX(tables));
         VARDEC_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else if(scope < SYMBOLTABLES_INDEX(tables)) {
@@ -82,7 +83,8 @@ node *CAVglobaldec(node *arg_node, symboltables *tables)
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
                                     IDENT_NAME(ident),
-                                    GLOBALDEC_TYPE(arg_node), is_array);
+                                    GLOBALDEC_TYPE(arg_node), is_array,
+                                    SYMBOLTABLES_INDEX(tables));
         GLOBALDEC_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
@@ -117,7 +119,8 @@ node *CAVglobaldef(node *arg_node, symboltables *tables)
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
                                     IDENT_NAME(ident),
-                                    GLOBALDEF_TYPE(arg_node), is_array);
+                                    GLOBALDEF_TYPE(arg_node), is_array,
+                                    SYMBOLTABLES_INDEX(tables));
         GLOBALDEF_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
@@ -202,7 +205,8 @@ node *CAVparam(node *arg_node, symboltables *tables)
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
                                     IDENT_NAME(ident),
-                                    PARAM_TYPE(arg_node), is_array);
+                                    PARAM_TYPE(arg_node), is_array,
+                                    SYMBOLTABLES_INDEX(tables));
         PARAM_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {

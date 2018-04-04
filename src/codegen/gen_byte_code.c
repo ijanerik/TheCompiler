@@ -9,7 +9,9 @@
 /*
  * Traversal start function
  */
-
+// struct ops {
+//   ILOAD = "iload"
+// }
 
 node *GBCdoGenByteCode( node *syntaxtree)
 {

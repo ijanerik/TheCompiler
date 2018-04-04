@@ -1,8 +1,13 @@
 int b = 2;
-float d;
+int z = 7;
+int y = 8;
+bool aa = false;
+bool ab = true;
+int j = 7;
+bool ac = false;
+
 
 void fun(int a) {
-    int c = 1;
-
-    
+    int c = 10;
 }
+int h;

@@ -104,6 +104,9 @@
                 <node name="GlobalDef" />
                 <node name="Param" />
                 <node name="FunDef" />
+                <node name="Num" />
+                <node name="Float" />
+                <node name="Bool" />
             </travuser>
         </traversal>
     </general>
@@ -177,8 +180,94 @@
                     </target>
                 </targets>
             </son>
+            <son name="ConstantsTable">
+                <description>The constants table</description>
+                <targets>
+                    <target mandatory="no">
+                        <node name="ConstantsTable" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
         </sons>
         <attributes>
+        </attributes>
+    </node>
+
+    <!-- Node ConstantsTable -->
+    <node name="ConstantsTable">
+        <description>represents symbol table entry</description>
+        <sons>
+            <son name="Next">
+                <description>The constants table</description>
+                <targets>
+                    <target mandatory="no">
+                        <node name="ConstantsTable" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+        </sons>
+        <attributes>
+            <attribute name="Type">
+                <type name="Type">
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+            <attribute name="Index">
+                <type name="Int">
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+            <attribute name="Bool">
+                <type name="Bool">
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+            <attribute name="Int">
+                <type name="Int">
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+            <attribute name="Float">
+                <type name="Float">
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
         </attributes>
     </node>
 
@@ -1316,6 +1405,18 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="ConstantsTable">
+                    <type name="Link">
+                        <targets>
+                            <target mandatory="no">
+                                <node name="ConstantsTable" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -1336,6 +1437,18 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="ConstantsTable">
+                    <type name="Link">
+                        <targets>
+                            <target mandatory="no">
+                                <node name="ConstantsTable" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -1349,6 +1462,18 @@
                     <type name="Bool">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="ConstantsTable">
+                    <type name="Link">
+                        <targets>
+                            <target mandatory="no">
+                                <node name="ConstantsTable" />
                                 <phases>
                                     <all />
                                 </phases>
@@ -1428,6 +1553,17 @@
                     </type>
                 </attribute>
                 <attribute name="Index">
+                    <type name="Int">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="Scope">
                     <type name="Int">
                         <targets>
                             <target mandatory="yes">

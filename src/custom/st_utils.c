@@ -28,7 +28,7 @@ symboltables* FreeSymboltables( symboltables *tables)
 
 
 // @todo Not sure about cctype here
-node* addSymbolTableEntry(node* symbol_table, char* name, cctype type, bool is_array) {
+node* addSymbolTableEntry(node* symbol_table, char* name, cctype type, bool is_array, int scope) {
 
     while (SYMBOLTABLE_NEXT(symbol_table) != NULL) {
         symbol_table = SYMBOLTABLE_NEXT(symbol_table);
@@ -36,7 +36,7 @@ node* addSymbolTableEntry(node* symbol_table, char* name, cctype type, bool is_a
 
     // Add a new entry to the symbol table
     SYMBOLTABLE_NEXT(symbol_table) = TBmakeSymboltable(NULL, NULL);
-    node* entry = TBmakeSymboltableentry(name, type, is_array, -1);
+    node* entry = TBmakeSymboltableentry(name, type, is_array, -1, scope);
     SYMBOLTABLE_SYMBOLTABLEENTRY(SYMBOLTABLE_NEXT(symbol_table)) = entry;
     return entry;
 }

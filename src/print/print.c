@@ -58,6 +58,23 @@ static void printIndents(info *info) {
     }
 }
 
+static void typeToString(cctype type, char* string) {
+    switch (type) {
+        case T_float:
+            string = "float";
+            break;
+        case T_int:
+            string = "int";
+            break;
+        case T_bool:
+            string = "bool";
+            break;
+        default:
+            string = "unknown";
+    }
+}
+
+
 
 
 /** <!--******************************************************************-->
@@ -217,6 +234,9 @@ PRTfloat(node* arg_node, info *arg_info) {
     DBUG_ENTER("PRTfloat");
 
     printf("%f", FLOAT_VALUE(arg_node));
+    if (FLOAT_CONSTANTSTABLE(arg_node)) {
+        printf("/*%f*/", CONSTANTSTABLE_FLOAT(FLOAT_CONSTANTSTABLE(arg_node)));
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -240,6 +260,10 @@ PRTnum(node* arg_node, info *arg_info) {
     DBUG_ENTER("PRTnum");
 
     printf("%i", NUM_VALUE(arg_node));
+    if (NUM_CONSTANTSTABLE(arg_node)) {
+        printf("/*%d, %p*/", CONSTANTSTABLE_INT(NUM_CONSTANTSTABLE(arg_node)),
+                             NUM_CONSTANTSTABLE(arg_node));
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -266,6 +290,10 @@ PRTbool(node* arg_node, info *arg_info) {
         printf("true");
     } else {
         printf("false");
+    }
+    
+    if (BOOL_CONSTANTSTABLE(arg_node)) {
+        printf("/*%d*/", CONSTANTSTABLE_BOOL(BOOL_CONSTANTSTABLE(arg_node)));
     }
 
     DBUG_RETURN(arg_node);
@@ -825,7 +853,7 @@ node* PRTfundef(node* arg_node, info *arg_info) {
     printIndents(arg_info);
     
     // Print symbol table
-    printf("/** SYMBOL TABLE **\n");
+    printf("\n/** FUNCTION SYMBOL TABLE **\n * ID\tTYPE\tISARRAY\tINDEX\tSCOPE\n");
     if(FUNDEF_SYMBOLTABLE(arg_node) != NULL) {
         FUNDEF_SYMBOLTABLE(arg_node) = TRAVdo(FUNDEF_SYMBOLTABLE(arg_node), arg_info);
     }
@@ -864,7 +892,13 @@ node* PRTprogram(node* arg_node, info *arg_info) {
     DBUG_ENTER("");
 
     printIndents(arg_info);
-    printf("/** SYMBOL TABLE **\n");
+    printf("/** CONSTANTS TABLE\n");
+    if(PROGRAM_CONSTANTSTABLE(arg_node) != NULL) {
+        PROGRAM_CONSTANTSTABLE(arg_node) = TRAVdo(PROGRAM_CONSTANTSTABLE(arg_node), arg_info);
+    }
+    printf("\n");
+
+    printf("/** GLOBAL SYMBOL TABLE **\n * ID\tTYPE\tISARRAY\tINDEX\tSCOPE\n");
     if(PROGRAM_SYMBOLTABLE(arg_node) != NULL) {
         PROGRAM_SYMBOLTABLE(arg_node) = TRAVdo(PROGRAM_SYMBOLTABLE(arg_node), arg_info);
     }
@@ -915,10 +949,11 @@ node* PRTsymboltableentry(node* arg_node, info *arg_info) {
             DBUG_ASSERT(0, "unknown/incorrect returntype detected!");
     }
     
-    printf(" * %s %s %d %d\n", SYMBOLTABLEENTRY_NAME(arg_node),
+    printf(" * %s\t%s\t%d\t%d\t%d\n", SYMBOLTABLEENTRY_NAME(arg_node),
                                type,
                                SYMBOLTABLEENTRY_ISARRAY(arg_node),
-                               SYMBOLTABLEENTRY_INDEX(arg_node));
+                               SYMBOLTABLEENTRY_INDEX(arg_node),
+                               SYMBOLTABLEENTRY_SCOPE(arg_node));
 
     DBUG_RETURN(arg_node);
 }
@@ -945,6 +980,28 @@ node* PRTcondexpr(node* arg_node, info *arg_info) {
     CONDEXPR_FALSE(arg_node) = TRAVdo(CONDEXPR_FALSE(arg_node), arg_info);
     printf(")");
 
+    DBUG_RETURN(arg_node);
+}
+
+node* PRTconstantstable(node* arg_node, info *arg_info) {
+    DBUG_ENTER("PRTconstantstable");
+    
+    int index = CONSTANTSTABLE_INDEX(arg_node);
+    cctype type = CONSTANTSTABLE_TYPE(arg_node);
+
+    if (type == T_float) {
+        printf(" * %d\tfloat\t%f\n", index, CONSTANTSTABLE_FLOAT(arg_node));
+    }
+    if (type == T_bool) {
+        printf(" * %d\tbool\t%d\n", index, CONSTANTSTABLE_BOOL(arg_node));
+    }
+    if (type == T_int) {
+        printf(" * %d\tint\t%d\n", index, CONSTANTSTABLE_INT(arg_node));
+    }
+
+    if (CONSTANTSTABLE_NEXT(arg_node)) {
+        CONSTANTSTABLE_NEXT(arg_node) = TRAVdo(CONSTANTSTABLE_NEXT(arg_node), arg_info);
+    }
     DBUG_RETURN(arg_node);
 }
 
