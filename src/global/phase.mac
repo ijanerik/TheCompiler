@@ -41,6 +41,18 @@ SUBPHASE( cav,
           ALWAYS,
           ast)
 
+SUBPHASE( caf,
+        "Context analysis functions",
+        CAFdoFunctions,
+        ALWAYS,
+        ast)
+
+SUBPHASE(gvv,
+        "Add global variables function __init",
+        GVdoVariableToFunction,
+        ALWAYS,
+        ast)
+
 SUBPHASE( tcv, 
           "Type checking variables",
           TCVdoVariables, 
@@ -52,13 +64,6 @@ SUBPHASE( bo,
           BOdoOperations, 
           ALWAYS,
           ast)
-
-
-SUBPHASE( caf,
-        "Context analysis functions",
-        CAFdoFunctions,
-        ALWAYS,
-        ast)
 
 ENDPHASE( ast) 
 

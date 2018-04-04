@@ -97,6 +97,12 @@
             </travuser>
         </traversal>
 
+        <traversal id="GVV" name="Add global variables function __init" default="sons" include="gv_variables.h">
+            <travuser>
+                <!--<node name="BinOp" />-->
+            </travuser>
+        </traversal>
+
         <traversal id="CAF" name="Context Analysis Functions" default="sons" include="ca_functions.h">
             <travuser>
                 <node name="FunDef" />
