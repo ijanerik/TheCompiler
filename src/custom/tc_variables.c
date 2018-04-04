@@ -12,6 +12,7 @@
 
 #include "tc_variables.h"
 #include "errors.h"
+#include "string.h"
 
 struct INFO {
   cctype current_type;
@@ -169,11 +170,18 @@ node* TCVbinop(node *arg_node, info *arg_info)
 {
     DBUG_ENTER("TCVbinop");
 
-    TRAVdo(BINOP_LEFT(arg_node), arg_info);
+    BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
     cctype t1 = INFO_GET_TYPE(arg_info);
+    // @TODO ERROR WITH FIRST CHECK TO UNKOWN
+    char typer[30];
+    sprintf(typer, "%i", (int) NODE_TYPE(BINOP_LEFT(arg_node)));
 
-    TRAVdo(BINOP_RIGHT(arg_node), arg_info);
+    DBUG_PRINT ("t", (typer));
+    DBUG_PRINT ("t", (cctypeToString(t1)));
+
+    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
     cctype t2 = INFO_GET_TYPE(arg_info);
+    DBUG_PRINT ("t", (cctypeToString(t2)));
 
     if (t1 != t2) {
         CTIerror(ERROR_TYPE_BINOP, arg_node->lineno + 1, cctypeToString(t1),

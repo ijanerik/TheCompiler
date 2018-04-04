@@ -265,7 +265,19 @@ node *CAVassign(node *arg_node, symboltables *tables) {
 node *CAVforstmt(node *arg_node, symboltables *tables) {
     DBUG_ENTER("CAVforstmt");
 
+
+    DBUG_PRINT ("FORSTMT_CAV", ("Enter forstmt"));
     FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), tables);
+
+    if(BLOCK_SYMBOLTABLE(FORSTMT_BLOCK(arg_node)) == NULL) {
+        BLOCK_SYMBOLTABLE(FORSTMT_BLOCK(arg_node)) = TBmakeSymboltable(NULL, NULL);
+    }
+    SYMBOLTABLES_ADD_TABLE(tables, BLOCK_SYMBOLTABLE(FORSTMT_BLOCK(arg_node)));
+
+    FORSTMT_SYMBOLTABLEENTRY(arg_node) = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
+                                                            IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node)),
+                                                             T_int, 0);
+
 
     FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), tables);
 
@@ -275,10 +287,11 @@ node *CAVforstmt(node *arg_node, symboltables *tables) {
 
     FORSTMT_BLOCK(arg_node) = TRAVdo(FORSTMT_BLOCK(arg_node), tables);
 
+    SYMBOLTABLES_REMOVE_TABLE(tables);
+
     DBUG_RETURN( arg_node);
 }
 
-// @todo print symbol table
 
 /*
  * Traversal start function
