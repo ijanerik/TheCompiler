@@ -10,4 +10,4 @@ bool ac = false;
 void fun(int a) {
     int c = 10;
 }
-int h;
+int h = 10;

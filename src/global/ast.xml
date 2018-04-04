@@ -97,7 +97,7 @@
             </travuser>
         </traversal>
 
-        <traversal id="GGT" name="Generate Global Table" default="sons" include="gen_global_table.h">
+        <traversal id="GT" name="Generate tables for code generation" default="sons" include="gen_tables.h">
             <travuser>
                 <node name="VarDec" />
                 <node name="GlobalDec" />

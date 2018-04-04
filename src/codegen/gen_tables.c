@@ -1,4 +1,4 @@
-#include "gen_global_table.h"
+#include "gen_tables.h"
 
 #include "types.h"
 #include "tree_basic.h"
@@ -71,8 +71,8 @@ static info *FreeInfo( info *info)
   DBUG_RETURN( info);
 }
 
-node *GGTvardec(node* arg_node, info *arg_info) {
-    DBUG_ENTER("GGTvardec");
+node *GTvardec(node* arg_node, info *arg_info) {
+    DBUG_ENTER("GTvardec");
     node* entry = VARDEC_SYMBOLTABLEENTRY(arg_node);
     SYMBOLTABLEENTRY_INDEX(entry) = INFO_NEW_INDEX(arg_info);
     
@@ -83,8 +83,8 @@ node *GGTvardec(node* arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *GGTglobaldec(node* arg_node, info *arg_info) {
-    DBUG_ENTER("GGTglobaldec");
+node *GTglobaldec(node* arg_node, info *arg_info) {
+    DBUG_ENTER("GTglobaldec");
 
     node* entry = GLOBALDEC_SYMBOLTABLEENTRY(arg_node);
     SYMBOLTABLEENTRY_INDEX(entry) = INFO_NEW_INDEX(arg_info);
@@ -92,8 +92,8 @@ node *GGTglobaldec(node* arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node *GGTglobaldef(node* arg_node, info *arg_info) {
-    DBUG_ENTER("GGTglobaldef");
+node *GTglobaldef(node* arg_node, info *arg_info) {
+    DBUG_ENTER("GTglobaldef");
 
     node* entry = GLOBALDEF_SYMBOLTABLEENTRY(arg_node);
     SYMBOLTABLEENTRY_INDEX(entry) = INFO_NEW_INDEX(arg_info);
@@ -105,8 +105,8 @@ node *GGTglobaldef(node* arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node* GGTparam(node* arg_node, info *arg_info) {
-    DBUG_ENTER("GGTparam");
+node* GTparam(node* arg_node, info *arg_info) {
+    DBUG_ENTER("GTparam");
 
     node* entry = PARAM_SYMBOLTABLEENTRY(arg_node);
     SYMBOLTABLEENTRY_INDEX(entry) = INFO_NEW_INDEX(arg_info);
@@ -114,8 +114,8 @@ node* GGTparam(node* arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 }
 
-node* GGTfundef(node* arg_node, info *arg_info)  {
-    DBUG_ENTER("GGTfundef");
+node* GTfundef(node* arg_node, info *arg_info)  {
+    DBUG_ENTER("GTfundef");
 
     INFO_INC_SCOPE(arg_info);
     FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
@@ -128,8 +128,8 @@ node* GGTfundef(node* arg_node, info *arg_info)  {
     DBUG_RETURN(arg_node);
 }
 
-node* GGTnum(node* arg_node, info *arg_info) {
-    DBUG_ENTER("GGTnum");
+node* GTnum(node* arg_node, info *arg_info) {
+    DBUG_ENTER("GTnum");
 
     node* table_head = INFO_CONSTANTS_TABLE_HEAD(arg_info);
     node* table_tail = INFO_CONSTANTS_TABLE_TAIL(arg_info);
@@ -160,8 +160,8 @@ node* GGTnum(node* arg_node, info *arg_info) {
     DBUG_RETURN(arg_node);
 } 
 
-node* GGTfloat(node* arg_node, info *arg_info) {
-    DBUG_ENTER("GGTfloat");
+node* GTfloat(node* arg_node, info *arg_info) {
+    DBUG_ENTER("GTfloat");
 
     node* table_head = INFO_CONSTANTS_TABLE_HEAD(arg_info);
     node* table_tail = INFO_CONSTANTS_TABLE_TAIL(arg_info);
@@ -193,8 +193,8 @@ node* GGTfloat(node* arg_node, info *arg_info) {
 
 
 
-node* GGTbool(node* arg_node, info *arg_info) {
-    DBUG_ENTER("GGTbool");
+node* GTbool(node* arg_node, info *arg_info) {
+    DBUG_ENTER("GTbool");
        
     node* table_head = INFO_CONSTANTS_TABLE_HEAD(arg_info);
     node* table_tail = INFO_CONSTANTS_TABLE_TAIL(arg_info);
@@ -224,9 +224,9 @@ node* GGTbool(node* arg_node, info *arg_info) {
     DBUG_RETURN(arg_node); 
 } 
 
-node *GGTdoGenGlobalTable( node *syntaxtree)
+node *GTdoGenTables( node *syntaxtree)
 {
-    DBUG_ENTER("GGTdoGenGlobalTable");
+    DBUG_ENTER("GTdoGenGlobalTable");
 
     info *arg_info;
 
@@ -239,7 +239,7 @@ node *GGTdoGenGlobalTable( node *syntaxtree)
         PROGRAM_CONSTANTSTABLE(syntaxtree) = table;
     }
 
-    TRAVpush( TR_ggt);
+    TRAVpush( TR_gt);
     syntaxtree = TRAVdo( syntaxtree, arg_info);
     TRAVpop();
 

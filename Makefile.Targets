@@ -77,7 +77,7 @@ scanparse   = civic.tab.o civic.lex.o
 
 print       = print.o
 
-codegen     = gen_byte_code.o gen_global_table.o
+codegen     = gen_byte_code.o gen_tables.o
 
 demo        = rename_identifiers.o opt_sub.o sum_ints.o
 
