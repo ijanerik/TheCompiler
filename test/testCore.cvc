@@ -1,6 +1,6 @@
 export int gcd(int a, int b)
 {
-    if (a%3 == 0) {
+    if (3%3 == 0) {
         return b;
     }
     return gcd(a, a % b);

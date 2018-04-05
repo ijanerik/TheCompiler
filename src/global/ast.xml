@@ -99,7 +99,8 @@
 
         <traversal id="GVV" name="Add global variables function __init" default="sons" include="gv_variables.h">
             <travuser>
-                <!--<node name="BinOp" />-->
+                <node name="Program" />
+                <node name="Declarations" />
             </travuser>
         </traversal>
 
