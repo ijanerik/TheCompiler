@@ -88,6 +88,7 @@
                 <node name="Bool" />
                 <node name="Assign" />
                 <node name="CastExpr" />
+                <node name="VarCall" />
             </travuser>
         </traversal>
 

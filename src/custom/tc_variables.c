@@ -165,14 +165,25 @@ node* TCVnum(node *arg_node, info *arg_info)
     DBUG_RETURN( arg_node);
 }
 
+node *TCVvarcall(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCVnum");
+
+    node* entry = VARCALL_SYMBOLTABLEENTRY(arg_node);
+    cctype type = SYMBOLTABLEENTRY_TYPE(entry);
+
+    INFO_SET_TYPE(arg_info, type);
+
+    DBUG_RETURN( arg_node);
+}
+
 node* TCVbinop(node *arg_node, info *arg_info) 
 {
     DBUG_ENTER("TCVbinop");
 
-    TRAVdo(BINOP_LEFT(arg_node), arg_info);
+    BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
     cctype t1 = INFO_GET_TYPE(arg_info);
 
-    TRAVdo(BINOP_RIGHT(arg_node), arg_info);
+    BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
     cctype t2 = INFO_GET_TYPE(arg_info);
 
     if (t1 != t2) {
