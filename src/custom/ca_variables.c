@@ -192,11 +192,20 @@ node *CAVparam(node *arg_node, symboltables *tables)
 
     // @todo arrays as parameters are weird
     if(is_array) {
+
         node* array_entry = searchSymbolTables(tables, IDENT_NAME(array_length), NULL);
         PARAM_ARRAYLENGTH(arg_node) = TRAVdo(PARAM_ARRAYLENGTH(arg_node), tables);
-        if (!array_entry) {
-            CTIerror(ERROR_UNDEC_VAR, IDENT_NAME(array_length));
+
+        if(array_entry == NULL) {
+            array_entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
+                                        IDENT_NAME(array_length),
+                                        T_int, 0);
+            PARAM_SYMBOLTABLEENTRYLENGTH(arg_node) = array_entry;
+        } else if (array_entry) {
+            CTIerror(ERROR_REDEC_VAR, IDENT_NAME(array_length));
         }
+
+
     }
     
     if (entry == NULL) {

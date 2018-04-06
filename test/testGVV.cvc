@@ -1,4 +1,4 @@
-int test = 12;
+int[2] test = 20;
 int testd = 20;
 
 int main() {

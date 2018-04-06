@@ -16,7 +16,7 @@
 #include "types.h"
 #include "tree_basic.h"
 #include "traverse.h"
-#include "copy_node.h"
+#include "str.h"
 #include "dbug.h"
 
 #include "memory.h"
@@ -29,8 +29,13 @@
 
 struct INFO {
     node* initStatements;
-    node* latest;
+    node* latestStatement;
+
+    node* declarations;
     node* latestDec;
+
+    node* inits;
+    node* latestInit;
 };
 
 
@@ -39,8 +44,11 @@ struct INFO {
  */
 
 #define INFO_STATEMENTS(n)  ((n)->initStatements)
-#define INFO_LATEST(n) ((n)->latest)
+#define INFO_LATEST(n) ((n)->latestStatement)
 #define INFO_LATEST_DEC(n) ((n)->latestDec)
+#define INFO_DECLARATIONS(n) ((n)->declarations)
+#define INFO_INITS(n) ((n)->inits)
+#define INFO_LATEST_INIT(n) ((n)->latestInit)
 
 
 /*
@@ -57,7 +65,12 @@ static info *MakeInfo(void)
 
     INFO_STATEMENTS( result) = NULL;
     INFO_LATEST( result) = NULL;
+
+    INFO_DECLARATIONS(result) = NULL;
     INFO_LATEST_DEC( result) = NULL;
+
+    INFO_INITS(result) = NULL;
+    INFO_LATEST_INIT(result) = NULL;
 
     DBUG_RETURN( result);
 }
@@ -72,6 +85,14 @@ static info *FreeInfo( info *info)
 }
 
 
+void updateNext(node* lastDec, node* next) {
+    if(NODE_TYPE(lastDec) == N_program) {
+        PROGRAM_DECLARATIONS(lastDec) = next;
+    } else {
+        DECLARATIONS_NEXT(lastDec) = next;
+    }
+}
+
 /*
  * Traversal functions
  * Cleaning the initiation
@@ -79,42 +100,50 @@ static info *FreeInfo( info *info)
 node *GVVdeclarations (node *arg_node, info *arg_info)
 {
     DBUG_ENTER("GVVdeclarations");
-
-    if(NODE_TYPE(INFO_LATEST_DEC(arg_info)) == N_program) {
-        PROGRAM_DECLARATIONS(INFO_LATEST_DEC(arg_info)) = arg_node;
-    } else {
-        DECLARATIONS_NEXT(INFO_LATEST_DEC(arg_info)) = arg_node;
-    }
+    node* next = DECLARATIONS_NEXT(arg_node);
+    DECLARATIONS_NEXT(arg_node) = NULL;
 
     node* declaration = DECLARATIONS_DECLARATION(arg_node);
 
     if(NODE_TYPE(declaration) == N_globaldef || NODE_TYPE(declaration) == N_globaldec) {
+        updateNext(INFO_LATEST_DEC(arg_info), NULL);
+
         if(NODE_TYPE(declaration) == N_globaldef) {
             // @TODO only works for single expressions, so no array functionality
-            node* ident = COPYident(GLOBALDEF_IDENT(declaration), NULL);
-            node* exprs = COPYexprs(GLOBALDEF_EXPRS(declaration), NULL);
-            node* assignVar = TBmakeAssign(ident, exprs, NULL);
-            node* stmts = TBmakeStmts(assignVar, NULL);
-            if(INFO_STATEMENTS(arg_info) == NULL) {
-                INFO_STATEMENTS(arg_info) = stmts;
-            } else {
-                STMTS_NEXT(INFO_LATEST(arg_info)) = stmts;
-            }
+            node* ident = TBmakeIdent(STRcpy(IDENT_NAME(GLOBALDEF_IDENT(declaration))));
+            node* exprs = GLOBALDEF_EXPRS(declaration);
+            if(exprs != NULL) {
+                GLOBALDEF_EXPRS(declaration) = NULL;
+                node *assignVar = TBmakeAssign(ident, exprs, NULL);
+                node *stmts = TBmakeStmts(assignVar, NULL);
+                if (INFO_STATEMENTS(arg_info) == NULL) {
+                    INFO_STATEMENTS(arg_info) = stmts;
+                } else {
+                    STMTS_NEXT(INFO_LATEST(arg_info)) = stmts;
+                }
 
-            INFO_LATEST(arg_info) = stmts;
+                INFO_LATEST(arg_info) = stmts;
+            }
         }
+
+        if(INFO_INITS(arg_info) == NULL) {
+            INFO_INITS(arg_info) = arg_node;
+        } else {
+            DECLARATIONS_NEXT(INFO_LATEST_INIT(arg_info)) = arg_node;
+        }
+        INFO_LATEST_INIT(arg_info) = arg_node;
+
     } else {
+        if(INFO_DECLARATIONS(arg_info) == NULL) {
+            INFO_DECLARATIONS(arg_info) = arg_node;
+        } else {
+            DECLARATIONS_NEXT(INFO_LATEST_DEC(arg_info)) = arg_node;
+        }
         INFO_LATEST_DEC(arg_info) = arg_node;
     }
 
-    if(DECLARATIONS_NEXT(arg_node) != NULL) {
-        DECLARATIONS_NEXT(arg_node) = TRAVdo(DECLARATIONS_NEXT(arg_node), arg_info);
-    } else {
-        if(NODE_TYPE(INFO_LATEST_DEC(arg_info)) == N_program) {
-            PROGRAM_DECLARATIONS(INFO_LATEST_DEC(arg_info)) = NULL;
-        } else {
-            DECLARATIONS_NEXT(INFO_LATEST_DEC(arg_info)) = NULL;
-        }
+    if(next != NULL) {
+        TRAVdo(next, arg_info);
     }
 
     DBUG_RETURN( arg_node);
@@ -130,12 +159,17 @@ node *GVVprogram (node *arg_node, info *arg_info)
 
     INFO_LATEST_DEC(arg_info) = arg_node;
 
-    if(PROGRAM_DECLARATIONS(arg_node) != NULL) {
-        PROGRAM_DECLARATIONS(arg_node) = TRAVdo(PROGRAM_DECLARATIONS(arg_node), arg_info);
+    node* next = PROGRAM_DECLARATIONS(arg_node);
+    PROGRAM_DECLARATIONS(arg_node) = NULL;
+
+    if(next != NULL) {
+        TRAVdo(next, arg_info);
 
         node* initFunc = makeInitFun(INFO_STATEMENTS(arg_info));
-        node* declarations = TBmakeDeclarations(initFunc, PROGRAM_DECLARATIONS(arg_node));
-        PROGRAM_DECLARATIONS(arg_node) = declarations;
+        node* declarations = TBmakeDeclarations(initFunc, INFO_DECLARATIONS(arg_info));
+        DECLARATIONS_NEXT(INFO_LATEST_INIT(arg_info)) = declarations;
+        PROGRAM_DECLARATIONS(arg_node) = INFO_INITS(arg_info);
+
     }
 
     DBUG_RETURN( arg_node);

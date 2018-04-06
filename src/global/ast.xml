@@ -131,6 +131,7 @@
             <node name="Bool" />
             <node name="FunCall" />
             <node name="ArrayIndex" />
+            <node name="Exprs" />
         </target>
     </nodeset>
  
@@ -584,6 +585,20 @@
                 </attribute>
                 <attribute name="SymbolTableEntry">
                     <description>Link to symbol table entry</description>
+                    <type name="Link">
+                        <targets>
+                            <target mandatory="no">
+                                <node name="SymbolTableEntry" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+
+                <attribute name="SymbolTableEntryLength">
+                    <description>Link to symbol table entry length</description>
                     <type name="Link">
                         <targets>
                             <target mandatory="no">

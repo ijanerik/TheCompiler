@@ -445,6 +445,10 @@ arrexpr:
     {
         $$ = $2;
     }
+    | expr
+    {
+        $$ = TBmakeExprs($1, NULL);
+    }
     ;
 
 constant:
