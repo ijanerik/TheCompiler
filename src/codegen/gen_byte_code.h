@@ -7,6 +7,8 @@ extern node* GBCassign(node* arg_node, info* arg_info);
 extern node* GBCnum(node* arg_node, info* arg_info);
 extern node* GBCvarcall(node* arg_node, info* arg_info);
 extern node* GBCbinop(node* arg_node, info* arg_info);
+extern node* GBCvardec(node* arg_node, info* arg_info);
+extern node* GBCifelsestmt(node* arg_node, info* arg_info);
 
 
 #endif

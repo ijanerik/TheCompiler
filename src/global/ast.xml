@@ -141,6 +141,8 @@
                 <node name="Num" />
                 <node name="VarCall" />
                 <node name="BinOp" />
+                <node name="IfElseStmt" />
+                <node name="VarDec" />
             </travuser>
         </traversal>
     </general>
