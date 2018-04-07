@@ -1,0 +1,14 @@
+bool l (int a) {
+    bool b = true;
+    return b;
+}
+
+int main(int jj, int oo) {
+    l(10);
+    // for(int i = 0, 5, 1) {
+    //    b = b + 1;
+    // } 
+    
+    return 1;
+}
+

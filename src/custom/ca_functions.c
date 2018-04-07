@@ -196,13 +196,14 @@ node *CAFfundef(node *arg_node, info *tables)
         CTIerror(ERROR_REDEC_FUNC, IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(arg_node))));
     }
 
+    FUNDEF_SCOPE(arg_node) = TABLES_INDEX(tables);
+
     // Add to table and traverse through the function body.
     TABLES_ADD_TABLE(tables, arg_node);
 
     if(FUNDEF_SYMBOLTABLE(arg_node) != NULL) {
         FUNDEF_SYMBOLTABLE(arg_node) = TRAVdo(FUNDEF_SYMBOLTABLE(arg_node), tables);
     }
-
 
     FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), tables);
     if(FUNDEF_FUNBODY(arg_node) != NULL) {

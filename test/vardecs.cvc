@@ -1,6 +1,20 @@
+/*int b = 2;
+int z = 7;
+int y = 8;
+bool aa = false;
+bool ab = true;
+int j = 7;
+bool ac = false;
+
+
 void fun(int a) {
-    int [1] b;
-    int [a] b = [1, 2];
-    int [10] ones = 1;
-    int c;
+    int c = 10;
+    c = 2;
+}
+int h = 10; */
+
+void fun() {
+    int a;
+    int b = 0;
+    b = b + 10 * b;
 }

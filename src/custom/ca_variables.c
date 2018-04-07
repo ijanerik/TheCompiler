@@ -38,6 +38,12 @@ node *CAVprogram(node *arg_node, symboltables *tables)
 node *CAVvardec(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CAVvardec");
+    
+
+    if(VARDEC_EXPRS(arg_node) != NULL) {
+        VARDEC_EXPRS(arg_node) = TRAVdo(VARDEC_EXPRS(arg_node), tables);
+    }
+
     node* ident = VARDEC_IDENT(arg_node);
     int scope = SYMBOLTABLES_INDEX(tables);
     node* entry = searchSymbolTables(tables, IDENT_NAME(ident), &scope);
@@ -47,9 +53,7 @@ node *CAVvardec(node *arg_node, symboltables *tables)
 
     bool is_array = VARDEC_ARRAYLENGTH(arg_node) != NULL;
 
-    if(VARDEC_EXPRS(arg_node) != NULL) {
-        VARDEC_EXPRS(arg_node) = TRAVdo(VARDEC_EXPRS(arg_node), tables);
-    }
+    
 
     if(is_array) {
         VARDEC_ARRAYLENGTH(arg_node) = TRAVdo(VARDEC_ARRAYLENGTH(arg_node), tables);
@@ -59,7 +63,8 @@ node *CAVvardec(node *arg_node, symboltables *tables)
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
                                     IDENT_NAME(VARDEC_IDENT(arg_node)),
-                                    VARDEC_TYPE(arg_node), is_array);
+                                    VARDEC_TYPE(arg_node), is_array,
+                                    SYMBOLTABLES_INDEX(tables));
         VARDEC_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else if(scope < SYMBOLTABLES_INDEX(tables)) {
@@ -82,7 +87,8 @@ node *CAVglobaldec(node *arg_node, symboltables *tables)
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
                                     IDENT_NAME(ident),
-                                    GLOBALDEC_TYPE(arg_node), is_array);
+                                    GLOBALDEC_TYPE(arg_node), is_array,
+                                    SYMBOLTABLES_INDEX(tables));
         GLOBALDEC_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
@@ -117,7 +123,8 @@ node *CAVglobaldef(node *arg_node, symboltables *tables)
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
                                     IDENT_NAME(ident),
-                                    GLOBALDEF_TYPE(arg_node), is_array);
+                                    GLOBALDEF_TYPE(arg_node), is_array,
+                                    SYMBOLTABLES_INDEX(tables));
         GLOBALDEF_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
@@ -211,7 +218,8 @@ node *CAVparam(node *arg_node, symboltables *tables)
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
                                     IDENT_NAME(ident),
-                                    PARAM_TYPE(arg_node), is_array);
+                                    PARAM_TYPE(arg_node), is_array,
+                                    SYMBOLTABLES_INDEX(tables));
         PARAM_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
@@ -274,19 +282,16 @@ node *CAVassign(node *arg_node, symboltables *tables) {
 node *CAVforstmt(node *arg_node, symboltables *tables) {
     DBUG_ENTER("CAVforstmt");
 
-
     DBUG_PRINT ("FORSTMT_CAV", ("Enter forstmt"));
-    FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), tables);
 
-    if(BLOCK_SYMBOLTABLE(FORSTMT_BLOCK(arg_node)) == NULL) {
-        BLOCK_SYMBOLTABLE(FORSTMT_BLOCK(arg_node)) = TBmakeSymboltable(NULL, NULL);
-    }
-    SYMBOLTABLES_ADD_TABLE(tables, BLOCK_SYMBOLTABLE(FORSTMT_BLOCK(arg_node)));
+    node* ident = FORSTMT_ASSIGNVAR(arg_node); 
+
+    FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), tables);
 
     FORSTMT_SYMBOLTABLEENTRY(arg_node) = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
                                                             IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node)),
-                                                             T_int, 0);
-
+                                                             T_int, 0,
+                                                             SYMBOLTABLES_INDEX(tables));
 
     FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), tables);
 

@@ -13,6 +13,7 @@
 #include "tc_variables.h"
 #include "errors.h"
 #include "string.h"
+#include "util.h"
 
 struct INFO {
   cctype current_type;
@@ -20,24 +21,6 @@ struct INFO {
 
 #define INFO_SET_TYPE(n, type)  ((n)->current_type = type)
 #define INFO_GET_TYPE(n)  ((n)->current_type)
-
-char* cctypeToString(cctype type) {
-    char* str;
-    switch (type) {
-        case T_float:
-            str = "float";
-            break;
-        case T_int:
-            str = "int";
-            break;
-        case T_bool:
-            str = "bool";
-            break;
-        default:
-            str = "unknown";
-    }
-    return str;
-}
 
 static info *MakeInfo(void)
 {
@@ -62,11 +45,34 @@ static info *FreeInfo( info *info)
   DBUG_RETURN( info);
 }
 
-cctype type_inference(node* expr, info *arg_info)
+cctype tc_type_inference(node* expr, info *arg_info)
 {
     TRAVdo(expr, arg_info);
     return INFO_GET_TYPE(arg_info);
 }
+
+node* TCVcastexpr(node* arg_node, info *arg_info)
+{
+    DBUG_ENTER("TCVcastexpr");
+
+    node* expr = CASTEXPR_EXPR(arg_node);
+    cctype type = CASTEXPR_TYPE(arg_node);
+    cctype expr_type = tc_type_inference(expr, arg_info);
+
+    if (type == T_bool && expr_type == T_int) {
+        node* binop = TBmakeBinop(BO_ge, expr, TBmakeNum(1));
+        node* condexpr = TBmakeCondexpr(TBmakeBool(TRUE), TBmakeBool(FALSE),
+                                        binop);
+        //MEMfree(arg_node);
+        arg_node = condexpr;
+        printf("FINE\n");
+    }
+
+    INFO_SET_TYPE(arg_info, type);
+
+    DBUG_RETURN(arg_node);
+}
+
 
 node *TCVglobaldef (node *arg_node, info *arg_info)
 {
@@ -79,7 +85,7 @@ node *TCVglobaldef (node *arg_node, info *arg_info)
 
     if (exprs != NULL ) {
         node* expr = EXPRS_EXPR(exprs);
-        cctype inferred_type = type_inference(expr, arg_info);
+        cctype inferred_type = tc_type_inference(expr, arg_info);
 
         if (declared_type != inferred_type){
             CTIerror(ERROR_TYPE_GLOBDEF, arg_node->lineno + 1,
@@ -103,7 +109,7 @@ node *TCVvardec(node *arg_node, info *arg_info)
 
     if (exprs != NULL ) {
         node* expr = EXPRS_EXPR(exprs);
-        cctype inferred_type = type_inference(expr, arg_info);
+        cctype inferred_type = tc_type_inference(expr, arg_info);
 
         if (declared_type != inferred_type){
             CTIerror(ERROR_TYPE_GLOBDEF, arg_node->lineno + 1,
@@ -126,7 +132,7 @@ node *TCVassign(node *arg_node, info *arg_info)
     node* expr = ASSIGN_EXPR(arg_node);
 
     if (expr != NULL ) {
-        cctype inferred_type = type_inference(expr, arg_info);
+        cctype inferred_type = tc_type_inference(expr, arg_info);
 
         if (declared_type != inferred_type){
             CTIerror(ERROR_TYPE_GLOBDEF, arg_node->lineno + 1,
@@ -166,42 +172,53 @@ node* TCVnum(node *arg_node, info *arg_info)
     DBUG_RETURN( arg_node);
 }
 
+node *TCVvarcall(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCVvarcall");
+
+    node* entry = VARCALL_SYMBOLTABLEENTRY(arg_node);
+    cctype type = SYMBOLTABLEENTRY_TYPE(entry);
+
+    INFO_SET_TYPE(arg_info, type);
+
+    DBUG_RETURN( arg_node);
+}
+
+node *TCVfuncall(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCVfuncall");
+
+    node* fundef = FUNCALL_SYMBOLTABLEENTRY(arg_node);
+    node* funheader = FUNDEF_FUNHEADER(fundef);
+    cctype type = FUNHEADER_RETTYPE(funheader);
+
+    INFO_SET_TYPE(arg_info, type);
+
+    DBUG_RETURN( arg_node);
+}
+
 node* TCVbinop(node *arg_node, info *arg_info) 
 {
     DBUG_ENTER("TCVbinop");
 
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
     cctype t1 = INFO_GET_TYPE(arg_info);
-    // @TODO ERROR WITH FIRST CHECK TO UNKOWN
-    char typer[30];
-    sprintf(typer, "%i", (int) NODE_TYPE(BINOP_LEFT(arg_node)));
-
-    DBUG_PRINT ("t", (typer));
-    DBUG_PRINT ("t", (cctypeToString(t1)));
 
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
     cctype t2 = INFO_GET_TYPE(arg_info);
-    DBUG_PRINT ("t", (cctypeToString(t2)));
+   
 
+    binop op = BINOP_OP(arg_node);
     if (t1 != t2) {
         CTIerror(ERROR_TYPE_BINOP, arg_node->lineno + 1, cctypeToString(t1),
                                                          cctypeToString(t2));
         INFO_SET_TYPE(arg_info, T_unknown);
     }
+    else if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge ||
+             op == BO_ne || op == BO_and || op == BO_or) {
+            INFO_SET_TYPE(arg_info, T_bool);
+    }
     else {
         INFO_SET_TYPE(arg_info, t1);
     }
-
-    DBUG_RETURN( arg_node);
-}
-
-node *TCVcastexpr(node *arg_node, info *arg_info)
-{
-    DBUG_ENTER("TCVbinop");
-
-    //cctype type = type_inference(CASTEXPR_EXPR(arg_node), arg_info);
-    //CASTEXPR_TYPE(arg_node) = type;
-    INFO_SET_TYPE(arg_info, CASTEXPR_TYPE(arg_node));
 
     DBUG_RETURN( arg_node);
 }

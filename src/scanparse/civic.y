@@ -74,7 +74,7 @@ start:
 program:
     declarations
     {
-        $$ = TBmakeProgram($1, NULL);
+        $$ = TBmakeProgram($1, NULL, NULL);
     }
     ;
 
@@ -374,16 +374,16 @@ returnstmt:
 block:
     C_BRACKET_L stmts C_BRACKET_R
     {
-        $$ = TBmakeBlock($2, NULL);
+        $$ = TBmakeBlock($2);
     }
     | C_BRACKET_L C_BRACKET_R
     {
-        $$ = TBmakeBlock(NULL, NULL);
+        $$ = TBmakeBlock(NULL);
     }
     |
     stmt
     {
-        $$ = TBmakeBlock(TBmakeStmts($1, NULL), NULL);
+        $$ = TBmakeBlock(TBmakeStmts($1, NULL));
     }
     ;
 

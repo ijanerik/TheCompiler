@@ -70,6 +70,23 @@
                 <node name="Bool" />
                 <node name="Assign" />
                 <node name="CastExpr" />
+                <node name="VarCall" />
+
+                <node name="FunCall" />
+            </travuser>
+        </traversal>
+
+        <traversal id="TCF" name="Type Checking Functions" default="sons" include="tc_functions.h">
+            <travuser>
+                <node name="BinOp" />
+                <node name="Num" />
+                <node name="Float" />
+                <node name="Bool" />
+                <node name="CastExpr" />
+                <node name="VarCall" />
+                <node name="FunCall" />
+                <node name="FunDef" />
+                <node name="ReturnStmt" />
             </travuser>
         </traversal>
 
@@ -91,6 +108,40 @@
                 <node name="FunDef" />
                 <node name="FunCall" />
                 <node name="Program" />
+            </travuser>
+        </traversal>
+            
+        <traversal id="GT" name="Generate tables for code generation" default="sons" include="gen_tables.h">
+            <travuser>
+                <node name="VarDec" />
+                <node name="GlobalDec" />
+                <node name="GlobalDef" />
+                <node name="Param" />
+                <node name="FunDef" />
+                <node name="ForStmt" />
+                <node name="Num" />
+                <node name="Float" />
+                <node name="Bool" />
+            </travuser>
+        </traversal>
+
+        <traversal id="GBC" name="Generate Byte Code" default="sons" include="gen_byte_code.h">
+            <travuser>
+                <node name="Assign" />
+                <node name="Num" />
+                <node name="VarCall" />
+                <node name="BinOp" />
+                <node name="IfElseStmt" />
+                <node name="VarDec" />
+                <node name="WhileStmt" />
+                <node name="DoWhileStmt" />
+                <node name="ForStmt" />
+                <node name="GlobalDef" />
+                <node name="FunDef" />
+                <node name="ConstantsTable" />
+                <node name="Program" />
+                <node name="ReturnStmt" />
+                <node name="FunCall" />
             </travuser>
         </traversal>
     </general>
@@ -165,8 +216,94 @@
                     </target>
                 </targets>
             </son>
+            <son name="ConstantsTable">
+                <description>The constants table</description>
+                <targets>
+                    <target mandatory="no">
+                        <node name="ConstantsTable" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
         </sons>
         <attributes>
+        </attributes>
+    </node>
+
+    <!-- Node ConstantsTable -->
+    <node name="ConstantsTable">
+        <description>represents symbol table entry</description>
+        <sons>
+            <son name="Next">
+                <description>The constants table</description>
+                <targets>
+                    <target mandatory="no">
+                        <node name="ConstantsTable" />
+                        <phases>
+                            <all />
+                        </phases>
+                    </target>
+                </targets>
+            </son>
+        </sons>
+        <attributes>
+            <attribute name="Type">
+                <type name="Type">
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+            <attribute name="Index">
+                <type name="Int">
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+            <attribute name="Bool">
+                <type name="Bool">
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+            <attribute name="Int">
+                <type name="Int">
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+            <attribute name="Float">
+                <type name="Float">
+                    <targets>
+                        <target mandatory="yes">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
         </attributes>
     </node>
 
@@ -284,6 +421,17 @@
                     <targets>
                         <target mandatory="yes">
                             <set name="Declaration" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+            <attribute name="Scope">
+                <type name="Int">
+                    <targets>
+                        <target mandatory="no">
                             <phases>
                                 <all />
                             </phases>
@@ -776,18 +924,6 @@
                     <targets>
                         <target mandatory="no">
                             <node name="Stmts" />
-                            <phases>
-                                <all />
-                            </phases>
-                        </target>
-                    </targets>
-                </son>
-
-                <son name="SymbolTable">
-                    <description>The symbol table from the global stack</description>
-                    <targets>
-                        <target mandatory="no">
-                            <node name="SymbolTable" />
                             <phases>
                                 <all />
                             </phases>
@@ -1333,6 +1469,18 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="ConstantsTable">
+                    <type name="Link">
+                        <targets>
+                            <target mandatory="no">
+                                <node name="ConstantsTable" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -1353,6 +1501,18 @@
                         </targets>
                     </type>
                 </attribute>
+                <attribute name="ConstantsTable">
+                    <type name="Link">
+                        <targets>
+                            <target mandatory="no">
+                                <node name="ConstantsTable" />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
             </attributes>
         </node>
 
@@ -1366,6 +1526,18 @@
                     <type name="Bool">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="ConstantsTable">
+                    <type name="Link">
+                        <targets>
+                            <target mandatory="no">
+                                <node name="ConstantsTable" />
                                 <phases>
                                     <all />
                                 </phases>
@@ -1435,6 +1607,28 @@
                 </attribute>
                 <attribute name="IsArray">
                     <type name="Bool">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="Index">
+                    <type name="Int">
+                        <targets>
+                            <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="Scope">
+                    <type name="Int">
                         <targets>
                             <target mandatory="yes">
                                 <phases>
