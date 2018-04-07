@@ -83,6 +83,9 @@ void printFunction(char* name) {
     printf("%s:\n", name);
 }
 
+void printJSR(char* instruction, int num, char* name) {
+    printf("\t%s %d %s\n", instruction, num, name);
+}
 
 node* GBCprogram(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCprogram");
@@ -121,6 +124,31 @@ node* GBCconstantstable(node* arg_node, info* arg_info) {
 
 node* GBCfuncall(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCfuncall");
+
+    node* fundef = FUNCALL_SYMBOLTABLEENTRY(arg_node);
+    int scope = FUNDEF_SCOPE(fundef);
+    int current_scope = INFO_SCOPE(arg_info);
+    int delta_scope = current_scope - scope;     
+
+    if (delta_scope > 0) {
+        printOp1(ISRN, delta_scope);
+    } else {
+        printOp0(ISR);
+    }
+
+    if (FUNCALL_ARGS(arg_node)) {
+        FUNCALL_ARGS(arg_node) = TRAVdo(FUNCALL_ARGS(arg_node), arg_info);
+    }
+
+    int n_args = 0;
+    node* args = FUNCALL_ARGS(arg_node);
+    while(args) {
+        n_args += 1;
+        args = EXPRS_NEXT(args);
+    }
+
+    char* name = IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(fundef)));
+    printJSR(JSR, n_args, name);
 
     DBUG_RETURN(arg_node);
 }
