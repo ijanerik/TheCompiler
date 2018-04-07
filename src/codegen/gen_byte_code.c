@@ -79,13 +79,33 @@ void printLabel(char* label, int id) {
 }
 
 
+node* GBCprogram(node* arg_node, info* arg_info) {
+    if (PROGRAM_CONSTANTSTABLE(arg_node)) {
+        PROGRAM_CONSTANTSTABLE(arg_node) = TRAVdo(PROGRAM_CONSTANTSTABLE(arg_node), arg_info);
+    }
+    printf("\n");
+    PROGRAM_DECLARATIONS(arg_node) = TRAVdo(PROGRAM_DECLARATIONS(arg_node), arg_info);
+}
 
 node* GBCconstantstable(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCglobaldef");
     
-    char* type = cctypeToString(CONSTANTSTABLE_TYPE(arg_node));
-    printf("%s %s %d\n", CONST_TABLE, type, CONSTANTSTABLE_INDEX(arg_node));
+    node* table = arg_node;
 
+    while(table) {
+        cctype type = CONSTANTSTABLE_TYPE(table);
+        char* _type = cctypeToString(type);
+        if (type == T_int) {
+            printf("%s %s %d\n", CONST_TABLE, _type, CONSTANTSTABLE_INT(table));
+        }
+        if (type == T_bool) {
+            printf("%s %s %d\n", CONST_TABLE, _type, CONSTANTSTABLE_BOOL(table));
+        }
+        if (type == T_float) {
+            printf("%s %s %f\n", CONST_TABLE, _type, CONSTANTSTABLE_FLOAT(table));
+        }
+        table = CONSTANTSTABLE_NEXT(table);
+    }
     DBUG_RETURN(arg_node);
 } 
 

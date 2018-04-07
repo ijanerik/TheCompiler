@@ -149,6 +149,8 @@
                 <node name="ForStmt" />
                 <node name="GlobalDef" />
                 <node name="FunDef" />
+                <node name="ConstantsTable" />
+                <node name="Program" />
             </travuser>
         </traversal>
     </general>
