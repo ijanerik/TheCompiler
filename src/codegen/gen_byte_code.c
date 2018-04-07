@@ -174,13 +174,14 @@ node* GBCfundef(node* arg_node, info* arg_info) {
 
 
     int var_cnt = 0;
-    // Next to fix one off error
-    table = SYMBOLTABLE_NEXT(table);
-    while (table) {
-        var_cnt += 1;
+    if(table != NULL) {
+        // Next to fix one off error
         table = SYMBOLTABLE_NEXT(table);
+        while (table) {
+            var_cnt += 1;
+            table = SYMBOLTABLE_NEXT(table);
+        }
     }
-
     
     node* ident = FUNHEADER_IDENT(funheader);
     char* name = IDENT_NAME(ident);
@@ -190,7 +191,6 @@ node* GBCfundef(node* arg_node, info* arg_info) {
     if (var_cnt > 0) {
         printOp1(ESR, var_cnt);
     }
-    
 
     // node* params = FUNHEADER_PARAMS(funheader);
     // int params_cnt = 0;
@@ -202,8 +202,7 @@ node* GBCfundef(node* arg_node, info* arg_info) {
     // printf("params_cnt: %d\n", params_cnt);
 
     FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
-
-
+    
 
     if (FUNDEF_FUNBODY(arg_node)) {
         INFO_SCOPE(arg_info) += 1;

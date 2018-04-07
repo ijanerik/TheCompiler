@@ -1,5 +1,3 @@
-extern void printInt(int val);
-
 export int gcd(int a, int b)
 {
   if (a % b == 0) {

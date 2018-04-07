@@ -173,6 +173,7 @@ node *GVVprogram (node *arg_node, info *arg_info)
         } else {
             PROGRAM_DECLARATIONS(arg_node) = declarations;
         }
+
     }
 
     DBUG_RETURN( arg_node);
