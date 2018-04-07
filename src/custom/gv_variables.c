@@ -167,9 +167,12 @@ node *GVVprogram (node *arg_node, info *arg_info)
 
         node* initFunc = makeInitFun(INFO_STATEMENTS(arg_info));
         node* declarations = TBmakeDeclarations(initFunc, INFO_DECLARATIONS(arg_info));
-        DECLARATIONS_NEXT(INFO_LATEST_INIT(arg_info)) = declarations;
-        PROGRAM_DECLARATIONS(arg_node) = INFO_INITS(arg_info);
-
+        if(INFO_LATEST_INIT(arg_info) != NULL) {
+            DECLARATIONS_NEXT(INFO_LATEST_INIT(arg_info)) = declarations;
+            PROGRAM_DECLARATIONS(arg_node) = INFO_INITS(arg_info);
+        } else {
+            PROGRAM_DECLARATIONS(arg_node) = declarations;
+        }
     }
 
     DBUG_RETURN( arg_node);

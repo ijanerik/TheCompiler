@@ -206,7 +206,8 @@ node *CAVparam(node *arg_node, symboltables *tables)
         if(array_entry == NULL) {
             array_entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
                                         IDENT_NAME(array_length),
-                                        T_int, 0);
+                                        T_int, 0,
+                                        SYMBOLTABLES_INDEX(tables));
             PARAM_SYMBOLTABLEENTRYLENGTH(arg_node) = array_entry;
         } else if (array_entry) {
             CTIerror(ERROR_REDEC_VAR, IDENT_NAME(array_length));
@@ -283,8 +284,6 @@ node *CAVforstmt(node *arg_node, symboltables *tables) {
     DBUG_ENTER("CAVforstmt");
 
     DBUG_PRINT ("FORSTMT_CAV", ("Enter forstmt"));
-
-    node* ident = FORSTMT_ASSIGNVAR(arg_node); 
 
     FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), tables);
 
