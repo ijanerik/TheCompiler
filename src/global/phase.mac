@@ -47,17 +47,17 @@ SUBPHASE( caf,
         ALWAYS,
         ast)
 
-SUBPHASE(gvv,
-        "Add global variables function __init",
-        GVdoVariableToFunction,
-        ALWAYS,
-        ast)
-
 SUBPHASE( tcv, 
           "Type checking variables",
           TCVdoVariables, 
           ALWAYS,
           ast)
+
+SUBPHASE(gvv,
+        "Add global variables function __init",
+        GVdoVariableToFunction,
+        ALWAYS,
+        ast)
 
 SUBPHASE( bo, 
           "Boolean operations",

@@ -23,14 +23,14 @@ static int yyerror( char *errname);
  nodetype            nodetype;
  char               *id;
  int                 cint;
- float               cflt;
+ double               cflt;
  binop               cbinop;
  monop               cmonop;
  cctype             ccctype;
  node               *node;
 }
 
-%token BRACKET_L BRACKET_R COMMA SEMICOLON C_BRACKET_L C_BRACKET_R S_BRACKET_L S_BRACKET_R 
+%token DOT BRACKET_L BRACKET_R COMMA SEMICOLON C_BRACKET_L C_BRACKET_R S_BRACKET_L S_BRACKET_R
 %token MINUS PLUS STAR SLASH PERCENT LE LT GE GT EQ NE OR AND EXCL_MARK
 %token TRUEVAL FALSEVAL LET
 %token TBOOL TVOID TINT TFLOAT EXTERN EXPORT
@@ -466,10 +466,16 @@ constant:
     }
     ;
 
-floatval: 
+floatval:
     FLOAT
     {
-        $$ = TBmakeFloat( $1);
+        node* in = TBmakeFloat(0.0);
+        FLOAT_VALUE(in) = $1;
+        $$ = in;
+    } |
+    MINUS floatval {
+        FLOAT_VALUE($2) = -FLOAT_VALUE($2);
+        $$ = $2;
     }
     ;
 
@@ -477,6 +483,10 @@ intval:
     NUM
     {
         $$ = TBmakeNum( $1);
+    } |
+    MINUS intval {
+        NUM_VALUE($2) = -NUM_VALUE($2);
+        $$ = $2;
     }
     ;
 

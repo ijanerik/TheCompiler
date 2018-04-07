@@ -7,6 +7,7 @@
 #include "types.h"
 #include "node_basic.h"
 #include "str.h"
+#include "dbug.h"
 #include "free.h"
 #include "civic.tab.h"
 #include "globals.h"
@@ -14,6 +15,7 @@
 
 
 #define FILTER(token) \
+  DBUG_PRINT ("LEX", ("Token: %i\n", token)); \
   global.col += yyleng;  \
   return( token);
 
@@ -93,6 +95,10 @@
 
 [A-Za-z][A-Za-z0-9_]*      { yylval.id = STRcpy(yytext);
                              FILTER( ID);
+                           }
+
+[0-9]+\.[0-9]+              { yylval.cflt = atof(yytext);
+                             FILTER(FLOAT);
                            }
 
 [0-9]+                     { yylval.cint=atoi(yytext);
