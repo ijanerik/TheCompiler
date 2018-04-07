@@ -151,6 +151,8 @@
                 <node name="FunDef" />
                 <node name="ConstantsTable" />
                 <node name="Program" />
+                <node name="ReturnStmt" />
+                <node name="FunCall" />
             </travuser>
         </traversal>
     </general>

@@ -20,9 +20,14 @@ char* BRANCH_F = "branch_f";
 char* BRANCH_T = "branch_t";
 char* JMP = "jmp";
 
-char* ESR = "esr";
-char* RETURN = "return";
+
 
 char* IINC = "iinc";
 
 char* CONST_TABLE = ".const";
+
+char* ESR = "esr";
+char* IRETURN = "ireturn";
+char* BRETURN = "breturn";
+char* FRETURN = "freturn";
+char* RETURN = "return";

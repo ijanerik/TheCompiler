@@ -19,6 +19,8 @@ struct INFO {
     int while_cnt;
     int dowhile_cnt;
     int for_cnt;
+
+    cctype ret_type;
 };
 
 #define INFO_SCOPE(n)  ((n)->scope)
@@ -27,6 +29,8 @@ struct INFO {
 #define INFO_WHILECNT(n)  ((n)->while_cnt)
 #define INFO_DOWHILECNT(n)  ((n)->dowhile_cnt)
 #define INFO_FORCNT(n)  ((n)->for_cnt)
+
+#define INFO_RETTYPE(n)  ((n)->ret_type)
 
 static info *MakeInfo(void)
 {
@@ -41,6 +45,7 @@ static info *MakeInfo(void)
     INFO_DOWHILECNT(result) = 0;
     INFO_FORCNT(result) = 0;
     INFO_IFCNT(result) = 0;
+    INFO_RETTYPE(result) = T_unknown;
 
     DBUG_RETURN( result);
 }
@@ -53,10 +58,6 @@ static info *FreeInfo( info *info)
 
     DBUG_RETURN( info);
 }
-
-/*
- * Traversal start function
- */
 
 void printOp0(char* instruction) {
     printf("\t%s\n", instruction);
@@ -78,13 +79,22 @@ void printLabel(char* label, int id) {
     printf("%s_%d:\n", label, id);
 }
 
+void printFunction(char* name) {
+    printf("%s:\n", name);
+}
+
 
 node* GBCprogram(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCprogram");
+
     if (PROGRAM_CONSTANTSTABLE(arg_node)) {
         PROGRAM_CONSTANTSTABLE(arg_node) = TRAVdo(PROGRAM_CONSTANTSTABLE(arg_node), arg_info);
     }
     printf("\n");
     PROGRAM_DECLARATIONS(arg_node) = TRAVdo(PROGRAM_DECLARATIONS(arg_node), arg_info);
+    
+    DBUG_RETURN(arg_node);
+
 }
 
 node* GBCconstantstable(node* arg_node, info* arg_info) {
@@ -109,6 +119,11 @@ node* GBCconstantstable(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 } 
 
+node* GBCfuncall(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCfuncall");
+
+    DBUG_RETURN(arg_node);
+}
 
 node* GBCglobaldef(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCglobaldef");
@@ -126,14 +141,76 @@ node* GBCglobaldef(node* arg_node, info* arg_info) {
 node* GBCfundef(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCfundef");
     
+    node* table = FUNDEF_SYMBOLTABLE(arg_node);
+    node* funheader = FUNDEF_FUNHEADER(arg_node);
+
+
+    int var_cnt = 0;
+    // Next to fix one off error
+    table = SYMBOLTABLE_NEXT(table);
+    while (table) {
+        var_cnt += 1;
+        table = SYMBOLTABLE_NEXT(table);
+    }
+
+    
+    node* ident = FUNHEADER_IDENT(funheader);
+    char* name = IDENT_NAME(ident);
+    printFunction(name);
+    //printf("var_cnt: %d\n", var_cnt);
+
+    if (var_cnt > 0) {
+        printOp1(ESR, var_cnt);
+    }
+    
+
+    // node* params = FUNHEADER_PARAMS(funheader);
+    // int params_cnt = 0;
+    // while(params) {
+    //     params_cnt += 1;
+    //     params = PARAMS_NEXT(params);
+    // }
+
+    // printf("params_cnt: %d\n", params_cnt);
+
     FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
+
+
 
     if (FUNDEF_FUNBODY(arg_node)) {
         INFO_SCOPE(arg_info) += 1;
+        cctype temp = INFO_RETTYPE(arg_info);
+        INFO_RETTYPE(arg_info) = FUNHEADER_RETTYPE(funheader);
         FUNDEF_FUNBODY(arg_node) = TRAVdo(FUNDEF_FUNBODY(arg_node), arg_info);
+        INFO_RETTYPE(arg_info) = temp;
         INFO_SCOPE(arg_info) -= 1;
     }
 
+    printf("\n");
+    DBUG_RETURN(arg_node);
+}
+
+node* GBCreturnstmt(node* arg_node, info* arg_info) {
+
+    DBUG_ENTER("GBCreturnstmt");
+
+    if (RETURNSTMT_EXPR(arg_node)) {
+        RETURNSTMT_EXPR(arg_node) = TRAVdo(RETURNSTMT_EXPR(arg_node), arg_info);
+    }
+    cctype type = INFO_RETTYPE(arg_info);
+    
+    if (type == T_int) { 
+        printOp0(IRETURN);
+    }
+    if (type == T_bool) { 
+        printOp0(BRETURN);
+    }
+    if (type == T_float) { 
+        printOp0(FRETURN);
+    }
+    if (type == T_void) { 
+        printOp0(RETURN);
+    }
     DBUG_RETURN(arg_node);
 }
 
