@@ -1,7 +1,20 @@
+int b (bool y, int d) {
+    return 1;
+}
 
+int a(int c) {
+    //int gg;
+    
+    int hh() {
+        
+        return 10;
+    }
+    
+    //int a = 1 + b((bool)10, 1);
+    return (int)true;
+}
 
-int a(int b) {
-    int a;
-    b = a + 1;
-
+void ff() 
+{
+    return;
 }

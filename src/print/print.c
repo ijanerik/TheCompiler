@@ -444,7 +444,9 @@ node* PRTreturnstmt(node* arg_node, info *arg_info) {
     DBUG_ENTER("PRTreturnstmt");
     printIndents(arg_info);
     printf("return ");
-    RETURNSTMT_EXPR(arg_node) = TRAVdo(RETURNSTMT_EXPR(arg_node), arg_info);
+    if (RETURNSTMT_EXPR(arg_node)) {
+        RETURNSTMT_EXPR(arg_node) = TRAVdo(RETURNSTMT_EXPR(arg_node), arg_info);
+    }
     printf(";\n");
 
     DBUG_RETURN(arg_node);

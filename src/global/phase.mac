@@ -41,9 +41,21 @@ SUBPHASE( cav,
           ALWAYS,
           ast)
 
+SUBPHASE( caf,
+        "Context analysis functions",
+        CAFdoFunctions,
+        ALWAYS,
+        ast)
+
 SUBPHASE( tcv, 
           "Type checking variables",
           TCVdoVariables, 
+          ALWAYS,
+          ast)
+
+SUBPHASE( tcf, 
+          "Type checking functions",
+          TCFdoFunctions, 
           ALWAYS,
           ast)
 
@@ -54,11 +66,7 @@ SUBPHASE( bo,
           ast)
 
 
-SUBPHASE( caf,
-        "Context analysis functions",
-        CAFdoFunctions,
-        ALWAYS,
-        ast)
+
 
 ENDPHASE( ast) 
 

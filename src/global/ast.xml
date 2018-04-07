@@ -89,6 +89,22 @@
                 <node name="Assign" />
                 <node name="CastExpr" />
                 <node name="VarCall" />
+
+                <node name="FunCall" />
+            </travuser>
+        </traversal>
+
+        <traversal id="TCF" name="Type Checking Functions" default="sons" include="tc_functions.h">
+            <travuser>
+                <node name="BinOp" />
+                <node name="Num" />
+                <node name="Float" />
+                <node name="Bool" />
+                <node name="CastExpr" />
+                <node name="VarCall" />
+                <node name="FunCall" />
+                <node name="FunDef" />
+                <node name="ReturnStmt" />
             </travuser>
         </traversal>
 
