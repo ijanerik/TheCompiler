@@ -8,7 +8,7 @@
 
 #include "isa.h"
 #include "constants_table.h"
-//#include "util.h"
+#include "util.h"
 
 
 struct INFO {
@@ -80,14 +80,14 @@ void printLabel(char* label, int id) {
 
 
 
-// node* GBCconstantstable(node* arg_node, info* arg_info) {
-//     DBUG_ENTER("GBCglobaldef");
+node* GBCconstantstable(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCglobaldef");
+    
+    char* type = cctypeToString(CONSTANTSTABLE_TYPE(arg_node));
+    printf("%s %s %d\n", CONST_TABLE, type, CONSTANTSTABLE_INDEX(arg_node));
 
-//     //char* type = cctypeToString(CONSTANTSTABLE_TYPE(arg_node));
-//     //printf("%s %s %d\n", CONST_TABLE, type, CONSTANTSTABLE_INDEX(arg_node));
-
-//     DBUG_RETURN(arg_node);
-// } 
+    DBUG_RETURN(arg_node);
+} 
 
 
 node* GBCglobaldef(node* arg_node, info* arg_info) {
