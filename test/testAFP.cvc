@@ -1,0 +1,12 @@
+// Array function passing
+int[3] array = [1,2,3];
+int main() {
+    int g = 3;
+    int[g] test = -4;
+    float t = -4.0;
+    return func(test);
+}
+
+int func(int[m] arrayty) {
+    return m;
+}

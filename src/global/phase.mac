@@ -52,21 +52,24 @@ SUBPHASE( tcv,
           TCVdoVariables, 
           ALWAYS,
           ast)
-
+          
 SUBPHASE( tcf, 
           "Type checking functions",
           TCFdoFunctions, 
           ALWAYS,
           ast)
 
+SUBPHASE(gvv,
+        "Add global variables function __init",
+        GVdoVariableToFunction,
+        ALWAYS,
+        ast)
+
 SUBPHASE( bo, 
           "Boolean operations",
           BOdoOperations, 
           ALWAYS,
           ast)
-
-
-
 
 ENDPHASE( ast) 
 
