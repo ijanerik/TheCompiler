@@ -74,7 +74,7 @@ start:
 program:
     declarations
     {
-        $$ = TBmakeProgram($1, NULL);
+        $$ = TBmakeProgram($1, NULL, NULL);
     }
     ;
 
