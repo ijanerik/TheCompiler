@@ -103,7 +103,6 @@ node* GTparam(node* arg_node, info *arg_info) {
 node* GTforstmt(node* arg_node, info *arg_info) {
     DBUG_ENTER("GTforstmt");
 
-    INFO_INC_SCOPE(arg_info);
     node* entry = FORSTMT_SYMBOLTABLEENTRY(arg_node);
     SYMBOLTABLEENTRY_INDEX(entry) = INFO_NEW_INDEX(arg_info);
 
@@ -115,8 +114,6 @@ node* GTforstmt(node* arg_node, info *arg_info) {
     }
 
     FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), arg_info);
-
-    INFO_DEC_SCOPE(arg_info);
 
     DBUG_RETURN(arg_node);
 }

@@ -261,6 +261,9 @@ node* GBCforstmt(node* arg_node, info* arg_info) {
 
     FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), arg_info);
 
+    printOp1(ILOAD, SYMBOLTABLEENTRY_INDEX(entry));
+    printOp0(IADD);
+    printOp1(ISTORE, SYMBOLTABLEENTRY_INDEX(entry));
     printBranch(JMP, FOR_LABEL, id);
     printLabel(END_FOR_LABEL, id);
 

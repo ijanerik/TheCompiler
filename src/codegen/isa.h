@@ -22,3 +22,5 @@ char* JMP = "jmp";
 
 char* ESR = "esr";
 char* RETURN = "return";
+
+char* IINC = "iinc";

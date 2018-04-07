@@ -571,14 +571,14 @@ node* PRTblock(node* arg_node, info *arg_info) {
     printf("{\n");
     INFO_INDENTS(arg_info)++;
 
-    // Print symbol table
-    if(BLOCK_SYMBOLTABLE(arg_node) != NULL) {
-        printIndents(arg_info);
-        printf("/** SYMBOL TABLE **\n");
-        BLOCK_SYMBOLTABLE(arg_node) = TRAVdo(BLOCK_SYMBOLTABLE(arg_node), arg_info);
-        printIndents(arg_info);
-        printf(" */\n");
-    }
+    // // Print symbol table
+    // if(BLOCK_SYMBOLTABLE(arg_node) != NULL) {
+    //     printIndents(arg_info);
+    //     printf("/** SYMBOL TABLE **\n");
+    //     BLOCK_SYMBOLTABLE(arg_node) = TRAVdo(BLOCK_SYMBOLTABLE(arg_node), arg_info);
+    //     printIndents(arg_info);
+    //     printf(" */\n");
+    // }
 
     if (BLOCK_STMTS(arg_node)) {
         BLOCK_STMTS(arg_node) = TRAVdo(BLOCK_STMTS(arg_node), arg_info);

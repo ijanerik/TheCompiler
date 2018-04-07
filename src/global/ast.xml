@@ -911,18 +911,6 @@
                         </target>
                     </targets>
                 </son>
-
-                <son name="SymbolTable">
-                    <description>The symbol table from the global stack</description>
-                    <targets>
-                        <target mandatory="no">
-                            <node name="SymbolTable" />
-                            <phases>
-                                <all />
-                            </phases>
-                        </target>
-                    </targets>
-                </son>
             </sons>
         </node>
 
