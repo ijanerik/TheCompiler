@@ -496,9 +496,10 @@ node* PRTforstmt(node* arg_node, info *arg_info) {
         FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), arg_info);
     }
     printf(") ");
-    FORSTMT_BLOCK(arg_node) = TRAVdo(FORSTMT_BLOCK(arg_node), arg_info);
-    //printf("for (%s = %s, %s, %s) {\n %s;\n }", "ASSIGN_VAR", "ASSIGN_EXPR",
-    //       "COMPARE_EXPR", "UPDATE_EXPR", "BLOCK");
+    if (FORSTMT_BLOCK(arg_node)) {
+        FORSTMT_BLOCK(arg_node) = TRAVdo(FORSTMT_BLOCK(arg_node), arg_info);
+    }
+
     DBUG_RETURN(arg_node);
 }
 
@@ -579,8 +580,10 @@ node* PRTblock(node* arg_node, info *arg_info) {
         printf(" */\n");
     }
 
-
-    BLOCK_STMTS(arg_node) = TRAVdo(BLOCK_STMTS(arg_node), arg_info);
+    if (BLOCK_STMTS(arg_node)) {
+        BLOCK_STMTS(arg_node) = TRAVdo(BLOCK_STMTS(arg_node), arg_info);
+    }
+    
     INFO_INDENTS(arg_info)--;
     printIndents(arg_info);
     printf("}\n");

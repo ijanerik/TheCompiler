@@ -129,6 +129,7 @@
                 <node name="GlobalDef" />
                 <node name="Param" />
                 <node name="FunDef" />
+                <node name="ForStmt" />
                 <node name="Num" />
                 <node name="Float" />
                 <node name="Bool" />
@@ -143,6 +144,11 @@
                 <node name="BinOp" />
                 <node name="IfElseStmt" />
                 <node name="VarDec" />
+                <node name="WhileStmt" />
+                <node name="DoWhileStmt" />
+                <node name="ForStmt" />
+                <node name="GlobalDef" />
+                <node name="FunDef" />
             </travuser>
         </traversal>
     </general>

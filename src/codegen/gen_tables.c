@@ -87,7 +87,7 @@ node *GTglobaldef(node* arg_node, info *arg_info) {
     if (GLOBALDEF_EXPRS(arg_node)) {
         GLOBALDEF_EXPRS(arg_node) = TRAVdo(GLOBALDEF_EXPRS(arg_node), arg_info);
     }
-    
+
     DBUG_RETURN(arg_node);
 }
 
@@ -96,6 +96,27 @@ node* GTparam(node* arg_node, info *arg_info) {
 
     node* entry = PARAM_SYMBOLTABLEENTRY(arg_node);
     SYMBOLTABLEENTRY_INDEX(entry) = INFO_NEW_INDEX(arg_info);
+
+    DBUG_RETURN(arg_node);
+}
+
+node* GTforstmt(node* arg_node, info *arg_info) {
+    DBUG_ENTER("GTforstmt");
+
+    INFO_INC_SCOPE(arg_info);
+    node* entry = FORSTMT_SYMBOLTABLEENTRY(arg_node);
+    SYMBOLTABLEENTRY_INDEX(entry) = INFO_NEW_INDEX(arg_info);
+
+    FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), arg_info);
+    FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), arg_info);
+
+    if (FORSTMT_BLOCK(arg_node)) {
+        FORSTMT_BLOCK(arg_node) = TRAVdo(FORSTMT_BLOCK(arg_node), arg_info);
+    }
+
+    FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), arg_info);
+
+    INFO_DEC_SCOPE(arg_info);
 
     DBUG_RETURN(arg_node);
 }
@@ -125,21 +146,18 @@ node* GTnum(node* arg_node, info *arg_info) {
 
     if (table == NULL) {
         int new_index = INFO_NEW_CONSTANTS_INDEX(arg_info);
-        if (CONSTANTSTABLE_INDEX(table_head) == -1) {
-            CONSTANTSTABLE_INDEX(table_head) = new_index;
-            CONSTANTSTABLE_TYPE(table_head) = T_int;
-            CONSTANTSTABLE_INT(table_head) = value;
-            table = table_head;
-            //printf("FIRST ONE, index: %d value: %d p:%p\n", new_index, value, table_head);
-        }
-        else {
-            node* new_table = TBmakeConstantstable(T_int, new_index, FALSE,
-                                                   value, 0, NULL);
-            CONSTANTSTABLE_NEXT(table_tail) = new_table;
-            //printf("Added new table for int: %d, index: %d\t%p->%p\n", value, new_index, table_tail,new_table);
-            INFO_CONSTANTS_TABLE_TAIL(arg_info) = new_table;
-            table = new_table;
-        }
+        node* new_table = TBmakeConstantstable(T_int, new_index, FALSE,
+                                                value, 0, NULL);
+        CONSTANTSTABLE_NEXT(table_tail) = new_table;
+        INFO_CONSTANTS_TABLE_TAIL(arg_info) = new_table;
+        table = new_table;
+    }
+    else if (CONSTANTSTABLE_INDEX(table_head) == -1) {
+        int new_index = INFO_NEW_CONSTANTS_INDEX(arg_info);
+        CONSTANTSTABLE_INDEX(table_head) = new_index;
+        CONSTANTSTABLE_TYPE(table_head) = T_int;
+        CONSTANTSTABLE_INT(table_head) = value;
+        table = table_head;
     }
     NUM_CONSTANTSTABLE(arg_node) = table;
 
@@ -169,7 +187,6 @@ node* GTfloat(node* arg_node, info *arg_info) {
             CONSTANTSTABLE_NEXT(table_tail) = new_table;
             INFO_CONSTANTS_TABLE_TAIL(arg_info) = new_table;
             table = new_table;
-            //printf("Added new table for float: %f\n", value);
         }
     }
     FLOAT_CONSTANTSTABLE(arg_node) = table;
@@ -202,7 +219,6 @@ node* GTbool(node* arg_node, info *arg_info) {
             CONSTANTSTABLE_NEXT(table_tail) = new_table;
             INFO_CONSTANTS_TABLE_TAIL(arg_info) = new_table;
             table = new_table;
-            //printf("Added new table for bool: %d, index: %d\n", value, new_index);
         }
     }
     BOOL_CONSTANTSTABLE(arg_node) = table;

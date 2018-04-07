@@ -15,11 +15,17 @@ struct INFO {
     int scope;
 
     int if_cnt;
+    int while_cnt;
+    int dowhile_cnt;
+    int for_cnt;
 };
 
 #define INFO_SCOPE(n)  ((n)->scope)
 #define INFO_CONSTANTS_TABLE(n) ((n)->constants_table)
-#define INFO_IFCNT(n)  ((n)->scope)
+#define INFO_IFCNT(n)  ((n)->if_cnt)
+#define INFO_WHILECNT(n)  ((n)->while_cnt)
+#define INFO_DOWHILECNT(n)  ((n)->dowhile_cnt)
+#define INFO_FORCNT(n)  ((n)->for_cnt)
 
 static info *MakeInfo(void)
 {
@@ -29,7 +35,11 @@ static info *MakeInfo(void)
 
     result = (info *)MEMmalloc(sizeof(info));
 
-    result->scope = 0;
+    INFO_SCOPE(result) = 0;
+    INFO_WHILECNT(result) = 0;
+    INFO_DOWHILECNT(result) = 0;
+    INFO_FORCNT(result) = 0;
+    INFO_IFCNT(result) = 0;
 
     DBUG_RETURN( result);
 }
@@ -55,15 +65,54 @@ void printOp1(char* instruction, int arg) {
     printf("\t%s %d\n", instruction, arg);
 }
 
+void printOp2(char* instruction, int arg1, int arg2) {
+    printf("\t%s %d %d\n", instruction, arg1, arg2);
+}
+
+void printBranch(char* instruction, char* label, int id) {
+    printf("%s %s_%d\n", instruction, label, id);
+}
+
+void printLabel(char* label, int id) {
+    printf("%s_%d:\n", label, id);
+}
+
+node* GBCglobaldef(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCglobaldef");
+
+    if(GLOBALDEF_EXPRS(arg_node)) {
+        GLOBALDEF_EXPRS(arg_node) = TRAVdo(GLOBALDEF_EXPRS(arg_node), arg_info);
+        node* entry = GLOBALDEF_SYMBOLTABLEENTRY(arg_node);
+        int index = SYMBOLTABLEENTRY_INDEX(entry);
+        printOp1(ISTORE, index);
+    }
+
+    DBUG_RETURN(arg_node);
+} 
+
+node* GBCfundef(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCfundef");
+    
+    FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
+
+    if (FUNDEF_FUNBODY(arg_node)) {
+        INFO_SCOPE(arg_info) += 1;
+        FUNDEF_FUNBODY(arg_node) = TRAVdo(FUNDEF_FUNBODY(arg_node), arg_info);
+        INFO_SCOPE(arg_info) -= 1;
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
 node* GBCvardec(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCvardec");
 
-    VARDEC_EXPRS(arg_node) = TRAVdo(VARDEC_EXPRS(arg_node), arg_info);
-
-    node* entry = VARDEC_SYMBOLTABLEENTRY(arg_node);
-    int index = SYMBOLTABLEENTRY_INDEX(entry);
-
-    printOp1(ISTORE, index);
+    if(VARDEC_EXPRS(arg_node)) {
+        VARDEC_EXPRS(arg_node) = TRAVdo(VARDEC_EXPRS(arg_node), arg_info);
+        node* entry = VARDEC_SYMBOLTABLEENTRY(arg_node);
+        int index = SYMBOLTABLEENTRY_INDEX(entry);
+        printOp1(ISTORE, index);
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -101,8 +150,15 @@ node* GBCvarcall(node* arg_node, info* arg_info) {
 
     node* entry = VARCALL_SYMBOLTABLEENTRY(arg_node);
     int index = SYMBOLTABLEENTRY_INDEX(entry);
+    int scope = SYMBOLTABLEENTRY_SCOPE(entry);
+    int current_scope = INFO_SCOPE(arg_info);
 
-    printOp1(ILOAD, index);
+    if (current_scope > scope) {
+        printOp2(ILOADN, current_scope - scope, index);
+    } else{
+        printOp1(ILOAD, index);
+    }
+    
 
     DBUG_RETURN(arg_node);
 }
@@ -117,20 +173,96 @@ node* GBCifelsestmt(node* arg_node, info* arg_info) {
     node* if_block = IFELSESTMT_IFBLOCK(arg_node);
 
     if (else_block) {
-        printf("%s %s_%d\n", BRANCH_F, "ELSE", id);
+        printBranch(BRANCH_F, "ELSE", id);
         if_block = TRAVdo(if_block, arg_info);
-        printf("%s %s_%d\n", JMP, "ENDIF", id);    
-        printf("%s_%d:\n", "ELSE", id);
+        printBranch(JMP, "ENDIF", id);    
+        printLabel("ELSE", id);
         else_block = TRAVdo(else_block, arg_info);
-        printf("%s_%d:\n", "ENDIF", id);
+        printLabel("ENDIF", id);
     }
     else {
-        printf("%s %s_%d\n", BRANCH_F, "ENDIF", id);
+        printBranch(BRANCH_F, "ENDIF", id);
         if_block = TRAVdo(if_block, arg_info);
-        printf("%s_%d:\n", "ENDIF", id);
+        printLabel("ENDIF", id);
     }
 
     INFO_IFCNT(arg_info) += 1;
+
+    DBUG_RETURN(arg_node);
+}
+
+// node* GBCblock(node* arg_node, info* arg_info) {
+
+
+
+//     INFO_SCOPE(arg_info) += 1;
+//     if (BLOCK_STMTS(arg_node)) {
+//         BLOCK_STMTS(arg_node) = TRAVdo(BLOCK_STMTS(arg_node), arg_info);
+//     }
+//     INFO_SCOPE(arg_info) -= 1;
+// }
+
+node* GBCwhilestmt(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCwhilestmt");
+
+    int id = INFO_WHILECNT(arg_info);
+    char* WHILE_LABEL = "WHILE";
+    char* END_WHILE_LABEL = "ENDWHILE";
+
+    printLabel(WHILE_LABEL, id);
+    WHILESTMT_EXPR(arg_node) = TRAVdo(WHILESTMT_EXPR(arg_node), arg_info);
+
+    printBranch(BRANCH_F, END_WHILE_LABEL, id);
+
+    WHILESTMT_BLOCK(arg_node) = TRAVdo(WHILESTMT_BLOCK(arg_node), arg_info);    
+
+    printBranch(JMP, WHILE_LABEL, id);
+    printLabel(END_WHILE_LABEL, id);
+
+    DBUG_RETURN(arg_node);
+}
+
+node* GBCdowhilestmt(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCwhilestmt");
+
+    int id = INFO_WHILECNT(arg_info);
+    char* DOWHILE_LABEL = "DOWHILE";
+    
+    printLabel(DOWHILE_LABEL, id);
+    
+    DOWHILESTMT_BLOCK(arg_node) = TRAVdo(DOWHILESTMT_BLOCK(arg_node), arg_info);  
+    DOWHILESTMT_EXPR(arg_node) = TRAVdo(DOWHILESTMT_EXPR(arg_node), arg_info);  
+
+    printBranch(BRANCH_T, DOWHILE_LABEL, id);
+    
+    DBUG_RETURN(arg_node);
+}
+
+node* GBCforstmt(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCforstmt");
+
+    int id = INFO_FORCNT(arg_info);
+    char* FOR_LABEL = "FOR";
+    char* END_FOR_LABEL = "ENDFOR";
+
+    FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), arg_info);
+    node* entry = FORSTMT_SYMBOLTABLEENTRY(arg_node);
+    printOp1(ISTORE, SYMBOLTABLEENTRY_INDEX(entry));
+
+    printLabel(FOR_LABEL, id);
+    printOp1(ILOAD, SYMBOLTABLEENTRY_INDEX(entry));  
+    
+    FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), arg_info);
+
+    printOp0(ILT);
+    printBranch(BRANCH_F, END_FOR_LABEL, id);
+
+    FORSTMT_BLOCK(arg_node) = TRAVdo(FORSTMT_BLOCK(arg_node), arg_info);    
+
+    FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), arg_info);
+
+    printBranch(JMP, FOR_LABEL, id);
+    printLabel(END_FOR_LABEL, id);
 
     DBUG_RETURN(arg_node);
 }
