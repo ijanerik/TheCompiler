@@ -428,6 +428,17 @@
                     </targets>
                 </type>
             </attribute>
+            <attribute name="Scope">
+                <type name="Int">
+                    <targets>
+                        <target mandatory="no">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
         </attributes>
     </node>
                 

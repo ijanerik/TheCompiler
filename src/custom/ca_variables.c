@@ -38,6 +38,12 @@ node *CAVprogram(node *arg_node, symboltables *tables)
 node *CAVvardec(node *arg_node, symboltables *tables)
 {
     DBUG_ENTER("CAVvardec");
+    
+
+    if(VARDEC_EXPRS(arg_node) != NULL) {
+        VARDEC_EXPRS(arg_node) = TRAVdo(VARDEC_EXPRS(arg_node), tables);
+    }
+
     node* ident = VARDEC_IDENT(arg_node);
     int scope = SYMBOLTABLES_INDEX(tables);
     node* entry = searchSymbolTables(tables, IDENT_NAME(ident), &scope);
@@ -47,9 +53,7 @@ node *CAVvardec(node *arg_node, symboltables *tables)
 
     bool is_array = VARDEC_ARRAYLENGTH(arg_node) != NULL;
 
-    if(VARDEC_EXPRS(arg_node) != NULL) {
-        VARDEC_EXPRS(arg_node) = TRAVdo(VARDEC_EXPRS(arg_node), tables);
-    }
+    
 
     if(is_array) {
         VARDEC_ARRAYLENGTH(arg_node) = TRAVdo(VARDEC_ARRAYLENGTH(arg_node), tables);

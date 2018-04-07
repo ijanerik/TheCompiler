@@ -52,6 +52,12 @@ SUBPHASE( tcv,
           TCVdoVariables, 
           ALWAYS,
           ast)
+          
+SUBPHASE( tcf, 
+          "Type checking functions",
+          TCFdoFunctions, 
+          ALWAYS,
+          ast)
 
 SUBPHASE(gvv,
         "Add global variables function __init",
@@ -75,7 +81,8 @@ PHASE( cg,
        "Generating Code",
        ALWAYS)
 
-SUBPHASE( prt, "Generating byte code", GBCdoGenByteCode, ALWAYS, cg)      
+SUBPHASE( gt, "Generate tables for code generation", GTdoGenTables, ALWAYS, cg)
+SUBPHASE( gbc, "Generating byte code", GBCdoGenByteCode, ALWAYS, cg)      
 SUBPHASE( prt_ast, "Print ast", PRTdoPrint, ALWAYS, cg)      
 
 SUBPHASE( frtr, 

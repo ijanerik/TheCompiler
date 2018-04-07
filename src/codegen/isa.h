@@ -31,3 +31,7 @@ char* IRETURN = "ireturn";
 char* BRETURN = "breturn";
 char* FRETURN = "freturn";
 char* RETURN = "return";
+
+char* ISRN = "isrn";
+char* ISR = "isr";
+char* JSR = "jsr";

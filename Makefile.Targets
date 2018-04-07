@@ -77,7 +77,7 @@ scanparse   = civic.tab.o civic.lex.o
 
 print       = print.o
 
-codegen     = gen_byte_code.o
+codegen     = gen_byte_code.o gen_tables.o constants_table.o
 
 
-custom      = ca_variables.o st_utils.o ca_functions.o tc_variables.o bo_operations.o gv_variables.o
+custom      = ca_variables.o st_utils.o ca_functions.o tc_variables.o tc_functions.o util.o bo_operations.o
