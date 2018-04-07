@@ -14,4 +14,5 @@ extern node* GBCdowhilestmt(node* arg_node, info* arg_info);
 extern node* GBCforstmt(node* arg_node, info* arg_info);
 extern node* GBCglobaldef(node* arg_node, info* arg_info);
 extern node* GBCfundef(node* arg_node, info* arg_info);
+//extern node* GBCconstantstable(node* arg_node, info* arg_info);
 #endif

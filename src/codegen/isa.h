@@ -24,3 +24,5 @@ char* ESR = "esr";
 char* RETURN = "return";
 
 char* IINC = "iinc";
+
+char* CONST_TABLE = ".const"
