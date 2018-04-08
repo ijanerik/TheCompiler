@@ -12,7 +12,9 @@
 node *CAFfundef(node *arg_node, info *tables);
 node *CAFprogram(node *arg_node, info *tables);
 node *CAFfuncall(node *arg_node, info *tables);
-
+node *CAFreturnstmt(node *arg_node, info *tables);
+node* CAFblock(node *arg_node, info *tables);
+node* CAFifelsestmt(node *arg_node, info *tables);
 node *CAFdoFunctions(node *syntaxtree);
 
 

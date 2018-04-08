@@ -211,13 +211,48 @@ node* TCVbinop(node *arg_node, info *arg_info)
         CTIerror(ERROR_TYPE_BINOP, arg_node->lineno + 1, cctypeToString(t1),
                                                          cctypeToString(t2));
         INFO_SET_TYPE(arg_info, T_unknown);
+        DBUG_RETURN( arg_node);
+
     }
-    else if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge ||
-             op == BO_ne || op == BO_and || op == BO_or) {
+
+
+    if (t1 == T_int) {
+        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne ){
             INFO_SET_TYPE(arg_info, T_bool);
+            BINOP_TYPE(arg_node) = T_bool;       
+        }
+        else if(op == BO_add || op == BO_sub || op == BO_mul || op == BO_div || op == BO_mod) {
+            INFO_SET_TYPE(arg_info, T_int);
+            BINOP_TYPE(arg_node) = T_int;       
+        }
+        else {
+             CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno, "int");
+        }
     }
-    else {
-        INFO_SET_TYPE(arg_info, t1);
+
+    if (t1 == T_float) {
+        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne ){
+            INFO_SET_TYPE(arg_info, T_bool);
+            BINOP_TYPE(arg_node) = T_bool;       
+        }
+        else if (op == BO_add || op == BO_sub || op == BO_mul || op == BO_div ) {
+            INFO_SET_TYPE(arg_info, T_float);
+            BINOP_TYPE(arg_node) = T_float;       
+        }
+        else {
+            CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno, "float");
+        }
+    }
+
+    if (t1 == T_bool) {
+        if (op == BO_and || op == BO_or || op == BO_ne || op == BO_eq ||
+            op == BO_add || op == BO_mul) {
+            INFO_SET_TYPE(arg_info, T_bool);  
+            BINOP_TYPE(arg_node) = T_bool;             
+        }
+        else {
+            CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno, "bool");
+        }
     }
 
     DBUG_RETURN( arg_node);

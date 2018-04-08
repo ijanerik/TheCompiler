@@ -1,13 +1,25 @@
+/* LOAD INSTRUCTIONS */
 char* ILOAD = "iload";
 char* ILOADN = "iloadn";
 char* ILOADC = "iloadc";
 char* ISTORE = "istore";
 
+char* FLOAD = "fload";
+char* FLOADN = "floadn";
+char* FLOADC = "floadc";
+char* FSTORE = "fstore";
+
+/* ARITHMETIC INSTRUCTIONS */
 char* IADD = "iadd";
 char* ISUB = "isub";
 char* IMUL = "imul";
 char* IDIV = "idiv";
 char* IREM = "irem";
+
+char* FADD = "fadd";
+char* FSUB = "fsub";
+char* FMUL = "fmul";
+char* FDIV = "fdiv";
 
 char* ILT = "ilt";
 char* ILE = "ile"; 

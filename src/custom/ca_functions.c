@@ -4,6 +4,8 @@
 struct INFO {
     node* table_stack[32];
     int index;
+
+    int no_return;
 };
 
 /*
@@ -16,6 +18,8 @@ struct INFO {
 #define TABLES_CURRENT_TABLE(n) ((n)->table_stack[(n)->index])
 #define TABLES_ADD_TABLE(n, symboltable) ((n)->table_stack[++(n)->index] = symboltable)
 #define TABLES_REMOVE_TABLE(n) ((n)->table_stack[(n)->index--] = NULL)
+
+#define TABLES_NO_RETURN(n) ((n)->no_return)
 
 #define ERROR_INCORRECT_FUNCTION_TABLE "Incorrect function table given"
 #define ERROR_REDEC_FUNC "Function \"%s\" is already declared"
@@ -206,12 +210,55 @@ node *CAFfundef(node *arg_node, info *tables)
     }
 
     FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), tables);
+
+    TABLES_NO_RETURN(tables) = 1;
     if(FUNDEF_FUNBODY(arg_node) != NULL) {
         FUNDEF_FUNBODY(arg_node) = TRAVdo(FUNDEF_FUNBODY(arg_node), tables);
     }
+
+    if (TABLES_NO_RETURN(tables) == 1 && 
+        FUNHEADER_RETTYPE(FUNDEF_FUNHEADER(arg_node)) != T_void) {
+        CTIerror("No return statement found for non void function.");
+    }
+
     TABLES_REMOVE_TABLE(tables);
 
 
+    DBUG_RETURN( arg_node);
+}
+
+node *CAFreturnstmt(node *arg_node, info *tables)
+{
+    DBUG_ENTER("CAFreturnstmt");
+
+    TABLES_NO_RETURN(tables) = 0;
+
+    DBUG_RETURN( arg_node);
+}
+
+node* CAFblock(node *arg_node, info *tables) {
+    DBUG_ENTER("CAFreturnstmt");
+
+    TABLES_NO_RETURN(tables) = 1;
+    BLOCK_STMTS(arg_node) = TRAVdo(BLOCK_STMTS(arg_node), tables);
+
+    DBUG_RETURN( arg_node);
+}
+
+node* CAFifelsestmt(node *arg_node, info *tables) {
+    DBUG_ENTER("CAFifelsestmt");
+
+    if (TABLES_NO_RETURN(tables)) {
+        IFELSESTMT_IFBLOCK(arg_node) = TRAVdo(IFELSESTMT_IFBLOCK(arg_node), tables);
+        if (!TABLES_NO_RETURN(tables)) {
+            TABLES_NO_RETURN(tables) = 1;
+            
+            if (IFELSESTMT_ELSEBLOCK(arg_node)) {
+                IFELSESTMT_ELSEBLOCK(arg_node) = TRAVdo(IFELSESTMT_ELSEBLOCK(arg_node), tables);
+            }
+        }   
+    }
+    
     DBUG_RETURN( arg_node);
 }
 

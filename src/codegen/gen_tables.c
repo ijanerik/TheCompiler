@@ -20,6 +20,7 @@ struct INFO {
 };
 
 #define INFO_NEW_INDEX(n)  ((n)->index[(n)->scope]++)
+#define INFO_RESET_INDEX(n) ((n)->index[(n)->scope] = 0)
 #define INFO_INC_SCOPE(n)  ((n)->scope++)
 #define INFO_DEC_SCOPE(n)  ((n)->scope--)
 
@@ -122,9 +123,13 @@ node* GTfundef(node* arg_node, info *arg_info)  {
     DBUG_ENTER("GTfundef");
 
     INFO_INC_SCOPE(arg_info);
+    
+    INFO_RESET_INDEX(arg_info);
+    
     FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
     
     if (FUNDEF_FUNBODY(arg_node)) {
+        
         FUNDEF_FUNBODY(arg_node) = TRAVdo(FUNDEF_FUNBODY(arg_node), arg_info);
     }
     INFO_DEC_SCOPE(arg_info);

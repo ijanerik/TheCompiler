@@ -160,7 +160,14 @@ node* GBCglobaldef(node* arg_node, info* arg_info) {
         GLOBALDEF_EXPRS(arg_node) = TRAVdo(GLOBALDEF_EXPRS(arg_node), arg_info);
         node* entry = GLOBALDEF_SYMBOLTABLEENTRY(arg_node);
         int index = SYMBOLTABLEENTRY_INDEX(entry);
-        printOp1(ISTORE, index);
+        cctype type = SYMBOLTABLEENTRY_TYPE(entry);
+        
+        if (type == T_int) {
+            printOp1(ISTORE, index);
+        }
+        if (type == T_float) {
+            printOp1(FSTORE, index);
+        }
     }
 
     DBUG_RETURN(arg_node);
@@ -248,7 +255,15 @@ node* GBCvardec(node* arg_node, info* arg_info) {
         VARDEC_EXPRS(arg_node) = TRAVdo(VARDEC_EXPRS(arg_node), arg_info);
         node* entry = VARDEC_SYMBOLTABLEENTRY(arg_node);
         int index = SYMBOLTABLEENTRY_INDEX(entry);
-        printOp1(ISTORE, index);
+        cctype type = SYMBOLTABLEENTRY_TYPE(entry);
+        
+        if (type == T_int) {
+            printOp1(ISTORE, index);
+        }
+        if (type == T_float) {
+            printOp1(FSTORE, index);
+        }
+        
     }
 
     DBUG_RETURN(arg_node);
@@ -262,8 +277,14 @@ node* GBCassign(node* arg_node, info* arg_info) {
 
     node* entry = ASSIGN_SYMBOLTABLEENTRY(arg_node);
     int index = SYMBOLTABLEENTRY_INDEX(entry);
-
-    printOp1(ISTORE, index);
+    cctype type = SYMBOLTABLEENTRY_TYPE(entry);
+        
+    if (type == T_int) {
+        printOp1(ISTORE, index);
+    }
+    if (type == T_float) {
+        printOp1(FSTORE, index);
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -282,18 +303,52 @@ node* GBCnum(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node* GBCfloat(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCfloat");
+
+    float value = FLOAT_VALUE(arg_node);
+    node* table = findConstant(T_float, (void*)&value,
+                               INFO_CONSTANTS_TABLE(arg_info));
+    if (table) {
+        int index = CONSTANTSTABLE_INDEX(table);
+        printOp1(FLOADC, index);
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
+node* GBCbool(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCbool");
+
+    
+
+    DBUG_RETURN(arg_node);
+}
+
 node* GBCvarcall(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCvarcall");
 
     node* entry = VARCALL_SYMBOLTABLEENTRY(arg_node);
+    cctype type = SYMBOLTABLEENTRY_TYPE(entry);
     int index = SYMBOLTABLEENTRY_INDEX(entry);
     int scope = SYMBOLTABLEENTRY_SCOPE(entry);
     int current_scope = INFO_SCOPE(arg_info);
 
     if (current_scope > scope) {
-        printOp2(ILOADN, current_scope - scope, index);
+        if (type == T_int) {
+            printOp2(ILOADN, current_scope - scope, index);
+        }
+        if (type == T_float) {
+            printOp2(FLOADN, current_scope - scope, index);
+        }
+        
     } else{
-        printOp1(ILOAD, index);
+        if (type == T_int) {
+            printOp1(ILOAD, index);
+        }
+        if (type == T_float) {
+            printOp1(FLOAD, index);
+        }
     }
     
 
@@ -417,19 +472,40 @@ node* GBCbinop(node* arg_node, info* arg_info) {
 
     // Integer Operations
     if (BINOP_OP(arg_node) == BO_add) {
-        printOp0(IADD);
+        if (BINOP_TYPE(arg_node) == T_float) {
+            printOp0(FADD);
+        }
+        if (BINOP_TYPE(arg_node) == T_int) {
+            printOp0(IADD);
+        }
+        
     }
 
     if (BINOP_OP(arg_node) == BO_sub) {
-        printOp0(ISUB);
+        if (BINOP_TYPE(arg_node) == T_int) {
+            printOp0(ISUB);
+        }
+        if (BINOP_TYPE(arg_node) == T_float) {
+            printOp0(FSUB);
+        }
     }
 
     if (BINOP_OP(arg_node) == BO_mul) {
-        printOp0(IMUL);
+        if (BINOP_TYPE(arg_node) == T_int) {
+            printOp0(IMUL);
+        }
+        if (BINOP_TYPE(arg_node) == T_float) {
+            printOp0(FMUL);
+        }
     }
 
     if (BINOP_OP(arg_node) == BO_div) {
-        printOp0(IDIV);
+        if (BINOP_TYPE(arg_node) == T_int) {
+            printOp0(IDIV);
+        }
+        if (BINOP_TYPE(arg_node) == T_float) {
+            printOp0(FDIV);
+        }
     }
 
     if (BINOP_OP(arg_node) == BO_mod) {

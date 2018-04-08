@@ -107,6 +107,9 @@
             <travuser>
                 <node name="FunDef" />
                 <node name="FunCall" />
+                <node name="Block" />
+                <node name="ReturnStmt" />
+                <node name="IfElseStmt" />
                 <node name="Program" />
             </travuser>
         </traversal>
@@ -129,6 +132,8 @@
             <travuser>
                 <node name="Assign" />
                 <node name="Num" />
+                <node name="Bool" />
+                <node name="Float" />
                 <node name="VarCall" />
                 <node name="BinOp" />
                 <node name="IfElseStmt" />
@@ -1421,6 +1426,17 @@
                         <targets>
                             <target mandatory="yes">
                                 <any />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="Type">
+                    <type name="Type">
+                        <targets>
+                            <target mandatory="no">
                                 <phases>
                                     <all />
                                 </phases>
