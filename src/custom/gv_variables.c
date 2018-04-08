@@ -254,10 +254,6 @@ node *GVVprogram (node *arg_node, info *arg_info)
         }
     }
 
-    if(INFO_MAIN_FUNCTION(arg_info) == NULL) {
-        CTIerror("Main function is missing!!");
-    }
-
     DBUG_RETURN( arg_node);
 }
 

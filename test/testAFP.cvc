@@ -14,5 +14,10 @@ int main() {
 }
 
 int func(int arrayty) {
+    int p;
+    for(int i = 0, 4, 1) {
+        p = i;
+        main();
+    }
     return 2;
 }

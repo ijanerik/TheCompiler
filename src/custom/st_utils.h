@@ -18,6 +18,8 @@
 struct INFO {
     node* table_stack[32];
     int index;
+    char* forloop_vars[32];
+    int forloopIndex;
 };
 
 typedef struct INFO symboltables;
@@ -36,9 +38,15 @@ typedef struct INFO symboltables;
 #define SYMBOLTABLES_ADD_TABLE(n, symboltable) ((n)->table_stack[++(n)->index] = symboltable)
 #define SYMBOLTABLES_REMOVE_TABLE(n) ((n)->table_stack[(n)->index--] = NULL)
 
+#define SYMBOLTABLES_FORLOOPS(n) ((n)->forloop_vars)
+#define SYMBOLTABLES_FORLOOP_C(n) ((n)->forloop_vars[(n)->forloopIndex])
+#define SYMBOLTABLES_FORLOOP(n, i) ((n)->forloop_vars[i])
+#define SYMBOLTABLES_FORLOOP_INDEX(n) ((n)->forloopIndex)
 
 symboltables* MakeSymboltables(void);
 symboltables* FreeSymboltables(symboltables *tables);
+
+bool strInArray(char* string, char* stringArr[], int lastIndex);
 
 // @todo Not sure about cctype here
 node* addSymbolTableEntry(node* symbol_table, char* name, cctype type, bool is_array, int scope);
