@@ -22,6 +22,8 @@ struct INFO {
     int for_cnt;
 
     cctype ret_type;
+
+    bool is_returned;
 };
 
 #define INFO_SCOPE(n)  ((n)->scope)
@@ -32,6 +34,7 @@ struct INFO {
 #define INFO_FORCNT(n)  ((n)->for_cnt)
 
 #define INFO_RETTYPE(n)  ((n)->ret_type)
+#define INFO_IS_RETURNED(n)  ((n)->is_returned)
 
 static info *MakeInfo(void)
 {
@@ -285,13 +288,19 @@ node* GBCfundef(node* arg_node, info* arg_info) {
     FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
 
 
+
     if (FUNDEF_FUNBODY(arg_node)) {
+        INFO_IS_RETURNED(arg_info) = 0;
         INFO_SCOPE(arg_info) += 1;
         cctype temp = INFO_RETTYPE(arg_info);
         INFO_RETTYPE(arg_info) = FUNHEADER_RETTYPE(funheader);
         FUNDEF_FUNBODY(arg_node) = TRAVdo(FUNDEF_FUNBODY(arg_node), arg_info);
         INFO_RETTYPE(arg_info) = temp;
         INFO_SCOPE(arg_info) -= 1;
+
+        if(INFO_IS_RETURNED(arg_info) == 0) {
+            printOp0(RETURN);
+        }
     }
 
     fprintf(f,"\n");
@@ -316,9 +325,12 @@ node* GBCreturnstmt(node* arg_node, info* arg_info) {
     if (type == T_float) { 
         printOp0(FRETURN);
     }
-    if (type == T_void) { 
+    if (type == T_void) {
         printOp0(RETURN);
     }
+
+    INFO_IS_RETURNED(arg_info) = 1;
+
     DBUG_RETURN(arg_node);
 }
 

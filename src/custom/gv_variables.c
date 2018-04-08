@@ -21,6 +21,7 @@
 
 #include "memory.h"
 #include "ctinfo.h"
+#include "util.h"
 
 
 /*
@@ -221,7 +222,7 @@ node *GVVdeclarations (node *arg_node, info *arg_info)
 }
 
 node* makeInitFun(node* stmts) {
-    return TBmakeFundef(0, TBmakeFunheader(T_void, TBmakeIdent(STRcpy("__init")), NULL), TBmakeFunbody(NULL, NULL, stmts), NULL);
+    return TBmakeFundef(TRUE, TBmakeFunheader(T_void, TBmakeIdent(STRcpy("__init")), NULL), TBmakeFunbody(NULL, NULL, stmts), NULL);
 }
 
 node *GVVprogram (node *arg_node, info *arg_info)
@@ -236,13 +237,17 @@ node *GVVprogram (node *arg_node, info *arg_info)
     if(next != NULL) {
         TRAVdo(next, arg_info);
 
-        node* initFunc = makeInitFun(INFO_STATEMENTS(arg_info));
-        node* declarations = TBmakeDeclarations(initFunc, INFO_DECLARATIONS(arg_info));
-        if(INFO_LATEST_INIT(arg_info) != NULL) {
-            DECLARATIONS_NEXT(INFO_LATEST_INIT(arg_info)) = declarations;
-            PROGRAM_DECLARATIONS(arg_node) = INFO_INITS(arg_info);
+        if(INFO_STATEMENTS(arg_info) != NULL) {
+            node *initFunc = makeInitFun(INFO_STATEMENTS(arg_info));
+            node *declarations = TBmakeDeclarations(initFunc, INFO_DECLARATIONS(arg_info));
+            if (INFO_LATEST_INIT(arg_info) != NULL) {
+                DECLARATIONS_NEXT(INFO_LATEST_INIT(arg_info)) = declarations;
+                PROGRAM_DECLARATIONS(arg_node) = INFO_INITS(arg_info);
+            } else {
+                PROGRAM_DECLARATIONS(arg_node) = declarations;
+            }
         } else {
-            PROGRAM_DECLARATIONS(arg_node) = declarations;
+            PROGRAM_DECLARATIONS(arg_node) = next;
         }
 
         /*

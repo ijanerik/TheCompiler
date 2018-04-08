@@ -1,14 +1,12 @@
+int e = 4;
+
 bool l (int a) {
     bool b = true;
     return b;
 }
 
-int main(int jj, int oo) {
+export int main() {
     l(10);
-    // for(int i = 0, 5, 1) {
-    //    b = b + 1;
-    // } 
     
     return 1;
 }
-
