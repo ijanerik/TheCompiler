@@ -63,8 +63,6 @@ node *GTvardec(node* arg_node, info *arg_info) {
     node* entry = VARDEC_SYMBOLTABLEENTRY(arg_node);
     SYMBOLTABLEENTRY_INDEX(entry) = INFO_NEW_INDEX(arg_info);
     
-    printf("ident: %s\n", IDENT_NAME(VARDEC_IDENT(arg_node)));
-
     node* exprs = VARDEC_EXPRS(arg_node);
     
     while(exprs) {
