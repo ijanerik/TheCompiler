@@ -226,7 +226,7 @@ node* TCVbinop(node *arg_node, info *arg_info)
             BINOP_TYPE(arg_node) = T_int;       
         }
         else {
-             CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno, "int");
+             CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno + 1, "int");
         }
     }
 
@@ -240,7 +240,7 @@ node* TCVbinop(node *arg_node, info *arg_info)
             BINOP_TYPE(arg_node) = T_float;       
         }
         else {
-            CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno, "float");
+            CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno + 1, "float");
         }
     }
 
@@ -251,7 +251,7 @@ node* TCVbinop(node *arg_node, info *arg_info)
             BINOP_TYPE(arg_node) = T_bool;             
         }
         else {
-            CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno, "bool");
+            CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno + 1, "bool");
         }
     }
 
