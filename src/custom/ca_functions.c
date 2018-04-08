@@ -216,11 +216,33 @@ node *CAFfundef(node *arg_node, info *tables)
         FUNDEF_FUNBODY(arg_node) = TRAVdo(FUNDEF_FUNBODY(arg_node), tables);
     }
 
-    if (TABLES_NO_RETURN(tables) == 1 && 
-        FUNHEADER_RETTYPE(FUNDEF_FUNHEADER(arg_node)) != T_void &&
+    if (TABLES_NO_RETURN(tables) == 1){
+        
+        if (FUNHEADER_RETTYPE(FUNDEF_FUNHEADER(arg_node)) == T_void) {
+            
+            node* retstmt = TBmakeReturnstmt(NULL);
+            node* stmts = FUNBODY_STMTS(FUNDEF_FUNBODY(arg_node));
+            
+            if (stmts == NULL) {
+                stmts = TBmakeStmts(retstmt, NULL);
+                FUNBODY_STMTS(FUNDEF_FUNBODY(arg_node)) = stmts;
+            }
+            else {
+                while (STMTS_NEXT(stmts)) {
+                    stmts = STMTS_NEXT(stmts); 
+                }
+                
+                STMTS_NEXT(stmts) = TBmakeStmts(retstmt, NULL);
+            }
+        }
+
+        if (FUNHEADER_RETTYPE(FUNDEF_FUNHEADER(arg_node)) != T_void &&
         FUNDEF_FUNBODY(arg_node) != NULL) {
-        CTIerror("No return statement found for non void function.");
+            CTIerror("No return statement found for non void function.");
+        }
     }
+
+    
 
     TABLES_REMOVE_TABLE(tables);
 
