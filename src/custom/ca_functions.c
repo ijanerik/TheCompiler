@@ -196,7 +196,7 @@ node *CAFfundef(node *arg_node, info *tables)
     if(times > 1) {
         CTIerror(ERROR_REDEC_FUNC, arg_node->lineno + 1, IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(arg_node))));
     }
-
+    
     FUNDEF_SCOPE(arg_node) = TABLES_INDEX(tables);
 
     // Add to table and traverse through the function body.
@@ -205,19 +205,21 @@ node *CAFfundef(node *arg_node, info *tables)
     if(FUNDEF_SYMBOLTABLE(arg_node) != NULL) {
         FUNDEF_SYMBOLTABLE(arg_node) = TRAVdo(FUNDEF_SYMBOLTABLE(arg_node), tables);
     }
-
+    
     FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), tables);
 
     TABLES_NO_RETURN(tables) = 1;
     if(FUNDEF_FUNBODY(arg_node) != NULL) {
         FUNDEF_FUNBODY(arg_node) = TRAVdo(FUNDEF_FUNBODY(arg_node), tables);
     }
-
+    
     if (TABLES_NO_RETURN(tables) == 1){
         
-        if (FUNHEADER_RETTYPE(FUNDEF_FUNHEADER(arg_node)) == T_void) {
+        if (FUNHEADER_RETTYPE(FUNDEF_FUNHEADER(arg_node)) == T_void &&
+            FUNDEF_FUNBODY(arg_node)) {
             
             node* retstmt = TBmakeReturnstmt(NULL);
+            
             node* stmts = FUNBODY_STMTS(FUNDEF_FUNBODY(arg_node));
             
             if (stmts == NULL) {
