@@ -266,7 +266,6 @@ node* CAFifelsestmt(node *arg_node, info *tables) {
 node *CAFfuncall(node *arg_node, info *tables)
 {
     DBUG_ENTER("CAFfuncall");
-    DBUG_PRINT("TCVfun", ("%s\n", IDENT_NAME(FUNCALL_IDENT(arg_node))));
 
     // Check if you can find the function in one of the tables.
     // Otherwise give a error.
