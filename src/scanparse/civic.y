@@ -410,25 +410,25 @@ exprs:
     }
     ;
 
-expr: expr binop1 expr2 { $$ = TBmakeBinop( $2, $1, $3); }
+expr: expr binop1 expr2 { $$ = TBmakeBinop( $2, $1, $3, NULL); }
      | expr2;
 
-expr2: expr2 binop2 expr3 { $$ = TBmakeBinop( $2, $1, $3); }
+expr2: expr2 binop2 expr3 { $$ = TBmakeBinop( $2, $1, $3, NULL); }
      | expr3;
 
-expr3: expr3 binop3 expr4 { $$ = TBmakeBinop( $2, $1, $3); }
+expr3: expr3 binop3 expr4 { $$ = TBmakeBinop( $2, $1, $3, NULL); }
      | expr4;
 
-expr4: expr4 binop4 expr5 { $$ = TBmakeBinop( $2, $1, $3); }
+expr4: expr4 binop4 expr5 { $$ = TBmakeBinop( $2, $1, $3, NULL); }
      | expr5;
 
-expr5: expr5 binop5 expr6 { $$ = TBmakeBinop( $2, $1, $3); }
+expr5: expr5 binop5 expr6 { $$ = TBmakeBinop( $2, $1, $3, NULL); }
     | expr6
     ;
-expr6: expr6 binop6 expr7 { $$ = TBmakeBinop( $2, $1, $3); }
+expr6: expr6 binop6 expr7 { $$ = TBmakeBinop( $2, $1, $3, NULL); }
      | expr7;
 expr7: monop expr7 { $$ = TBmakeMonop($1, $2); }
-     | BRACKET_L vartype BRACKET_R expr7 { $$ = TBmakeCastexpr($2, $4); }
+     | BRACKET_L vartype BRACKET_R expr7 { $$ = TBmakeCastexpr($2, $4, NULL); }
      | expr8;
 expr8: BRACKET_L expr BRACKET_R { $$ = $2; }
      | constant { $$ = $1; }

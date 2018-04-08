@@ -63,8 +63,18 @@ node *GTvardec(node* arg_node, info *arg_info) {
     node* entry = VARDEC_SYMBOLTABLEENTRY(arg_node);
     SYMBOLTABLEENTRY_INDEX(entry) = INFO_NEW_INDEX(arg_info);
     
-    if (VARDEC_EXPRS(arg_node)) {
-        VARDEC_EXPRS(arg_node) = TRAVdo(VARDEC_EXPRS(arg_node), arg_info);
+    printf("ident: %s\n", IDENT_NAME(VARDEC_IDENT(arg_node)));
+
+    node* exprs = VARDEC_EXPRS(arg_node);
+    
+    while(exprs) {
+        
+        node* expr = EXPRS_EXPR(exprs);
+        
+        if (expr) {
+            expr = TRAVdo(expr, arg_info);
+        }
+        exprs = EXPRS_NEXT(exprs);
     }
 
     DBUG_RETURN(arg_node);
@@ -144,9 +154,17 @@ node* GTnum(node* arg_node, info *arg_info) {
     node* table_tail = INFO_CONSTANTS_TABLE_TAIL(arg_info);
 
     int value = NUM_VALUE(arg_node);
+
     node* table = findConstant(T_int, (void *)&value, table_head);
 
-    if (table == NULL) {
+    if (CONSTANTSTABLE_INDEX(table_head) == -1) {
+        INFO_CONSTANTS_INDEX(arg_info) = 1;
+        CONSTANTSTABLE_INDEX(table_head) = 0,
+        CONSTANTSTABLE_TYPE(table_head) = T_int;
+        CONSTANTSTABLE_INT(table_head) = value;
+        table = INFO_CONSTANTS_TABLE_HEAD(arg_info);
+    }
+    else if (table == NULL) {
         int new_index = INFO_NEW_CONSTANTS_INDEX(arg_info);
         node* new_table = TBmakeConstantstable(T_int, new_index, FALSE,
                                                 value, 0, NULL);
@@ -154,13 +172,7 @@ node* GTnum(node* arg_node, info *arg_info) {
         INFO_CONSTANTS_TABLE_TAIL(arg_info) = new_table;
         table = new_table;
     }
-    else if (CONSTANTSTABLE_INDEX(table_head) == -1) {
-        int new_index = INFO_NEW_CONSTANTS_INDEX(arg_info);
-        CONSTANTSTABLE_INDEX(table_head) = new_index;
-        CONSTANTSTABLE_TYPE(table_head) = T_int;
-        CONSTANTSTABLE_INT(table_head) = value;
-        table = table_head;
-    }
+    
     NUM_CONSTANTSTABLE(arg_node) = table;
 
     DBUG_RETURN(arg_node);
@@ -175,7 +187,14 @@ node* GTfloat(node* arg_node, info *arg_info) {
     float value = FLOAT_VALUE(arg_node);
     node* table = findConstant(T_float, (void *)&value, table_head);
     
-    if (table == NULL) {
+    if (CONSTANTSTABLE_INDEX(table_head) == -1) {
+        INFO_CONSTANTS_INDEX(arg_info) = 1;
+        CONSTANTSTABLE_INDEX(table_head) = 0,
+        CONSTANTSTABLE_TYPE(table_head) = T_float;
+        CONSTANTSTABLE_FLOAT(table_head) = value;
+        table = INFO_CONSTANTS_TABLE_HEAD(arg_info);
+    }
+    else if (table == NULL) {
         int new_index = INFO_NEW_CONSTANTS_INDEX(arg_info);
         node* new_table = TBmakeConstantstable(T_float, new_index, FALSE,
                                                 0, value, NULL);
@@ -183,13 +202,7 @@ node* GTfloat(node* arg_node, info *arg_info) {
         INFO_CONSTANTS_TABLE_TAIL(arg_info) = new_table;
         table = new_table;
     }
-    if (CONSTANTSTABLE_INDEX(table_head) == -1) {
-        int new_index = INFO_NEW_CONSTANTS_INDEX(arg_info);
-        CONSTANTSTABLE_INDEX(table_head) = new_index;
-        CONSTANTSTABLE_TYPE(table_head) = T_float;
-        CONSTANTSTABLE_FLOAT(table_head) = value;
-        table = table_head;
-    }
+    
 
     FLOAT_CONSTANTSTABLE(arg_node) = table;
     
@@ -207,7 +220,14 @@ node* GTbool(node* arg_node, info *arg_info) {
     bool value = BOOL_VALUE(arg_node);
     node* table = findConstant(T_bool, (void *)&value, table_head);
     
-    if (table == NULL) {
+    if (CONSTANTSTABLE_INDEX(table_head) == -1) {
+        INFO_CONSTANTS_INDEX(arg_info) = 1;
+        CONSTANTSTABLE_INDEX(table_head) = 0,
+        CONSTANTSTABLE_TYPE(table_head) = T_bool;
+        CONSTANTSTABLE_BOOL(table_head) = value;
+        table = INFO_CONSTANTS_TABLE_HEAD(arg_info);
+    }
+    else if (table == NULL) {
         int new_index = INFO_NEW_CONSTANTS_INDEX(arg_info);
         node* new_table = TBmakeConstantstable(T_bool, new_index, value,
                                                 0, 0, NULL);
@@ -215,13 +235,7 @@ node* GTbool(node* arg_node, info *arg_info) {
         INFO_CONSTANTS_TABLE_TAIL(arg_info) = new_table;
         table = new_table;
     } 
-    else if (CONSTANTSTABLE_INDEX(table_head) == -1) {
-        int new_index = INFO_NEW_CONSTANTS_INDEX(arg_info);
-        CONSTANTSTABLE_INDEX(table_head) = new_index,
-        CONSTANTSTABLE_TYPE(table_head) = T_bool;
-        CONSTANTSTABLE_BOOL(table_head) = value;
-        table = table_head;
-    }
+    
     BOOL_CONSTANTSTABLE(arg_node) = table;
 
     DBUG_RETURN(arg_node); 

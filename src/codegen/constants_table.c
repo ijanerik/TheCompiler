@@ -7,18 +7,30 @@
 
 node* findConstant(cctype type, void* value, node* table) {
     while (table != NULL) {
-        bool b = CONSTANTSTABLE_BOOL(table);
-        int i = CONSTANTSTABLE_INT(table);
-        float f = CONSTANTSTABLE_FLOAT(table);
-        int index = CONSTANTSTABLE_INDEX(table);
         
-        if ((type == T_bool && *((bool*)value) == b) ||
-            (type == T_int && *((int*)value) == i) || 
-            (type == T_float && *((float*)value) == f)) {
+        cctype table_type = CONSTANTSTABLE_TYPE(table);
+        if (type == T_bool && table_type == T_bool) {
+            bool table_value = CONSTANTSTABLE_BOOL(table);
+            if (*((bool*)value) == table_value) {
                 return table;
+            }
+        }
+        if (type == T_int && table_type == T_int) {
+            int table_value = CONSTANTSTABLE_INT(table);
+            if (*((int*)value) == table_value) {
+                return table;
+            }
+        }
+
+        if(type == T_float && table_type == T_float) {
+            float table_value = CONSTANTSTABLE_FLOAT(table);
+            if(*((float*)value) == table_value) {
+                return table;
+            }
         }
         
         table = CONSTANTSTABLE_NEXT(table);
     }
     return NULL;
 }
+

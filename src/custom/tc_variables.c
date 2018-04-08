@@ -58,14 +58,36 @@ node* TCVcastexpr(node* arg_node, info *arg_info)
     node* expr = CASTEXPR_EXPR(arg_node);
     cctype type = CASTEXPR_TYPE(arg_node);
     cctype expr_type = tc_type_inference(expr, arg_info);
+    CASTEXPR_EXPRTYPE(arg_node) = expr_type;
 
+    // @ todo expr used to crash deallocation of tree
     if (type == T_bool && expr_type == T_int) {
-        node* binop = TBmakeBinop(BO_ge, expr, TBmakeNum(1));
+        node* binop = TBmakeBinop(BO_ge, expr, TBmakeNum(1), NULL);
+        BINOP_TYPE(binop) = T_int;
         node* condexpr = TBmakeCondexpr(TBmakeBool(TRUE), TBmakeBool(FALSE),
                                         binop);
-        //MEMfree(arg_node);
-        arg_node = condexpr;
-        printf("FINE\n");
+        CASTEXPR_CONDEXPR(arg_node) = condexpr;
+    }
+    else if (type == T_int && expr_type == T_bool) {
+        node* binop = TBmakeBinop(BO_eq, expr, TBmakeBool(TRUE), NULL);
+        BINOP_TYPE(binop) = T_bool;
+        node* condexpr = TBmakeCondexpr(TBmakeNum(1), TBmakeNum(0),
+                                        binop);
+        CASTEXPR_CONDEXPR(arg_node) = condexpr;
+    }
+    else if (type == T_float && expr_type == T_bool) {
+        node* binop = TBmakeBinop(BO_eq, expr, TBmakeBool(TRUE), NULL);
+        BINOP_TYPE(binop) = T_float;
+        node* condexpr = TBmakeCondexpr(TBmakeFloat(1.0), TBmakeFloat(0.0),
+                                        binop);
+        CASTEXPR_CONDEXPR(arg_node) = condexpr;
+    }
+    else if (type == T_bool && expr_type == T_float) {
+        node* binop = TBmakeBinop(BO_ge, expr, TBmakeFloat(1.0), NULL);
+        BINOP_TYPE(binop) = T_bool;
+        node* condexpr = TBmakeCondexpr(TBmakeBool(TRUE), TBmakeBool(FALSE),
+                                        binop);
+        CASTEXPR_CONDEXPR(arg_node) = condexpr;
     }
 
     INFO_SET_TYPE(arg_info, type);
@@ -166,6 +188,8 @@ node* TCVfloat(node *arg_node, info *arg_info)
 node* TCVnum(node *arg_node, info *arg_info)
 {
     DBUG_ENTER("TCVnum");
+
+    
 
     INFO_SET_TYPE(arg_info, T_int);
 

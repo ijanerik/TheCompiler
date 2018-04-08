@@ -20,4 +20,6 @@ extern node* GBCreturnstmt(node* arg_node, info* arg_info);
 extern node* GBCfuncall(node* arg_node, info* arg_info);
 extern node* GBCfloat(node* arg_node, info* arg_info);
 extern node* GBCbool(node* arg_node, info* arg_info);
+extern node* GBCcastexpr(node* arg_node, info* arg_info);
+extern node* GBCcondexpr(node* arg_node, info* arg_info);
 #endif

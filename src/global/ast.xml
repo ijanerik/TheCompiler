@@ -147,6 +147,8 @@
                 <node name="Program" />
                 <node name="ReturnStmt" />
                 <node name="FunCall" />
+                <node name="CastExpr" />
+                <node name="CondExpr" />
             </travuser>
         </traversal>
     </general>
@@ -1280,12 +1282,34 @@
                         </target>
                     </targets>
                 </son>
+                <son name="CondExpr">
+                    <description>remaining expressions in sequence</description>
+                    <targets>
+                        <target mandatory="no">
+                            <node name="CondExpr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
             </sons>
             <attributes>
                 <attribute name="Type">
                     <type name="Type">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="ExprType">
+                    <type name="Type">
+                        <targets>
+                            <target mandatory="no">
                                 <phases>
                                     <all />
                                 </phases>
@@ -1418,6 +1442,17 @@
                         </target>
                     </targets>
                 </son>
+                <son name="CondExpr">
+                    <description>right operand expression</description>
+                    <targets>
+                        <target mandatory="yes">
+                            <node name="CondExpr" />
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </son>
             </sons>
             <attributes>
                 <attribute name="Op">
@@ -1510,10 +1545,10 @@
                     <type name="Float">
                         <targets>
                             <target mandatory="yes">
+                                <phases>
+                                    <all />
+                                </phases>
                             </target>
-                            <phases>
-                                <all />
-                            </phases>
                         </targets>
                     </type>
                 </attribute>

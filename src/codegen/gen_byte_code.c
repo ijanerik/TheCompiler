@@ -294,6 +294,48 @@ node* GBCvardec(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 }
 
+node* GBCcastexpr(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCcastexpr");
+
+    cctype type = CASTEXPR_TYPE(arg_node);
+    cctype expr_type = CASTEXPR_EXPRTYPE(arg_node);
+
+    if (CASTEXPR_CONDEXPR(arg_node)) {
+        CASTEXPR_CONDEXPR(arg_node) = TRAVdo(CASTEXPR_CONDEXPR(arg_node), arg_info);
+    }
+    else {
+        CASTEXPR_EXPR(arg_node) = TRAVdo(CASTEXPR_EXPR(arg_node), arg_info);
+    }
+
+    
+    if (type == T_int && expr_type == T_float) {
+        printOp0(F2I);
+    }
+    if (type == T_float && expr_type == T_int) {
+        printOp0(I2F);
+    } 
+
+    DBUG_RETURN(arg_node);
+}
+
+node* GBCcondexpr(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCcondexpr");
+    
+    CONDEXPR_EXPR(arg_node) = TRAVdo(CONDEXPR_EXPR(arg_node), arg_info);
+
+    int id = INFO_IFCNT(arg_info);
+    printBranch(BRANCH_F, "ELSE", id);
+    CONDEXPR_TRUE(arg_node) = TRAVdo(CONDEXPR_TRUE(arg_node), arg_info);
+    printBranch(JMP, "ENDIF", id);    
+    printLabel("ELSE", id);
+    CONDEXPR_FALSE(arg_node) = TRAVdo(CONDEXPR_FALSE(arg_node), arg_info);
+    printLabel("ENDIF", id);
+    
+    INFO_IFCNT(arg_info) += 1;
+
+    DBUG_RETURN(arg_node);
+}
+
 
 node* GBCassign(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCassign");
@@ -348,7 +390,7 @@ node* GBCfloat(node* arg_node, info* arg_info) {
 node* GBCbool(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCbool");
 
-    float value = BOOL_VALUE(arg_node);
+    bool value = BOOL_VALUE(arg_node);
     node* table = findConstant(T_bool, (void*)&value,
                                INFO_CONSTANTS_TABLE(arg_info));
     if (table) {
@@ -507,8 +549,16 @@ node* GBCforstmt(node* arg_node, info* arg_info) {
 node* GBCbinop(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCbinop");
 
+    if ((BINOP_OP(arg_node) == BO_and || BINOP_OP(arg_node) == BO_or) &&
+         BINOP_CONDEXPR(arg_node)) {
+        BINOP_CONDEXPR(arg_node) = TRAVdo(BINOP_CONDEXPR(arg_node), arg_info);
+        DBUG_RETURN(arg_node);
+    }
+   
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
+    
+   
 
     /* ARTITHMETIC INSTRUCTIONS */
     if (BINOP_OP(arg_node) == BO_add) {
@@ -596,6 +646,9 @@ node* GBCbinop(node* arg_node, info* arg_info) {
         if (BINOP_TYPE(arg_node) == T_float) {
             printOp0(FEQ);
         }
+        if (BINOP_TYPE(arg_node) == T_bool) {
+            printOp0(BEQ);
+        }
     }
 
     if (BINOP_OP(arg_node) == BO_ne) {
@@ -605,10 +658,12 @@ node* GBCbinop(node* arg_node, info* arg_info) {
         if (BINOP_TYPE(arg_node) == T_float) {
             printOp0(FNE);
         }
+        if (BINOP_TYPE(arg_node) == T_bool) {
+            printOp0(BNE);
+        }
     }
 
-
-    DBUG_RETURN(arg_node);
+    DBUG_RETURN(arg_node);    
 }
 
 node *GBCdoGenByteCode( node *syntaxtree)

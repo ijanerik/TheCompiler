@@ -26,6 +26,12 @@ char* FSUB = "fsub";
 char* FMUL = "fmul";
 char* FDIV = "fdiv";
 
+
+/* CONVERSION INSTRUCTIONS */
+
+char* I2F = "i2f";
+char* F2I = "f2i";
+
 /* CONDITIONALS */
 char* ILT = "ilt";
 char* ILE = "ile"; 
@@ -40,6 +46,9 @@ char* FGT = "fgt";
 char* FGE = "fge";
 char* FEQ = "feq";
 char* FNE = "fne";
+
+char* BEQ = "beq";
+char* BNE = "bne";
 
 char* BRANCH_F = "branch_f";
 char* BRANCH_T = "branch_t";

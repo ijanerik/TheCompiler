@@ -297,7 +297,7 @@ PRTbool(node* arg_node, info *arg_info) {
     }
     
     if (BOOL_CONSTANTSTABLE(arg_node)) {
-        printf("/*%d*/", CONSTANTSTABLE_BOOL(BOOL_CONSTANTSTABLE(arg_node)));
+        printf("/*%p*/", BOOL_CONSTANTSTABLE(arg_node));
     }
 
     DBUG_RETURN(arg_node);
@@ -920,8 +920,10 @@ node* PRTprogram(node* arg_node, info *arg_info) {
     DBUG_ENTER("");
 
     printIndents(arg_info);
-    printf("/** CONSTANTS TABLE\n");
+    
     if(PROGRAM_CONSTANTSTABLE(arg_node) != NULL) {
+        printf("/** CONSTANTS TABLE\n");
+        printf(" * INDEX TYPE VALUE\n");
         PROGRAM_CONSTANTSTABLE(arg_node) = TRAVdo(PROGRAM_CONSTANTSTABLE(arg_node), arg_info);
     }
     printf("\n");

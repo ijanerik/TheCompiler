@@ -24,15 +24,21 @@ node* BObinop(node* arg_node, info *arg_info)
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
     
-    node* expr = op == BO_and ? TBmakeCondexpr(BINOP_RIGHT(arg_node),
-                                               TBmakeBool(FALSE),
-                                               BINOP_LEFT(arg_node))
-                              : TBmakeCondexpr(TBmakeBool(TRUE),
-                                               BINOP_RIGHT(arg_node),
-                                               BINOP_LEFT(arg_node));
+    node* expr;
+    if (op == BO_and) {
+        
+        node* eq = TBmakeBinop(BO_eq, BINOP_LEFT(arg_node), TBmakeBool(TRUE), NULL);
+        BINOP_TYPE(eq) = T_bool;
+        expr = TBmakeCondexpr(BINOP_RIGHT(arg_node), TBmakeBool(FALSE), eq);
+    }
+    if (op == BO_or) {
+        node* eq = TBmakeBinop(BO_eq, BINOP_LEFT(arg_node), TBmakeBool(TRUE), NULL);
+        BINOP_TYPE(eq) = T_bool;
+        expr = TBmakeCondexpr(TBmakeBool(TRUE), BINOP_RIGHT(arg_node), eq);
+    }
 
-    MEMfree(arg_node);
-    arg_node = expr;
+    // @ todo this crashes the program
+    BINOP_CONDEXPR(arg_node) = expr; 
 
     DBUG_RETURN(arg_node);
 }
