@@ -245,6 +245,8 @@ node *GVVprogram (node *arg_node, info *arg_info)
             PROGRAM_DECLARATIONS(arg_node) = declarations;
         }
 
+        /*
+         * We dont need to call __init from the main function.
         if(INFO_MAIN_FUNCTION(arg_info) != NULL) {
             node* funcall = TBmakeFuncall(TBmakeIdent(STRcpy("__init")), NULL);
             FUNCALL_SYMBOLTABLEENTRY(funcall) = INFO_MAIN_FUNCTION(arg_info);
@@ -252,6 +254,7 @@ node *GVVprogram (node *arg_node, info *arg_info)
             FUNBODY_STMTS(FUNDEF_FUNBODY(INFO_MAIN_FUNCTION(arg_info))) = stmt;
 
         }
+         */
     }
 
     DBUG_RETURN( arg_node);

@@ -60,7 +60,6 @@ node* TCVcastexpr(node* arg_node, info *arg_info)
     cctype expr_type = tc_type_inference(expr, arg_info);
     CASTEXPR_EXPRTYPE(arg_node) = expr_type;
 
-    // @ todo expr used to crash deallocation of tree
     if (type == T_bool && expr_type == T_int) {
         node* binop = TBmakeBinop(BO_ge, expr, TBmakeNum(1), NULL);
         BINOP_TYPE(binop) = T_int;
