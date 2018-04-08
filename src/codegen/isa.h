@@ -51,6 +51,7 @@ char* IINC = "iinc";
 
 char* CONST_TABLE = ".const";
 char* EXPORT_FUN = ".exportfun";
+char* IMPORT_FUN = ".importfun";
 
 char* ESR = "esr";
 char* IRETURN = "ireturn";

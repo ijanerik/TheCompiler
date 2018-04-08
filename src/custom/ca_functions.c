@@ -217,7 +217,8 @@ node *CAFfundef(node *arg_node, info *tables)
     }
 
     if (TABLES_NO_RETURN(tables) == 1 && 
-        FUNHEADER_RETTYPE(FUNDEF_FUNHEADER(arg_node)) != T_void) {
+        FUNHEADER_RETTYPE(FUNDEF_FUNHEADER(arg_node)) != T_void &&
+        FUNDEF_FUNBODY(arg_node) != NULL) {
         CTIerror("No return statement found for non void function.");
     }
 

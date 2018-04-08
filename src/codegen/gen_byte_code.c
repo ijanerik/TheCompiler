@@ -91,6 +91,10 @@ void printFunExport(char* instruction, char* name, char* type, char* label) {
     printf("%s \"%s\" %s %s\n", instruction, name, type, label);    
 }
 
+void printFunImport(char* instruction, char* name, char* type) {
+    printf("%s \"%s\" %s\n", instruction, name, type);    
+}
+
 node* GBCprogram(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCprogram");
 
@@ -204,8 +208,14 @@ node* GBCfundef(node* arg_node, info* arg_info) {
     if (FUNDEF_EXPORT(arg_node) == TRUE) {
         printFunExport(EXPORT_FUN, name, cctypeToString(type), name);
     }
+
+    if(FUNDEF_FUNBODY(arg_node) == NULL) {
+        printFunImport(IMPORT_FUN, name, cctypeToString(type));
+    }
+    else {
+        printFunction(name);
+    }
     
-    printFunction(name);
     //printf("var_cnt: %d\n", var_cnt);
 
     if (var_cnt > 0) {
