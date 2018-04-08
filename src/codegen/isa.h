@@ -9,6 +9,11 @@ char* FLOADN = "floadn";
 char* FLOADC = "floadc";
 char* FSTORE = "fstore";
 
+char* BLOAD = "bload";
+char* BLOADN = "bloadn";
+char* BLOADC = "bloadc";
+char* BSTORE = "bstore";
+
 /* ARITHMETIC INSTRUCTIONS */
 char* IADD = "iadd";
 char* ISUB = "isub";
@@ -21,12 +26,20 @@ char* FSUB = "fsub";
 char* FMUL = "fmul";
 char* FDIV = "fdiv";
 
+/* CONDITIONALS */
 char* ILT = "ilt";
 char* ILE = "ile"; 
 char* IGT = "igt";
 char* IGE = "ige";
 char* IEQ = "ieq";
 char* INE = "ine";
+
+char* FLT = "flt";
+char* FLE = "fle"; 
+char* FGT = "fgt";
+char* FGE = "fge";
+char* FEQ = "feq";
+char* FNE = "fne";
 
 char* BRANCH_F = "branch_f";
 char* BRANCH_T = "branch_t";
@@ -37,6 +50,7 @@ char* JMP = "jmp";
 char* IINC = "iinc";
 
 char* CONST_TABLE = ".const";
+char* EXPORT_FUN = ".exportfun";
 
 char* ESR = "esr";
 char* IRETURN = "ireturn";

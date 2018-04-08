@@ -72,11 +72,11 @@ void printOp2(char* instruction, int arg1, int arg2) {
 }
 
 void printBranch(char* instruction, char* label, int id) {
-    printf("%s %s_%d\n", instruction, label, id);
+    printf("\t%s %s_%d\n", instruction, label, id);
 }
 
 void printLabel(char* label, int id) {
-    printf("%s_%d:\n", label, id);
+    printf("\t\t%s_%d:\n", label, id);
 }
 
 void printFunction(char* name) {
@@ -85,6 +85,10 @@ void printFunction(char* name) {
 
 void printJSR(char* instruction, int num, char* name) {
     printf("\t%s %d %s\n", instruction, num, name);
+}
+
+void printFunExport(char* instruction, char* name, char* type, char* label) {
+    printf("%s \"%s\" %s %s\n", instruction, name, type, label);    
 }
 
 node* GBCprogram(node* arg_node, info* arg_info) {
@@ -168,6 +172,9 @@ node* GBCglobaldef(node* arg_node, info* arg_info) {
         if (type == T_float) {
             printOp1(FSTORE, index);
         }
+        if (type == T_bool) {
+            printOp1(BSTORE, index);
+        }
     }
 
     DBUG_RETURN(arg_node);
@@ -191,7 +198,13 @@ node* GBCfundef(node* arg_node, info* arg_info) {
     }
     
     node* ident = FUNHEADER_IDENT(funheader);
+    cctype type = FUNHEADER_RETTYPE(funheader);
     char* name = IDENT_NAME(ident);
+
+    if (FUNDEF_EXPORT(arg_node) == TRUE) {
+        printFunExport(EXPORT_FUN, name, cctypeToString(type), name);
+    }
+    
     printFunction(name);
     //printf("var_cnt: %d\n", var_cnt);
 
@@ -263,7 +276,9 @@ node* GBCvardec(node* arg_node, info* arg_info) {
         if (type == T_float) {
             printOp1(FSTORE, index);
         }
-        
+        if (type == T_bool) {
+            printOp1(BSTORE, index);
+        }
     }
 
     DBUG_RETURN(arg_node);
@@ -284,6 +299,9 @@ node* GBCassign(node* arg_node, info* arg_info) {
     }
     if (type == T_float) {
         printOp1(FSTORE, index);
+    }
+    if (type == T_bool) {
+        printOp1(BSTORE, index);
     }
 
     DBUG_RETURN(arg_node);
@@ -320,7 +338,13 @@ node* GBCfloat(node* arg_node, info* arg_info) {
 node* GBCbool(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCbool");
 
-    
+    float value = BOOL_VALUE(arg_node);
+    node* table = findConstant(T_bool, (void*)&value,
+                               INFO_CONSTANTS_TABLE(arg_info));
+    if (table) {
+        int index = CONSTANTSTABLE_INDEX(table);
+        printOp1(BLOADC, index);
+    }
 
     DBUG_RETURN(arg_node);
 }
@@ -341,6 +365,9 @@ node* GBCvarcall(node* arg_node, info* arg_info) {
         if (type == T_float) {
             printOp2(FLOADN, current_scope - scope, index);
         }
+        if (type == T_bool) {
+            printOp2(BLOADN, current_scope - scope, index);
+        }
         
     } else{
         if (type == T_int) {
@@ -348,6 +375,9 @@ node* GBCvarcall(node* arg_node, info* arg_info) {
         }
         if (type == T_float) {
             printOp1(FLOAD, index);
+        }
+        if (type == T_bool) {
+            printOp1(BLOAD, index);
         }
     }
     
@@ -470,7 +500,7 @@ node* GBCbinop(node* arg_node, info* arg_info) {
     BINOP_LEFT(arg_node) = TRAVdo(BINOP_LEFT(arg_node), arg_info);
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
 
-    // Integer Operations
+    /* ARTITHMETIC INSTRUCTIONS */
     if (BINOP_OP(arg_node) == BO_add) {
         if (BINOP_TYPE(arg_node) == T_float) {
             printOp0(FADD);
@@ -512,29 +542,59 @@ node* GBCbinop(node* arg_node, info* arg_info) {
         printOp0(IREM);
     }
 
-    // Integer Conditionals
+    /* CONDITIONALS */
     if (BINOP_OP(arg_node) == BO_lt) {
-        printOp0(ILT);
+        if (BINOP_TYPE(arg_node) == T_int) {
+            printOp0(ILT);
+        }
+        if (BINOP_TYPE(arg_node) == T_float) {
+            printOp0(FLT);
+        }
     }
 
     if (BINOP_OP(arg_node) == BO_le) {
-        printOp0(ILE);
+        if (BINOP_TYPE(arg_node) == T_int) {
+            printOp0(ILE);
+        }
+        if (BINOP_TYPE(arg_node) == T_float) {
+            printOp0(FLE);
+        }
     }
 
     if (BINOP_OP(arg_node) == BO_gt) {
-        printOp0(IGT);
+        if (BINOP_TYPE(arg_node) == T_int) {
+            printOp0(IGT);
+        }
+        if (BINOP_TYPE(arg_node) == T_float) {
+            printOp0(FGT);
+        }
     }
 
     if (BINOP_OP(arg_node) == BO_ge) {
-        printOp0(IGE);
+        if (BINOP_TYPE(arg_node) == T_int) {
+            printOp0(IGE);
+        }
+        if (BINOP_TYPE(arg_node) == T_float) {
+            printOp0(FGE);
+        }
     }
 
     if (BINOP_OP(arg_node) == BO_eq) {
-        printOp0(IEQ);
+        if (BINOP_TYPE(arg_node) == T_int) {
+            printOp0(IEQ);
+        }
+        if (BINOP_TYPE(arg_node) == T_float) {
+            printOp0(FEQ);
+        }
     }
 
     if (BINOP_OP(arg_node) == BO_ne) {
-        printOp0(INE);
+        if (BINOP_TYPE(arg_node) == T_int) {
+            printOp0(INE);
+        }
+        if (BINOP_TYPE(arg_node) == T_float) {
+            printOp0(FNE);
+        }
     }
 
 

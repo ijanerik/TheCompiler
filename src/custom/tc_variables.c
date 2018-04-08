@@ -217,9 +217,9 @@ node* TCVbinop(node *arg_node, info *arg_info)
 
 
     if (t1 == T_int) {
-        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne ){
+        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne || op == BO_eq ){
             INFO_SET_TYPE(arg_info, T_bool);
-            BINOP_TYPE(arg_node) = T_bool;       
+            BINOP_TYPE(arg_node) = T_int;       
         }
         else if(op == BO_add || op == BO_sub || op == BO_mul || op == BO_div || op == BO_mod) {
             INFO_SET_TYPE(arg_info, T_int);
@@ -231,9 +231,9 @@ node* TCVbinop(node *arg_node, info *arg_info)
     }
 
     if (t1 == T_float) {
-        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne ){
+        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne || op == BO_eq ){
             INFO_SET_TYPE(arg_info, T_bool);
-            BINOP_TYPE(arg_node) = T_bool;       
+            BINOP_TYPE(arg_node) = T_float;       
         }
         else if (op == BO_add || op == BO_sub || op == BO_mul || op == BO_div ) {
             INFO_SET_TYPE(arg_info, T_float);
