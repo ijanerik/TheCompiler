@@ -60,6 +60,15 @@ static info *FreeInfo( info *info)
     DBUG_RETURN( info);
 }
 
+char* boolToString(bool value) {
+    if (value) {
+        return "true";
+    }
+    else {
+        return "false";
+    }
+}
+
 void printOp0(char* instruction) {
     fprintf(f,"\t%s\n", instruction);
 }
@@ -134,7 +143,7 @@ node* GBCconstantstable(node* arg_node, info* arg_info) {
             fprintf(f,"%s %s %d\n", CONST_TABLE, _type, CONSTANTSTABLE_INT(table));
         }
         if (type == T_bool) {
-            fprintf(f,"%s %s %d\n", CONST_TABLE, _type, CONSTANTSTABLE_BOOL(table));
+            fprintf(f,"%s %s %s\n", CONST_TABLE, _type, boolToString(CONSTANTSTABLE_BOOL(table)));
         }
         if (type == T_float) {
             fprintf(f,"%s %s %f\n", CONST_TABLE, _type, CONSTANTSTABLE_FLOAT(table));

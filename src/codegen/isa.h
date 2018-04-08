@@ -60,7 +60,7 @@ char* BNE = "bne";
 
 char* BRANCH_F = "branch_f";
 char* BRANCH_T = "branch_t";
-char* JMP = "jmp";
+char* JMP = "jump";
 
 char* IINC = "iinc";
 
