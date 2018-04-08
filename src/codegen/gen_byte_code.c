@@ -185,9 +185,13 @@ node* GBCfuncall(node* arg_node, info* arg_info) {
     int current_scope = INFO_SCOPE(arg_info);
     int delta_scope = current_scope - scope;     
 
-    if (delta_scope > 0) {
+    if (delta_scope  == 1) {
+        printOp0(ISRL);
+    }
+    else if (delta_scope > 0) {
         printOp1(ISRN, delta_scope);
-    } else {
+    } 
+    else {
         printOp0(ISR);
     }
 

@@ -84,5 +84,6 @@ char* FRETURN = "freturn";
 char* RETURN = "return";
 
 char* ISRN = "isrn";
+char* ISRL = "isrl";
 char* ISR = "isr";
 char* JSR = "jsr";
