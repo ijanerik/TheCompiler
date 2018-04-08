@@ -1,4 +1,5 @@
 #include "st_utils.h"
+#include "str.h"
 
 /*
  * SYMBOLTABLE functions
@@ -36,7 +37,7 @@ node* addSymbolTableEntry(node* symbol_table, char* name, cctype type, bool is_a
 
     // Add a new entry to the symbol table
     SYMBOLTABLE_NEXT(symbol_table) = TBmakeSymboltable(NULL, NULL);
-    node* entry = TBmakeSymboltableentry(name, type, is_array, -1, scope);
+    node* entry = TBmakeSymboltableentry(STRcpy(name), type, is_array, -1, scope);
     SYMBOLTABLE_SYMBOLTABLEENTRY(SYMBOLTABLE_NEXT(symbol_table)) = entry;
     return entry;
 }

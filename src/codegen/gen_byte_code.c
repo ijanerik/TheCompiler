@@ -232,7 +232,7 @@ node* GBCfundef(node* arg_node, info* arg_info) {
     // printf("params_cnt: %d\n", params_cnt);
 
     FUNDEF_FUNHEADER(arg_node) = TRAVdo(FUNDEF_FUNHEADER(arg_node), arg_info);
-    
+
 
     if (FUNDEF_FUNBODY(arg_node)) {
         INFO_SCOPE(arg_info) += 1;

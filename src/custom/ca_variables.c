@@ -68,10 +68,10 @@ node *CAVvardec(node *arg_node, symboltables *tables)
         VARDEC_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else if(scope < SYMBOLTABLES_INDEX(tables)) {
-        CTIwarn(WARNING_SHADOW_VAR, IDENT_NAME(ident));
+        CTIwarn(WARNING_SHADOW_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
     }
     else {
-        CTIerror(ERROR_REDEC_VAR, IDENT_NAME(ident));
+        CTIerror(ERROR_REDEC_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
     }
     DBUG_RETURN( arg_node);
 }
@@ -92,7 +92,7 @@ node *CAVglobaldec(node *arg_node, symboltables *tables)
         GLOBALDEC_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
-        CTIerror(ERROR_REDEC_VAR, IDENT_NAME(ident));
+        CTIerror(ERROR_REDEC_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
     }
 
     if(is_array) {
@@ -128,7 +128,7 @@ node *CAVglobaldef(node *arg_node, symboltables *tables)
         GLOBALDEF_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
-        CTIerror(ERROR_REDEC_VAR, IDENT_NAME(ident));
+        CTIerror(ERROR_REDEC_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
     }
 
     DBUG_RETURN( arg_node);
@@ -182,7 +182,7 @@ node *CAVvarcall(node *arg_node, symboltables *tables)
     if (entry != NULL) {
         VARCALL_SYMBOLTABLEENTRY(arg_node) = entry;
     } else {
-        CTIerror(ERROR_UNDEC_VAR, IDENT_NAME(ident));
+        CTIerror(ERROR_UNDEC_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
     }
 
     DBUG_RETURN( arg_node);
@@ -210,7 +210,7 @@ node *CAVparam(node *arg_node, symboltables *tables)
                                         SYMBOLTABLES_INDEX(tables));
             PARAM_SYMBOLTABLEENTRYLENGTH(arg_node) = array_entry;
         } else if (array_entry) {
-            CTIerror(ERROR_REDEC_VAR, IDENT_NAME(array_length));
+            CTIerror(ERROR_REDEC_VAR, arg_node->lineno + 1, IDENT_NAME(array_length));
         }
 
 
@@ -224,7 +224,7 @@ node *CAVparam(node *arg_node, symboltables *tables)
         PARAM_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
-        CTIerror(ERROR_REDEC_VAR, IDENT_NAME(ident));
+        CTIerror(ERROR_REDEC_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
     }
 
     DBUG_RETURN( arg_node);
@@ -240,7 +240,7 @@ node *CAVarrayindex(node *arg_node, symboltables *tables) {
         ARRAYINDEX_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
-        CTIerror(ERROR_UNDEC_VAR, IDENT_NAME(ident));
+        CTIerror(ERROR_UNDEC_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
     }
     ARRAYINDEX_INDEX(arg_node) = TRAVdo(ARRAYINDEX_INDEX(arg_node), tables);
 
@@ -270,7 +270,7 @@ node *CAVassign(node *arg_node, symboltables *tables) {
     if (entry != NULL) {
         ASSIGN_SYMBOLTABLEENTRY(arg_node) = entry;
     } else {
-        CTIerror(ERROR_UNDEC_VAR, IDENT_NAME(ident));
+        CTIerror(ERROR_UNDEC_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
     }
 
     if(ASSIGN_INDEX(arg_node) != NULL) {
