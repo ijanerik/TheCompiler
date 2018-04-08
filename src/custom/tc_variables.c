@@ -76,14 +76,14 @@ node* TCVcastexpr(node* arg_node, info *arg_info)
     }
     else if (type == T_float && expr_type == T_bool) {
         node* binop = TBmakeBinop(BO_eq, expr, TBmakeBool(TRUE), NULL);
-        BINOP_TYPE(binop) = T_float;
+        BINOP_TYPE(binop) = T_bool;
         node* condexpr = TBmakeCondexpr(TBmakeFloat(1.0), TBmakeFloat(0.0),
                                         binop);
         CASTEXPR_CONDEXPR(arg_node) = condexpr;
     }
     else if (type == T_bool && expr_type == T_float) {
         node* binop = TBmakeBinop(BO_ge, expr, TBmakeFloat(1.0), NULL);
-        BINOP_TYPE(binop) = T_bool;
+        BINOP_TYPE(binop) = T_float;
         node* condexpr = TBmakeCondexpr(TBmakeBool(TRUE), TBmakeBool(FALSE),
                                         binop);
         CASTEXPR_CONDEXPR(arg_node) = condexpr;
