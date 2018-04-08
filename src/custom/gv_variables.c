@@ -36,6 +36,12 @@ struct INFO {
 
     node* inits;
     node* latestInit;
+
+    node* assigns;
+    node* latestAssign;
+    node* latestVardec;
+
+    node* mainFunc;
 };
 
 
@@ -49,6 +55,12 @@ struct INFO {
 #define INFO_DECLARATIONS(n) ((n)->declarations)
 #define INFO_INITS(n) ((n)->inits)
 #define INFO_LATEST_INIT(n) ((n)->latestInit)
+
+#define INFO_ASSIGNS(n) ((n)->assigns)
+#define INFO_LATEST_ASSIGN(n) ((n)->latestAssign)
+#define INFO_LATEST_VARDEC(n) ((n)->latestVardec)
+
+#define INFO_MAIN_FUNCTION(n) ((n)->mainFunc)
 
 
 /*
@@ -72,6 +84,12 @@ static info *MakeInfo(void)
     INFO_INITS(result) = NULL;
     INFO_LATEST_INIT(result) = NULL;
 
+    INFO_ASSIGNS(result) = NULL;
+    INFO_LATEST_ASSIGN(result) = NULL;
+    INFO_LATEST_VARDEC(result) = NULL;
+
+    INFO_MAIN_FUNCTION(result) = NULL;
+
     DBUG_RETURN( result);
 }
 
@@ -93,6 +111,55 @@ void updateNext(node* lastDec, node* next) {
     }
 }
 
+node *GVVfundef(node *arg_node, info *arg_info) {
+    DBUG_ENTER("GVVfundef");
+
+    if(STReq(IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(arg_node))), "main")) {
+        INFO_MAIN_FUNCTION(arg_info) = arg_node;
+    }
+
+    INFO_ASSIGNS(arg_info) = NULL;
+    INFO_LATEST_ASSIGN(arg_info) = NULL;
+    INFO_LATEST_VARDEC(arg_info) = NULL;
+
+    if(FUNDEF_FUNBODY(arg_node) != NULL) {
+        TRAVdo(FUNDEF_FUNBODY(arg_node), arg_info);
+    }
+
+    node* body = FUNDEF_FUNBODY(arg_node);
+    if(INFO_LATEST_ASSIGN(arg_info) != NULL) {
+        STMTS_NEXT(INFO_LATEST_ASSIGN(arg_info)) = FUNBODY_STMTS(body);
+        FUNBODY_STMTS(body) = INFO_ASSIGNS(arg_info);
+    }
+
+    DBUG_PRINT("GVV", ("Fundef\n"));
+    DBUG_RETURN(arg_node);
+}
+
+node *GVVvardec(node *arg_node, info *arg_info) {
+    DBUG_ENTER("GVVvardec");
+    DBUG_PRINT("GVV", ("Vardec\n"));
+
+    node* ident = TBmakeIdent(STRcpy(IDENT_NAME(VARDEC_IDENT(arg_node))));
+    node* exprs = VARDEC_EXPRS(arg_node);
+
+    if(exprs != NULL) {
+        VARDEC_EXPRS(arg_node) = NULL;
+        node *assignVar = TBmakeAssign(ident, exprs, NULL);
+        ASSIGN_SYMBOLTABLEENTRY(assignVar) = VARDEC_SYMBOLTABLEENTRY(arg_node);
+        node *stmts = TBmakeStmts(assignVar, NULL);
+        if (INFO_ASSIGNS(arg_info) == NULL) {
+            INFO_ASSIGNS(arg_info) = stmts;
+        } else {
+            STMTS_NEXT(INFO_LATEST_ASSIGN(arg_info)) = stmts;
+        }
+
+        INFO_LATEST_ASSIGN(arg_info) = stmts;
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
 /*
  * Traversal functions
  * Cleaning the initiation
@@ -103,7 +170,10 @@ node *GVVdeclarations (node *arg_node, info *arg_info)
     node* next = DECLARATIONS_NEXT(arg_node);
     DECLARATIONS_NEXT(arg_node) = NULL;
 
+    DBUG_PRINT("GVV", ("Declarations\n"));
+
     node* declaration = DECLARATIONS_DECLARATION(arg_node);
+    TRAVdo(declaration, arg_info);
 
     if(NODE_TYPE(declaration) == N_globaldef || NODE_TYPE(declaration) == N_globaldec) {
         updateNext(INFO_LATEST_DEC(arg_info), NULL);
@@ -115,6 +185,7 @@ node *GVVdeclarations (node *arg_node, info *arg_info)
             if(exprs != NULL) {
                 GLOBALDEF_EXPRS(declaration) = NULL;
                 node *assignVar = TBmakeAssign(ident, exprs, NULL);
+                ASSIGN_SYMBOLTABLEENTRY(assignVar) = GLOBALDEC_SYMBOLTABLEENTRY(declaration);
                 node *stmts = TBmakeStmts(assignVar, NULL);
                 if (INFO_STATEMENTS(arg_info) == NULL) {
                     INFO_STATEMENTS(arg_info) = stmts;
@@ -174,6 +245,13 @@ node *GVVprogram (node *arg_node, info *arg_info)
             PROGRAM_DECLARATIONS(arg_node) = declarations;
         }
 
+        if(INFO_MAIN_FUNCTION(arg_info) != NULL) {
+            node* funcall = TBmakeFuncall(TBmakeIdent(STRcpy("__init")), NULL);
+            FUNCALL_SYMBOLTABLEENTRY(funcall) = INFO_MAIN_FUNCTION(arg_info);
+            node* stmt = TBmakeStmts(funcall, FUNBODY_STMTS(FUNDEF_FUNBODY(INFO_MAIN_FUNCTION(arg_info))));
+            FUNBODY_STMTS(FUNDEF_FUNBODY(INFO_MAIN_FUNCTION(arg_info))) = stmt;
+
+        }
     }
 
     DBUG_RETURN( arg_node);

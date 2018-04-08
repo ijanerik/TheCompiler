@@ -100,6 +100,8 @@
             <travuser>
                 <node name="Program" />
                 <node name="Declarations" />
+                <node name="FunDef" />
+                <node name="VarDec" />
             </travuser>
         </traversal>
 
@@ -972,7 +974,7 @@
                     <type name="Link">
                         <targets>
                             <target mandatory="no">
-                                <node name="SymbolTableEntry" />
+                                <node name="FunDef" />
                                 <phases>
                                     <all />
                                 </phases>

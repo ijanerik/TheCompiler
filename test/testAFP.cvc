@@ -1,12 +1,23 @@
 // Array function passing
-int[3] array = [1,2,3];
 int main() {
     int g = 3;
-    int[g] test = -4;
+    int test = -4;
     float t = -4.0;
+
+    if(4 == 6) {
+        t = 0.0;
+    } else {
+        g = 0;
+    }
+
     return func(test);
 }
 
-int func(int[m] arrayty) {
-    return m;
+int func(int arrayty) {
+    int p;
+    for(int i = 0, 4, 1) {
+        p = i;
+        main();
+    }
+    return 2;
 }

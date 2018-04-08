@@ -14,6 +14,7 @@ symboltables* MakeSymboltables(void)
     tables = (symboltables *)MEMmalloc(sizeof(symboltables));
 
     SYMBOLTABLES_INDEX(tables) = 0;
+    SYMBOLTABLES_FORLOOP_INDEX(tables) = -1;
 
     DBUG_RETURN( tables);
 }
@@ -27,6 +28,15 @@ symboltables* FreeSymboltables( symboltables *tables)
     DBUG_RETURN( tables);
 }
 
+bool strInArray(char* string, char* stringArr[], int lastIndex) {
+    for(int i = lastIndex; i >= 0; i--) {
+        if(STReq(string, stringArr[i])) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 // @todo Not sure about cctype here
 node* addSymbolTableEntry(node* symbol_table, char* name, cctype type, bool is_array, int scope) {
@@ -37,7 +47,7 @@ node* addSymbolTableEntry(node* symbol_table, char* name, cctype type, bool is_a
 
     // Add a new entry to the symbol table
     SYMBOLTABLE_NEXT(symbol_table) = TBmakeSymboltable(NULL, NULL);
-    node* entry = TBmakeSymboltableentry(STRcpy(name), type, is_array, -1, scope);
+    node* entry = TBmakeSymboltableentry(name, type, is_array, -1, scope);
     SYMBOLTABLE_SYMBOLTABLEENTRY(SYMBOLTABLE_NEXT(symbol_table)) = entry;
     return entry;
 }

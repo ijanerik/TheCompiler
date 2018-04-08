@@ -10,7 +10,9 @@
 
 
 #include "ca_variables.h"
+#include "st_utils.h"
 #include "errors.h"
+#include "str.h"
 
 /*
  * Traversal functions
@@ -62,7 +64,7 @@ node *CAVvardec(node *arg_node, symboltables *tables)
     
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                                    IDENT_NAME(VARDEC_IDENT(arg_node)),
+                                    STRcpy(IDENT_NAME(VARDEC_IDENT(arg_node))),
                                     VARDEC_TYPE(arg_node), is_array,
                                     SYMBOLTABLES_INDEX(tables));
         VARDEC_SYMBOLTABLEENTRY(arg_node) = entry;
@@ -86,7 +88,7 @@ node *CAVglobaldec(node *arg_node, symboltables *tables)
 
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                                    IDENT_NAME(ident),
+                                    STRcpy(IDENT_NAME(ident)),
                                     GLOBALDEC_TYPE(arg_node), is_array,
                                     SYMBOLTABLES_INDEX(tables));
         GLOBALDEC_SYMBOLTABLEENTRY(arg_node) = entry;
@@ -122,7 +124,7 @@ node *CAVglobaldef(node *arg_node, symboltables *tables)
 
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                                    IDENT_NAME(ident),
+                                    STRcpy(IDENT_NAME(ident)),
                                     GLOBALDEF_TYPE(arg_node), is_array,
                                     SYMBOLTABLES_INDEX(tables));
         GLOBALDEF_SYMBOLTABLEENTRY(arg_node) = entry;
@@ -177,12 +179,20 @@ node *CAVvarcall(node *arg_node, symboltables *tables)
     DBUG_ENTER("CAVvarcall");
 
     node* ident = VARCALL_IDENT(arg_node);
-    node* entry = searchSymbolTables(tables, IDENT_NAME(ident), NULL);
+    char* name = IDENT_NAME(ident);
+    node* entry = NULL;
+    if(strInArray(name, SYMBOLTABLES_FORLOOPS(tables), SYMBOLTABLES_FORLOOP_INDEX(tables))) {
+        char* underName = STRcat("_", name);
+        entry = searchSymbolTables(tables, underName, NULL);
+        free(underName);
+    } else {
+        entry = searchSymbolTables(tables, name, NULL);
+    }
     
     if (entry != NULL) {
         VARCALL_SYMBOLTABLEENTRY(arg_node) = entry;
     } else {
-        CTIerror(ERROR_UNDEC_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
+        CTIerror(ERROR_UNDEC_VAR, arg_node->lineno + 1, name);
     }
 
     DBUG_RETURN( arg_node);
@@ -205,7 +215,7 @@ node *CAVparam(node *arg_node, symboltables *tables)
 
         if(array_entry == NULL) {
             array_entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                                        IDENT_NAME(array_length),
+                                              STRcpy(IDENT_NAME(array_length)),
                                         T_int, 0,
                                         SYMBOLTABLES_INDEX(tables));
             PARAM_SYMBOLTABLEENTRYLENGTH(arg_node) = array_entry;
@@ -218,7 +228,7 @@ node *CAVparam(node *arg_node, symboltables *tables)
     
     if (entry == NULL) {
         entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                                    IDENT_NAME(ident),
+                                    STRcpy(IDENT_NAME(ident)),
                                     PARAM_TYPE(arg_node), is_array,
                                     SYMBOLTABLES_INDEX(tables));
         PARAM_SYMBOLTABLEENTRY(arg_node) = entry;
@@ -283,12 +293,11 @@ node *CAVassign(node *arg_node, symboltables *tables) {
 node *CAVforstmt(node *arg_node, symboltables *tables) {
     DBUG_ENTER("CAVforstmt");
 
-    DBUG_PRINT ("FORSTMT_CAV", ("Enter forstmt"));
 
     FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), tables);
 
     FORSTMT_SYMBOLTABLEENTRY(arg_node) = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                                                            IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node)),
+                                                             STRcat("_", IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node))),
                                                              T_int, 0,
                                                              SYMBOLTABLES_INDEX(tables));
 
@@ -298,9 +307,13 @@ node *CAVforstmt(node *arg_node, symboltables *tables) {
         FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), tables);
     }
 
+    SYMBOLTABLES_FORLOOP_INDEX(tables)++;
+    SYMBOLTABLES_FORLOOP_C(tables) = STRcpy(IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node)));
+
     FORSTMT_BLOCK(arg_node) = TRAVdo(FORSTMT_BLOCK(arg_node), tables);
 
-    SYMBOLTABLES_REMOVE_TABLE(tables);
+    free(SYMBOLTABLES_FORLOOP_C(tables));
+    SYMBOLTABLES_FORLOOP_INDEX(tables)--;
 
     DBUG_RETURN( arg_node);
 }
