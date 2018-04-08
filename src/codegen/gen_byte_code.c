@@ -153,6 +153,30 @@ node* GBCconstantstable(node* arg_node, info* arg_info) {
     DBUG_RETURN(arg_node);
 } 
 
+node* GBCmonop(node* arg_node, info* arg_info) {
+    DBUG_ENTER("GBCmonop");
+
+    MONOP_RIGHT(arg_node) = TRAVdo(MONOP_RIGHT(arg_node), arg_info);
+    
+    printf("IN MONOP");
+    cctype type = MONOP_TYPE(arg_node);
+    monop op = MONOP_OP(arg_node);
+
+    if (op == MO_not) {
+        printOp0(BNOT);
+    }
+    if (op == MO_neg) {
+        if (type == T_int) {
+            printOp0(INEG);
+        }
+        if (type == T_float) {
+            printOp0(FNEG);
+        }
+    }
+
+    DBUG_RETURN(arg_node);
+}
+
 node* GBCfuncall(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCfuncall");
 

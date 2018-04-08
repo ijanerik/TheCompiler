@@ -71,7 +71,7 @@
                 <node name="Assign" />
                 <node name="CastExpr" />
                 <node name="VarCall" />
-
+                <node name="MonOp" />
                 <node name="FunCall" />
             </travuser>
         </traversal>
@@ -151,6 +151,7 @@
                 <node name="FunCall" />
                 <node name="CastExpr" />
                 <node name="CondExpr" />
+                <node name="MonOp" />
             </travuser>
         </traversal>
     </general>
@@ -1258,6 +1259,18 @@
                     <type name="MonOp">
                         <targets>
                             <target mandatory="yes">
+                                <any />
+                                <phases>
+                                    <all />
+                                </phases>
+                            </target>
+                        </targets>
+                    </type>
+                </attribute>
+                <attribute name="Type">
+                    <type name="Type">
+                        <targets>
+                            <target mandatory="no">
                                 <any />
                                 <phases>
                                     <all />

@@ -218,6 +218,23 @@ node *TCVfuncall(node *arg_node, info *arg_info) {
     DBUG_RETURN( arg_node);
 }
 
+node* TCVmonop(node *arg_node, info *arg_info) {
+    DBUG_ENTER("TCVmonop");
+
+    MONOP_RIGHT(arg_node) = TRAVdo(MONOP_RIGHT(arg_node), arg_info);
+    cctype type = INFO_GET_TYPE(arg_info);
+    monop op = MONOP_OP(arg_node);
+    MONOP_TYPE(arg_node) = type;
+    
+    if ((op == MO_neg && type == T_bool) ||
+        (op == MO_not && (type == T_int || type == T_float))) {
+            CTIerror(ERROR_TYPE_MONOP, arg_node->lineno + 1);
+    }
+    
+
+    DBUG_RETURN( arg_node);
+} 
+
 node* TCVbinop(node *arg_node, info *arg_info) 
 {
     DBUG_ENTER("TCVbinop");

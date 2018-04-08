@@ -34,6 +34,9 @@ char* FSUB = "fsub";
 char* FMUL = "fmul";
 char* FDIV = "fdiv";
 
+char* BNOT = "bnot";
+char* INEG = "ineg";
+char* FNEG = "fneg";
 
 /* CONVERSION INSTRUCTIONS */
 

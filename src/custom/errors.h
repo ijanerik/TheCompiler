@@ -2,6 +2,7 @@
 #define ERROR_TYPE_BINOP    "line: %d\tType %s does not match type %s in the expression"
 #define ERROR_TYPE_CAST     "line: %d\tType %s cannot be cast to %s"
 
+#define ERROR_TYPE_MONOP    "line: %d\tOperator does not support this type"
 
 #define ERROR_REDEC_VAR "line: %d\tVariable %s is already declared"
 #define ERROR_UNDEC_VAR "line: %d\tVariable %s is not declared"
