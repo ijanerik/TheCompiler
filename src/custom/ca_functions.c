@@ -1,5 +1,6 @@
 #include "ca_functions.h"
 #include "str.h"
+#include "errors.h"
 
 struct INFO {
     node* table_stack[32];
@@ -20,10 +21,6 @@ struct INFO {
 #define TABLES_REMOVE_TABLE(n) ((n)->table_stack[(n)->index--] = NULL)
 
 #define TABLES_NO_RETURN(n) ((n)->no_return)
-
-#define ERROR_INCORRECT_FUNCTION_TABLE "Incorrect function table given"
-#define ERROR_REDEC_FUNC "Function \"%s\" is already declared"
-#define ERROR_UNDEC_FUNC "Function \"%s\" is not declared"
 
 bool equalFunDefCall(node* funDef, node* funCall) {
     if(NODE_TYPE(funCall) == N_funcall) {
@@ -197,7 +194,7 @@ node *CAFfundef(node *arg_node, info *tables)
     searchFunctionTable(TABLES_CURRENT_TABLE(tables), arg_node, &times);
 
     if(times > 1) {
-        CTIerror(ERROR_REDEC_FUNC, IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(arg_node))));
+        CTIerror(ERROR_REDEC_FUNC, arg_node->lineno + 1, IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(arg_node))));
     }
 
     FUNDEF_SCOPE(arg_node) = TABLES_INDEX(tables);
@@ -218,7 +215,7 @@ node *CAFfundef(node *arg_node, info *tables)
 
     if (TABLES_NO_RETURN(tables) == 1 && 
         FUNHEADER_RETTYPE(FUNDEF_FUNHEADER(arg_node)) != T_void) {
-        CTIerror("No return statement found for non void function.");
+        CTIerror("No return statement found for non void function: %s.", IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(arg_node))));
     }
 
     TABLES_REMOVE_TABLE(tables);
@@ -232,6 +229,10 @@ node *CAFreturnstmt(node *arg_node, info *tables)
     DBUG_ENTER("CAFreturnstmt");
 
     TABLES_NO_RETURN(tables) = 0;
+
+    if(RETURNSTMT_EXPR(arg_node) != NULL) {
+        TRAVdo(RETURNSTMT_EXPR(arg_node), tables);
+    }
 
     DBUG_RETURN( arg_node);
 }
@@ -265,6 +266,7 @@ node* CAFifelsestmt(node *arg_node, info *tables) {
 node *CAFfuncall(node *arg_node, info *tables)
 {
     DBUG_ENTER("CAFfuncall");
+    DBUG_PRINT("TCVfun", ("%s\n", IDENT_NAME(FUNCALL_IDENT(arg_node))));
 
     // Check if you can find the function in one of the tables.
     // Otherwise give a error.
@@ -272,7 +274,7 @@ node *CAFfuncall(node *arg_node, info *tables)
     if(foundNode != NULL) {
         FUNCALL_SYMBOLTABLEENTRY(arg_node) = foundNode;
     } else {
-        CTIerror(ERROR_UNDEC_FUNC, IDENT_NAME(FUNCALL_IDENT(arg_node)));
+        CTIerror(ERROR_UNDEC_FUNC, arg_node->lineno + 1, IDENT_NAME(FUNCALL_IDENT(arg_node)));
     }
 
     if(FUNCALL_ARGS(arg_node) != NULL) {

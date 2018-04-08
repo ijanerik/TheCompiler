@@ -186,6 +186,7 @@ node *TCVvarcall(node *arg_node, info *arg_info) {
 node *TCVfuncall(node *arg_node, info *arg_info) {
     DBUG_ENTER("TCVfuncall");
 
+
     node* fundef = FUNCALL_SYMBOLTABLEENTRY(arg_node);
     node* funheader = FUNDEF_FUNHEADER(fundef);
     cctype type = FUNHEADER_RETTYPE(funheader);
@@ -217,7 +218,7 @@ node* TCVbinop(node *arg_node, info *arg_info)
 
 
     if (t1 == T_int) {
-        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne ){
+        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne || op == BO_eq ){
             INFO_SET_TYPE(arg_info, T_bool);
             BINOP_TYPE(arg_node) = T_bool;       
         }
@@ -231,7 +232,7 @@ node* TCVbinop(node *arg_node, info *arg_info)
     }
 
     if (t1 == T_float) {
-        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne ){
+        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne || op == BO_ne ){
             INFO_SET_TYPE(arg_info, T_bool);
             BINOP_TYPE(arg_node) = T_bool;       
         }

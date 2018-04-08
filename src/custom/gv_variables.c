@@ -150,7 +150,7 @@ node *GVVdeclarations (node *arg_node, info *arg_info)
 }
 
 node* makeInitFun(node* stmts) {
-    return TBmakeFundef(0, TBmakeFunheader(T_void, TBmakeIdent("__init"), NULL), TBmakeFunbody(NULL, NULL, stmts), NULL);
+    return TBmakeFundef(0, TBmakeFunheader(T_void, TBmakeIdent(STRcpy("__init")), NULL), TBmakeFunbody(NULL, NULL, stmts), NULL);
 }
 
 node *GVVprogram (node *arg_node, info *arg_info)
