@@ -127,8 +127,10 @@ node *GVVfundef(node *arg_node, info *arg_info) {
     }
 
     node* body = FUNDEF_FUNBODY(arg_node);
-    INFO_LATEST_ASSIGN(arg_info) = FUNBODY_STMTS(body);
-    FUNBODY_STMTS(body) = INFO_ASSIGNS(arg_info);
+    if(INFO_LATEST_ASSIGN(arg_info) != NULL) {
+        STMTS_NEXT(INFO_LATEST_ASSIGN(arg_info)) = FUNBODY_STMTS(body);
+        FUNBODY_STMTS(body) = INFO_ASSIGNS(arg_info);
+    }
 
     DBUG_PRINT("GVV", ("Fundef\n"));
     DBUG_RETURN(arg_node);
@@ -244,11 +246,11 @@ node *GVVprogram (node *arg_node, info *arg_info)
         }
 
         if(INFO_MAIN_FUNCTION(arg_info) != NULL) {
-            node* stmts = FUNBODY_STMTS(FUNDEF_FUNBODY(INFO_MAIN_FUNCTION(arg_info)));
             node* funcall = TBmakeFuncall(TBmakeIdent(STRcpy("__init")), NULL);
             FUNCALL_SYMBOLTABLEENTRY(funcall) = INFO_MAIN_FUNCTION(arg_info);
-            node* stmt = TBmakeStmts(funcall, stmts);
+            node* stmt = TBmakeStmts(funcall, FUNBODY_STMTS(FUNDEF_FUNBODY(INFO_MAIN_FUNCTION(arg_info))));
             FUNBODY_STMTS(FUNDEF_FUNBODY(INFO_MAIN_FUNCTION(arg_info))) = stmt;
+
         }
     }
 

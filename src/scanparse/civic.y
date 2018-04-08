@@ -30,7 +30,7 @@ static int yyerror( char *errname);
  node               *node;
 }
 
-%token DOT BRACKET_L BRACKET_R COMMA SEMICOLON C_BRACKET_L C_BRACKET_R S_BRACKET_L S_BRACKET_R
+%token BRACKET_L BRACKET_R COMMA SEMICOLON C_BRACKET_L C_BRACKET_R S_BRACKET_L S_BRACKET_R
 %token MINUS PLUS STAR SLASH PERCENT LE LT GE GT EQ NE OR AND EXCL_MARK
 %token TRUEVAL FALSEVAL LET
 %token TBOOL TVOID TINT TFLOAT EXTERN EXPORT
@@ -59,6 +59,8 @@ static int yyerror( char *errname);
 %type <node> vardec vardecs arrayindex
 %type <node> program declarations declaration start
 %type <node> globaldef globaldec fundef fundefs funheader funbody params param
+
+%right "then" KIF
 
 %start start
 
@@ -323,14 +325,16 @@ assign:
     }
     ;
 
+
+
 ifelsestmt:
+    KIF BRACKET_L expr BRACKET_R block KELSE block
+    {
+        $$ = TBmakeIfelsestmt($3, $5, $7);
+    } |
     KIF BRACKET_L expr BRACKET_R block
     {
         $$ = TBmakeIfelsestmt($3, $5, NULL);
-    }
-    | KIF BRACKET_L expr BRACKET_R block KELSE block
-    {
-        $$ = TBmakeIfelsestmt($3, $5, $7);
     }
     ;
 
@@ -463,26 +467,26 @@ constant:
     ;
 
 floatval:
+    MINUS FLOAT {
+        node* in = TBmakeFloat(0.0);
+        FLOAT_VALUE(in) = -$2;
+        $$ = in;
+    } |
     FLOAT
     {
         node* in = TBmakeFloat(0.0);
         FLOAT_VALUE(in) = $1;
         $$ = in;
-    } |
-    MINUS floatval {
-        FLOAT_VALUE($2) = -FLOAT_VALUE($2);
-        $$ = $2;
     }
     ;
 
 intval:
+    MINUS NUM {
+        $$ = TBmakeNum(-$2);
+    } |
     NUM
     {
-        $$ = TBmakeNum( $1);
-    } |
-    MINUS intval {
-        NUM_VALUE($2) = -NUM_VALUE($2);
-        $$ = $2;
+        $$ = TBmakeNum($1);
     }
     ;
 

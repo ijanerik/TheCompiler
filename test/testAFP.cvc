@@ -3,6 +3,13 @@ int main() {
     int g = 3;
     int test = -4;
     float t = -4.0;
+
+    if(4 == 6) {
+        t = 0.0;
+    } else {
+        g = 0;
+    }
+
     return func(test);
 }
 
