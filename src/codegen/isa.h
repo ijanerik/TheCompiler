@@ -54,13 +54,16 @@ char* BRANCH_F = "branch_f";
 char* BRANCH_T = "branch_t";
 char* JMP = "jmp";
 
-
-
 char* IINC = "iinc";
 
+
+/* PSEUDO INSTRUCTIONS */
 char* CONST_TABLE = ".const";
 char* EXPORT_FUN = ".exportfun";
 char* IMPORT_FUN = ".importfun";
+char* IMPORT_VAR = ".importvar";
+char* EXPORT_VAR = ".exportvar";
+
 
 char* ESR = "esr";
 char* IRETURN = "ireturn";

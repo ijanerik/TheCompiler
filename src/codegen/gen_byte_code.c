@@ -95,6 +95,15 @@ void printFunImport(char* instruction, char* name, char* type) {
     printf("%s \"%s\" %s\n", instruction, name, type);    
 }
 
+void printVarImport(char* instruction, char* name, char* type) {
+    printf("%s \"%s\" %s\n", instruction, name, type);    
+}
+
+void printVarExport(char* instruction, char* name, int index) {
+    printf("%s \"%s\" %d\n", instruction, name, index);    
+}
+
+
 node* GBCprogram(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCprogram");
 
@@ -673,6 +682,37 @@ node *GBCdoGenByteCode( node *syntaxtree)
     info *arg_info;
 
     arg_info = MakeInfo();
+    printf("foo");
+    /* Import variables */
+    node* declarations = PROGRAM_DECLARATIONS(syntaxtree);
+    while (declarations) {
+        node* declaration = DECLARATIONS_DECLARATION(declarations);
+        if (NODE_TYPE(declaration) == N_globaldec) {
+            char* name = IDENT_NAME(GLOBALDEC_IDENT(declaration));
+            char* type = cctypeToString(GLOBALDEC_TYPE(declaration));
+            printVarImport(IMPORT_VAR, name, type);
+
+        }
+        declarations = DECLARATIONS_NEXT(declarations);
+    }
+
+    
+    /* Export variables*/
+    declarations = PROGRAM_DECLARATIONS(syntaxtree);
+    while (declarations) {
+        
+        node* declaration = DECLARATIONS_DECLARATION(declarations);
+        if (NODE_TYPE(declaration) == N_globaldef &&
+            GLOBALDEF_EXPORT(declaration) == TRUE) {    
+            char* name = IDENT_NAME(GLOBALDEF_IDENT(declaration));
+            
+            node* entry = GLOBALDEF_SYMBOLTABLEENTRY(declaration);
+            int index = SYMBOLTABLEENTRY_INDEX(entry);
+            printVarExport(EXPORT_VAR, name, index);
+
+        }
+        declarations = DECLARATIONS_NEXT(declarations);
+    }
 
     TRAVpush( TR_gbc);
     INFO_CONSTANTS_TABLE(arg_info) = PROGRAM_CONSTANTSTABLE(syntaxtree);

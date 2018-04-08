@@ -252,6 +252,8 @@ node *GTdoGenTables( node *syntaxtree)
         INFO_CONSTANTS_TABLE_HEAD(arg_info) = table;
         INFO_CONSTANTS_TABLE_TAIL(arg_info) = table;
         PROGRAM_CONSTANTSTABLE(syntaxtree) = table;
+
+        
     }
 
     TRAVpush( TR_gt);
