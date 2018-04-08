@@ -14,6 +14,14 @@ char* BLOADN = "bloadn";
 char* BLOADC = "bloadc";
 char* BSTORE = "bstore";
 
+char* ILOADG = "iloadg";
+char* FLOADG = "floadg";
+char* BLOADG = "bloadg";
+
+char* ISTOREG = "istoreg";
+char* FSTOREG = "fstoreg";
+char* BSTOREG = "bstoreg";
+
 /* ARITHMETIC INSTRUCTIONS */
 char* IADD = "iadd";
 char* ISUB = "isub";
@@ -59,6 +67,7 @@ char* IINC = "iinc";
 
 /* PSEUDO INSTRUCTIONS */
 char* CONST_TABLE = ".const";
+char* GLOBAL_TABLE = ".global";
 char* EXPORT_FUN = ".exportfun";
 char* IMPORT_FUN = ".importfun";
 char* IMPORT_VAR = ".importvar";

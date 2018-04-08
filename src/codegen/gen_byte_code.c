@@ -10,6 +10,7 @@
 #include "constants_table.h"
 #include "util.h"
 
+FILE *f;
 
 struct INFO {
     node* constants_table;
@@ -60,47 +61,51 @@ static info *FreeInfo( info *info)
 }
 
 void printOp0(char* instruction) {
-    printf("\t%s\n", instruction);
+    fprintf(f,"\t%s\n", instruction);
 }
 
 void printOp1(char* instruction, int arg) {
-    printf("\t%s %d\n", instruction, arg);
+    fprintf(f,"\t%s %d\n", instruction, arg);
 }
 
 void printOp2(char* instruction, int arg1, int arg2) {
-    printf("\t%s %d %d\n", instruction, arg1, arg2);
+    fprintf(f,"\t%s %d %d\n", instruction, arg1, arg2);
 }
 
 void printBranch(char* instruction, char* label, int id) {
-    printf("\t%s %s_%d\n", instruction, label, id);
+    fprintf(f,"\t%s %s_%d\n", instruction, label, id);
 }
 
 void printLabel(char* label, int id) {
-    printf("\t\t%s_%d:\n", label, id);
+    fprintf(f,"\t\t%s_%d:\n", label, id);
 }
 
 void printFunction(char* name) {
-    printf("%s:\n", name);
+    fprintf(f,"%s:\n", name);
 }
 
 void printJSR(char* instruction, int num, char* name) {
-    printf("\t%s %d %s\n", instruction, num, name);
+    fprintf(f,"\t%s %d %s\n", instruction, num, name);
 }
 
 void printFunExport(char* instruction, char* name, char* type, char* label) {
-    printf("%s \"%s\" %s %s\n", instruction, name, type, label);    
+    fprintf(f,"%s \"%s\" %s %s\n", instruction, name, type, label);    
 }
 
 void printFunImport(char* instruction, char* name, char* type) {
-    printf("%s \"%s\" %s\n", instruction, name, type);    
+    fprintf(f,"%s \"%s\" %s\n", instruction, name, type);    
 }
 
 void printVarImport(char* instruction, char* name, char* type) {
-    printf("%s \"%s\" %s\n", instruction, name, type);    
+    fprintf(f,"%s \"%s\" %s\n", instruction, name, type);    
 }
 
 void printVarExport(char* instruction, char* name, int index) {
-    printf("%s \"%s\" %d\n", instruction, name, index);    
+    fprintf(f,"%s \"%s\" %d\n", instruction, name, index);    
+}
+
+void printGlobal(char* instruction, char* type) {
+    fprintf(f,"%s %s\n", instruction, type);    
 }
 
 
@@ -126,13 +131,13 @@ node* GBCconstantstable(node* arg_node, info* arg_info) {
         cctype type = CONSTANTSTABLE_TYPE(table);
         char* _type = cctypeToString(type);
         if (type == T_int) {
-            printf("%s %s %d\n", CONST_TABLE, _type, CONSTANTSTABLE_INT(table));
+            fprintf(f,"%s %s %d\n", CONST_TABLE, _type, CONSTANTSTABLE_INT(table));
         }
         if (type == T_bool) {
-            printf("%s %s %d\n", CONST_TABLE, _type, CONSTANTSTABLE_BOOL(table));
+            fprintf(f,"%s %s %d\n", CONST_TABLE, _type, CONSTANTSTABLE_BOOL(table));
         }
         if (type == T_float) {
-            printf("%s %s %f\n", CONST_TABLE, _type, CONSTANTSTABLE_FLOAT(table));
+            fprintf(f,"%s %s %f\n", CONST_TABLE, _type, CONSTANTSTABLE_FLOAT(table));
         }
         table = CONSTANTSTABLE_NEXT(table);
     }
@@ -252,7 +257,7 @@ node* GBCfundef(node* arg_node, info* arg_info) {
         INFO_SCOPE(arg_info) -= 1;
     }
 
-    printf("\n");
+    fprintf(f,"\n");
     DBUG_RETURN(arg_node);
 }
 
@@ -354,16 +359,31 @@ node* GBCassign(node* arg_node, info* arg_info) {
     node* entry = ASSIGN_SYMBOLTABLEENTRY(arg_node);
     int index = SYMBOLTABLEENTRY_INDEX(entry);
     cctype type = SYMBOLTABLEENTRY_TYPE(entry);
-        
-    if (type == T_int) {
-        printOp1(ISTORE, index);
+    int scope = SYMBOLTABLEENTRY_SCOPE(entry);
+
+    if (scope == 0) {
+        if (type == T_int) {
+            printOp1(ISTOREG, index);
+        }
+        if (type == T_float) {
+            printOp1(FSTOREG, index);
+        }
+        if (type == T_bool) {
+            printOp1(BSTOREG, index);
+        }
     }
-    if (type == T_float) {
-        printOp1(FSTORE, index);
+    else {
+        if (type == T_int) {
+            printOp1(ISTORE, index);
+        }
+        if (type == T_float) {
+            printOp1(FSTORE, index);
+        }
+        if (type == T_bool) {
+            printOp1(BSTORE, index);
+        }
     }
-    if (type == T_bool) {
-        printOp1(BSTORE, index);
-    }
+    
 
     DBUG_RETURN(arg_node);
 }
@@ -419,7 +439,18 @@ node* GBCvarcall(node* arg_node, info* arg_info) {
     int scope = SYMBOLTABLEENTRY_SCOPE(entry);
     int current_scope = INFO_SCOPE(arg_info);
 
-    if (current_scope > scope) {
+    if (scope == 0) {
+        if (type == T_int) {
+            printOp1(ILOADG, index);
+        }
+        if (type == T_float) {
+            printOp1(FLOADG, index);
+        }
+        if (type == T_bool) {
+            printOp1(BLOADG, index);
+        }
+    }
+    else if (current_scope > scope) {
         if (type == T_int) {
             printOp2(ILOADN, current_scope - scope, index);
         }
@@ -679,10 +710,11 @@ node *GBCdoGenByteCode( node *syntaxtree)
 {
     DBUG_ENTER("GBCdoGenByteCode");
 
+    f = fopen("out.cvo", "w");
+
     info *arg_info;
 
     arg_info = MakeInfo();
-    printf("foo");
     /* Import variables */
     node* declarations = PROGRAM_DECLARATIONS(syntaxtree);
     while (declarations) {
@@ -710,6 +742,24 @@ node *GBCdoGenByteCode( node *syntaxtree)
             int index = SYMBOLTABLEENTRY_INDEX(entry);
             printVarExport(EXPORT_VAR, name, index);
 
+        }
+        declarations = DECLARATIONS_NEXT(declarations);
+    }
+
+    /* Global variables*/
+    declarations = PROGRAM_DECLARATIONS(syntaxtree);
+    while (declarations) {
+        
+        node* declaration = DECLARATIONS_DECLARATION(declarations);
+        if (NODE_TYPE(declaration) == N_globaldec) {
+            node* entry = GLOBALDEC_SYMBOLTABLEENTRY(declaration);
+            char* type = cctypeToString(SYMBOLTABLEENTRY_TYPE(entry));
+            printGlobal(GLOBAL_TABLE, type);
+        }
+        if (NODE_TYPE(declaration) == N_globaldef) {
+            node* entry = GLOBALDEF_SYMBOLTABLEENTRY(declaration);
+            char* type = cctypeToString(SYMBOLTABLEENTRY_TYPE(entry));
+            printGlobal(GLOBAL_TABLE, type);
         }
         declarations = DECLARATIONS_NEXT(declarations);
     }
