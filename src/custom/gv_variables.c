@@ -185,7 +185,7 @@ node *GVVdeclarations (node *arg_node, info *arg_info)
             if(exprs != NULL) {
                 GLOBALDEF_EXPRS(declaration) = NULL;
                 node *assignVar = TBmakeAssign(ident, exprs, NULL);
-                ASSIGN_SYMBOLTABLEENTRY(assignVar) = GLOBALDEC_SYMBOLTABLEENTRY(declaration);
+                ASSIGN_SYMBOLTABLEENTRY(assignVar) = GLOBALDEF_SYMBOLTABLEENTRY(declaration);
                 node *stmts = TBmakeStmts(assignVar, NULL);
                 if (INFO_STATEMENTS(arg_info) == NULL) {
                     INFO_STATEMENTS(arg_info) = stmts;
