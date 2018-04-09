@@ -296,10 +296,19 @@ node *CAVforstmt(node *arg_node, symboltables *tables) {
 
     FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), tables);
 
-    FORSTMT_SYMBOLTABLEENTRY(arg_node) = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                                                             STRcat("_", IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node))),
-                                                             T_int, 0,
-                                                             SYMBOLTABLES_INDEX(tables));
+
+    char* underName = STRcat("_", IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node)));
+    node* entry = searchSymbolTables(tables, underName, NULL);
+    if(entry == NULL) {
+        FORSTMT_SYMBOLTABLEENTRY(arg_node) = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
+                                                                 STRcat("_", IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node))),
+                                                                 T_int, 0,
+                                                                 SYMBOLTABLES_INDEX(tables));
+    } else {
+        FORSTMT_SYMBOLTABLEENTRY(arg_node) = entry;
+    }
+
+    free(underName);
 
     FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), tables);
 
