@@ -71,10 +71,17 @@ node *CAVvardec(node *arg_node, symboltables *tables)
     }
     else if(scope < SYMBOLTABLES_INDEX(tables)) {
         CTIwarn(WARNING_SHADOW_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
+
+        entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
+                                    STRcpy(IDENT_NAME(VARDEC_IDENT(arg_node))),
+                                    VARDEC_TYPE(arg_node), is_array,
+                                    SYMBOLTABLES_INDEX(tables));
+        VARDEC_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
         CTIerror(ERROR_REDEC_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
     }
+
     DBUG_RETURN( arg_node);
 }
 
@@ -296,10 +303,19 @@ node *CAVforstmt(node *arg_node, symboltables *tables) {
 
     FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), tables);
 
-    FORSTMT_SYMBOLTABLEENTRY(arg_node) = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
-                                                             STRcat("_", IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node))),
-                                                             T_int, 0,
-                                                             SYMBOLTABLES_INDEX(tables));
+
+    char* underName = STRcat("_", IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node)));
+    node* entry = searchSymbolTables(tables, underName, NULL);
+    if(entry == NULL) {
+        FORSTMT_SYMBOLTABLEENTRY(arg_node) = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
+                                                                 STRcat("_", IDENT_NAME(FORSTMT_ASSIGNVAR(arg_node))),
+                                                                 T_int, 0,
+                                                                 SYMBOLTABLES_INDEX(tables));
+    } else {
+        FORSTMT_SYMBOLTABLEENTRY(arg_node) = entry;
+    }
+
+    free(underName);
 
     FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), tables);
 
