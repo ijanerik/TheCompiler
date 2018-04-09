@@ -5,6 +5,7 @@
 #include "traverse.h"
 #include "dbug.h"
 #include "memory.h"
+#include "globals.h"
 
 #include "isa.h"
 #include "constants_table.h"
@@ -769,7 +770,12 @@ node *GBCdoGenByteCode( node *syntaxtree)
 {
     DBUG_ENTER("GBCdoGenByteCode");
 
-    f = fopen("out.cvo", "w");
+    if (global.outfile) {
+        f = fopen(global.outfile, "w");
+    }else{
+        f = stdout;
+    }
+    
 
     info *arg_info;
 
