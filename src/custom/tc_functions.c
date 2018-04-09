@@ -108,6 +108,7 @@ node *TCFfuncall(node *arg_node, info *arg_info) {
     node* params = FUNHEADER_PARAMS(funheader);
     
     if (params == NULL) {
+        INFO_SET_TYPE(arg_info, type);
         DBUG_RETURN( arg_node);
     }
     
@@ -146,13 +147,52 @@ node* TCFbinop(node *arg_node, info *arg_info)
     BINOP_RIGHT(arg_node) = TRAVdo(BINOP_RIGHT(arg_node), arg_info);
     cctype t2 = INFO_GET_TYPE(arg_info);
 
+    binop op = BINOP_OP(arg_node);
     if (t1 != t2) {
         CTIerror(ERROR_TYPE_BINOP, arg_node->lineno + 1, cctypeToString(t1),
                                                          cctypeToString(t2));
         INFO_SET_TYPE(arg_info, T_unknown);
+        DBUG_RETURN( arg_node);
+
     }
-    else {
-        INFO_SET_TYPE(arg_info, t1);
+
+    if (t1 == T_int) {
+        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne || op == BO_eq ){
+            INFO_SET_TYPE(arg_info, T_bool);
+            BINOP_TYPE(arg_node) = T_int;       
+        }
+        else if(op == BO_add || op == BO_sub || op == BO_mul || op == BO_div || op == BO_mod) {
+            INFO_SET_TYPE(arg_info, T_int);
+            BINOP_TYPE(arg_node) = T_int;       
+        }
+        else {
+             CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno + 1, "int");
+        }
+    }
+
+    if (t1 == T_float) {
+        if (op == BO_lt || op == BO_le || op == BO_gt || op == BO_ge || op == BO_ne || op == BO_eq ){
+            INFO_SET_TYPE(arg_info, T_bool);
+            BINOP_TYPE(arg_node) = T_float;       
+        }
+        else if (op == BO_add || op == BO_sub || op == BO_mul || op == BO_div ) {
+            INFO_SET_TYPE(arg_info, T_float);
+            BINOP_TYPE(arg_node) = T_float;       
+        }
+        else {
+            CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno + 1, "float");
+        }
+    }
+
+    if (t1 == T_bool) {
+        if (op == BO_and || op == BO_or || op == BO_ne || op == BO_eq ||
+            op == BO_add || op == BO_mul) {
+            INFO_SET_TYPE(arg_info, T_bool);  
+            BINOP_TYPE(arg_node) = T_bool;             
+        }
+        else {
+            CTIerror(ERROR_OP_NOT_SUP, arg_node->lineno + 1, "bool");
+        }
     }
 
     DBUG_RETURN( arg_node);

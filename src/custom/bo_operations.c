@@ -39,6 +39,9 @@ node* BObinop(node* arg_node, info *arg_info)
 
     // @ todo this crashes the program
     BINOP_CONDEXPR(arg_node) = expr; 
+    BINOP_LEFT(arg_node) = TBmakeNum(1);
+    BINOP_RIGHT(arg_node) = TBmakeNum(1);
+
 
     DBUG_RETURN(arg_node);
 }
