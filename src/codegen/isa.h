@@ -87,3 +87,4 @@ char* ISRN = "isrn";
 char* ISRL = "isrl";
 char* ISR = "isr";
 char* JSR = "jsr";
+char* JSRE = "jsre";

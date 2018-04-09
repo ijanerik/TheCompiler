@@ -100,8 +100,12 @@ void printFunction(char* name) {
     fprintf(f,"%s:\n", name);
 }
 
-void printJSR(char* instruction, int num, int index) {
-    fprintf(f,"\t%s %d %d\n", instruction, num, index);
+void printJSR(char* instruction, int num, char* name) {
+    fprintf(f,"\t%s %d %s\n", instruction, num, name);
+}
+
+void printJSRE(char* instruction, int index) {
+    fprintf(f,"\t%s %d\n", instruction, index);
 }
 
 void printFunExport(char* instruction, char* name, char* type) {
@@ -214,7 +218,15 @@ node* GBCfuncall(node* arg_node, info* arg_info) {
     }
 
     char* name = IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(fundef)));
-    printJSR(JSR, n_args, FUNDEF_INDEX(fundef));
+    // if extern
+    if (FUNDEF_FUNBODY(fundef) == NULL) {
+        printJSRE(JSRE, FUNDEF_INDEX(fundef));
+    }
+    else {
+        printJSR(JSR, n_args, name);
+    }
+    
+    
 
     DBUG_RETURN(arg_node);
 }
