@@ -47,7 +47,6 @@
         <traversal id="CAV" name="Context Analysis Variables" default="sons" include="ca_variables.h">
             <travuser>
                 <node name="VarDec" />
-                <node name="GlobalDec" />
                 <node name="GlobalDef" />
                 <node name="FunDef" />
                 <node name="Assign" />
@@ -100,7 +99,6 @@
             <travuser>
                 <node name="Program" />
                 <node name="Declarations" />
-                <node name="FunDef" />
                 <node name="VarDec" />
             </travuser>
         </traversal>
@@ -108,6 +106,7 @@
         <traversal id="CAF" name="Context Analysis Functions" default="sons" include="ca_functions.h">
             <travuser>
                 <node name="FunDef" />
+                <node name="FunDec" />
                 <node name="FunCall" />
                 <node name="Block" />
                 <node name="ReturnStmt" />
@@ -439,6 +438,17 @@
                 </type>
             </attribute>
             <attribute name="Scope">
+                <type name="Int">
+                    <targets>
+                        <target mandatory="no">
+                            <phases>
+                                <all />
+                            </phases>
+                        </target>
+                    </targets>
+                </type>
+            </attribute>
+             <attribute name="Index">
                 <type name="Int">
                     <targets>
                         <target mandatory="no">
