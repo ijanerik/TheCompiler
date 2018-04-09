@@ -138,8 +138,7 @@ node *TCVvardec(node *arg_node, info *arg_info)
                                          cctypeToString(declared_type),
                                          cctypeToString(inferred_type));
         }
-    } 
-
+    }
     DBUG_RETURN( arg_node);
 }
 

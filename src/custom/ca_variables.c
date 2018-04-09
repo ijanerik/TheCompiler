@@ -71,10 +71,17 @@ node *CAVvardec(node *arg_node, symboltables *tables)
     }
     else if(scope < SYMBOLTABLES_INDEX(tables)) {
         CTIwarn(WARNING_SHADOW_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
+
+        entry = addSymbolTableEntry(SYMBOLTABLES_CURRENT_TABLE(tables),
+                                    STRcpy(IDENT_NAME(VARDEC_IDENT(arg_node))),
+                                    VARDEC_TYPE(arg_node), is_array,
+                                    SYMBOLTABLES_INDEX(tables));
+        VARDEC_SYMBOLTABLEENTRY(arg_node) = entry;
     }
     else {
         CTIerror(ERROR_REDEC_VAR, arg_node->lineno + 1, IDENT_NAME(ident));
     }
+
     DBUG_RETURN( arg_node);
 }
 
