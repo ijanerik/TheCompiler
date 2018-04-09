@@ -24,6 +24,7 @@ struct INFO {
 
     cctype ret_type;
 
+    int import_cnt;
     bool is_returned;
 };
 
@@ -36,6 +37,7 @@ struct INFO {
 
 #define INFO_RETTYPE(n)  ((n)->ret_type)
 #define INFO_IS_RETURNED(n)  ((n)->is_returned)
+#define INFO_IMPORT_CNT(n)  ((n)->import_cnt)
 
 static info *MakeInfo(void)
 {
@@ -50,6 +52,7 @@ static info *MakeInfo(void)
     INFO_DOWHILECNT(result) = 0;
     INFO_FORCNT(result) = 0;
     INFO_IFCNT(result) = 0;
+    INFO_IMPORT_CNT(result) = 0;
     INFO_RETTYPE(result) = T_unknown;
 
     DBUG_RETURN( result);
@@ -97,16 +100,16 @@ void printFunction(char* name) {
     fprintf(f,"%s:\n", name);
 }
 
-void printJSR(char* instruction, int num, char* name) {
-    fprintf(f,"\t%s %d %s\n", instruction, num, name);
+void printJSR(char* instruction, int num, int index) {
+    fprintf(f,"\t%s %d %d\n", instruction, num, index);
 }
 
-void printFunExport(char* instruction, char* name, char* type, char* label) {
-    fprintf(f,"%s \"%s\" %s %s\n", instruction, name, type, label);    
+void printFunExport(char* instruction, char* name, char* type) {
+    fprintf(f,"%s \"%s\" %s", instruction, name, type);    
 }
 
 void printFunImport(char* instruction, char* name, char* type) {
-    fprintf(f,"%s \"%s\" %s\n", instruction, name, type);    
+    fprintf(f,"%s \"%s\" %s", instruction, name, type);    
 }
 
 void printVarImport(char* instruction, char* name, char* type) {
@@ -211,7 +214,7 @@ node* GBCfuncall(node* arg_node, info* arg_info) {
     }
 
     char* name = IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(fundef)));
-    printJSR(JSR, n_args, name);
+    printJSR(JSR, n_args, FUNDEF_INDEX(fundef));
 
     DBUG_RETURN(arg_node);
 }
@@ -261,11 +264,26 @@ node* GBCfundef(node* arg_node, info* arg_info) {
     char* name = IDENT_NAME(ident);
 
     if (FUNDEF_EXPORT(arg_node) == TRUE) {
-        printFunExport(EXPORT_FUN, name, cctypeToString(type), name);
+        printFunExport(EXPORT_FUN, name, cctypeToString(type));
+        node* params = FUNHEADER_PARAMS(FUNDEF_FUNHEADER(arg_node));
+        while (params) {
+            fprintf(f, " %s", cctypeToString(PARAM_TYPE(PARAMS_PARAM(params))));
+            params = PARAMS_NEXT(params);
+        }
+        fprintf(f, " %s\n", name);
     }
 
     if(FUNDEF_FUNBODY(arg_node) == NULL) {
+        FUNDEF_INDEX(arg_node) = INFO_IMPORT_CNT(arg_info);
+        INFO_IMPORT_CNT(arg_info) += 1;
+
         printFunImport(IMPORT_FUN, name, cctypeToString(type));
+        node* params = FUNHEADER_PARAMS(FUNDEF_FUNHEADER(arg_node));
+        while (params) {
+            fprintf(f, " %s", cctypeToString(PARAM_TYPE(PARAMS_PARAM(params))));
+            params = PARAMS_NEXT(params);
+        }
+        fprintf(f, "\n");
     }
     else {
         printFunction(name);
@@ -273,7 +291,7 @@ node* GBCfundef(node* arg_node, info* arg_info) {
     
     //printf("var_cnt: %d\n", var_cnt);
 
-    if (var_cnt > 0) {
+    if (var_cnt > 0 && FUNDEF_FUNBODY(arg_node) != NULL) {
         printOp1(ESR, var_cnt);
     }
 
