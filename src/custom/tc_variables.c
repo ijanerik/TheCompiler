@@ -209,8 +209,11 @@ node *TCVvarcall(node *arg_node, info *arg_info) {
 node *TCVfuncall(node *arg_node, info *arg_info) {
     DBUG_ENTER("TCVfuncall");
 
+    
     node* fundef = FUNCALL_SYMBOLTABLEENTRY(arg_node);
+
     node* funheader = FUNDEF_FUNHEADER(fundef);
+   
     cctype type = FUNHEADER_RETTYPE(funheader);
 
     INFO_SET_TYPE(arg_info, type);

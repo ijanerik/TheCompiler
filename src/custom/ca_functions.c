@@ -2,6 +2,8 @@
 #include "str.h"
 #include "errors.h"
 
+node* root_node;
+
 struct INFO {
     node* table_stack[32];
     int index;
@@ -22,15 +24,14 @@ struct INFO {
 
 #define TABLES_NO_RETURN(n) ((n)->no_return)
 
-bool equalFunDefCall(node* funDef, node* funCall) {
-    if(NODE_TYPE(funCall) == N_funcall) {
-        return STReq(IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(funDef))), IDENT_NAME(FUNCALL_IDENT(funCall)));
-    } else if(NODE_TYPE(funCall) == N_fundef) {
-        return STReq(IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(funDef))),
-                     IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(funCall))));
-    } else {
-        return 0;
-    }
+bool is_equal(node* funDef, node* fun) {
+    if(NODE_TYPE(fun) == N_funcall) {
+        return STReq(IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(funDef))), IDENT_NAME(FUNCALL_IDENT(fun)));
+    } 
+    if(NODE_TYPE(fun) == N_fundef) {
+        return fun == funDef ;
+    } 
+    return 0;
 }
 
 /**
@@ -41,80 +42,27 @@ bool equalFunDefCall(node* funDef, node* funCall) {
  * @param times
  * @return
  */
-node* searchFunctionTable(node* table, node* funCall, int* times) {
-    DBUG_ENTER("searchFunctionTable");
-    node* currentNode;
+node* searchFunctionTable(node* fun, int* times) {
+    node* declarations;
     node* foundNode = NULL;
-    node* funDef;
-    int timesFound = 0;
+    
+    if(NODE_TYPE(root_node) == N_program) {
+        declarations = PROGRAM_DECLARATIONS(root_node);
+    } 
 
-    if(NODE_TYPE(table) == N_program) {
-        currentNode = PROGRAM_DECLARATIONS(table);
-    } else if(NODE_TYPE(table) == N_fundef) {
-        currentNode = FUNDEF_FUNBODY(table);
-        if(currentNode == NULL) {
-            CTIerror(ERROR_INCORRECT_FUNCTION_TABLE);
-            DBUG_RETURN(foundNode);
-            return NULL;
+    while(declarations != NULL) {
+        node* declaration = DECLARATIONS_DECLARATION(declarations);
+        
+        if (NODE_TYPE(declaration) == N_fundef &&
+            is_equal(declaration, fun)) {
+            foundNode = declaration;
+            *times += 1; 
         }
-        currentNode = FUNBODY_FUNDEFS(currentNode);
-        if(currentNode == NULL) {
-            DBUG_RETURN(foundNode);
-            return NULL;
-        }
-    } else {
-        CTIerror(ERROR_INCORRECT_FUNCTION_TABLE);
-        DBUG_RETURN(foundNode);
-        return NULL;
+
+        declarations = DECLARATIONS_NEXT(declarations);
     }
 
-    while(currentNode != NULL) {
-        if(NODE_TYPE(currentNode) == N_declarations) {
-            // If the declaration is empty
-            if(DECLARATIONS_DECLARATION(currentNode) == NULL) {
-                currentNode = DECLARATIONS_NEXT(currentNode);
-                continue;
-            }
-
-            // If not a fundef node
-            if(NODE_TYPE(DECLARATIONS_DECLARATION(currentNode)) != N_fundef) {
-                currentNode = DECLARATIONS_NEXT(currentNode);
-                continue;
-            }
-
-            // Otherwise update current FunDef and currentNode for next round
-            funDef = DECLARATIONS_DECLARATION(currentNode);
-            currentNode = DECLARATIONS_NEXT(currentNode);
-
-        } else if(NODE_TYPE(currentNode) == N_fundefs) {
-            // If the declaration is empty
-            if(FUNDEFS_FUNDEF(currentNode) == NULL) {
-                currentNode = FUNDEFS_NEXT(currentNode);
-                continue;
-            }
-
-            // Otherwise update current FunDef and currentNode for next round
-            funDef = FUNDEFS_FUNDEF(currentNode);
-            currentNode = FUNDEFS_NEXT(currentNode);
-        } else {
-            break;
-        }
-
-        // If funDef == funCall then found and return in the end the first found.
-        if(equalFunDefCall(funDef, funCall)) {
-            if(foundNode == NULL) {
-                foundNode = funDef;
-            }
-
-            timesFound++;
-        }
-    }
-
-    if(times != NULL) {
-        *times = timesFound;
-    }
-    DBUG_RETURN(foundNode);
-    return foundNode;
+    return foundNode;    
 }
 
 /**
@@ -125,25 +73,25 @@ node* searchFunctionTable(node* table, node* funCall, int* times) {
  * @param totalTimes
  * @return
  */
-node* searchFunctionTables(info *tables, node* funCall, int *totalTimes) {
-    DBUG_ENTER("searchFunctionTables");
-    node* returnNode = NULL;
-    for(int i = TABLES_INDEX(tables); i >= 0; i--) {
-        int times = 0;
-        node *foundNode = searchFunctionTable(TABLES_GET_TABLE(tables, i), funCall, &times);
-        if (foundNode != NULL) {
-            returnNode = foundNode;
-            break;
-        }
+// node* searchFunctionTables(info *tables, node* funCall, int *totalTimes) {
+//     DBUG_ENTER("searchFunctionTables");
+//     node* returnNode = NULL;
+//     for(int i = TABLES_INDEX(tables); i >= 0; i--) {
+//         int times = 0;
+//         node *foundNode = searchFunctionTable(TABLES_GET_TABLE(tables, i), funCall, &times);
+//         if (foundNode != NULL) {
+//             returnNode = foundNode;
+//             break;
+//         }
 
-        if(totalTimes != NULL) {
-            *totalTimes = *totalTimes + times;
-        }
-    }
+//         if(totalTimes != NULL) {
+//             *totalTimes = *totalTimes + times;
+//         }
+//     }
 
-    DBUG_RETURN(returnNode);
-    return returnNode;
-}
+//     DBUG_RETURN(returnNode);
+//     return returnNode;
+// }
 
 info* MakeTables(void)
 {
@@ -184,14 +132,31 @@ node *CAFprogram(node *arg_node, info *tables)
     DBUG_RETURN( arg_node);
 }
 
+// node* CAFfundec(node *arg_node, info *tables) {
+//     DBUG_ENTER("CAFfundef");
+
+//     int times = 0;
+//     searchFunctionTable(TABLES_CURRENT_TABLE(tables), arg_node, &times);
+
+//     if(times > 1) {
+//         CTIerror(ERROR_REDEC_FUNC, arg_node->lineno + 1, IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(arg_node))));
+//     }
+
+//     FUNDEC_FUNHEADER(arg_node) = TRAVdo(FUNDEC_FUNHEADER(arg_node), tables);
+
+
+//     DBUG_RETURN( arg_node);
+// }
+
 node *CAFfundef(node *arg_node, info *tables)
 {
     DBUG_ENTER("CAFfundef");
 
     // Search on the same level for duplicates.
     // Overloading is possible, but on the same level gives a duplicate conflict
+    
     int times = 0;
-    searchFunctionTable(TABLES_CURRENT_TABLE(tables), arg_node, &times);
+    searchFunctionTable(arg_node, &times);
 
     if(times > 1) {
         CTIerror(ERROR_REDEC_FUNC, arg_node->lineno + 1, IDENT_NAME(FUNHEADER_IDENT(FUNDEF_FUNHEADER(arg_node))));
@@ -274,16 +239,18 @@ node* CAFblock(node *arg_node, info *tables) {
 node* CAFifelsestmt(node *arg_node, info *tables) {
     DBUG_ENTER("CAFifelsestmt");
 
-    if (TABLES_NO_RETURN(tables)) {
-        IFELSESTMT_IFBLOCK(arg_node) = TRAVdo(IFELSESTMT_IFBLOCK(arg_node), tables);
-        if (!TABLES_NO_RETURN(tables)) {
-            TABLES_NO_RETURN(tables) = 1;
-            
-            if (IFELSESTMT_ELSEBLOCK(arg_node)) {
-                IFELSESTMT_ELSEBLOCK(arg_node) = TRAVdo(IFELSESTMT_ELSEBLOCK(arg_node), tables);
-            }
-        }   
+    IFELSESTMT_IFBLOCK(arg_node) = TRAVdo(IFELSESTMT_IFBLOCK(arg_node), tables);
+
+    if (IFELSESTMT_ELSEBLOCK(arg_node)) {
+            IFELSESTMT_ELSEBLOCK(arg_node) = TRAVdo(IFELSESTMT_ELSEBLOCK(arg_node), tables);
     }
+
+    // if (TABLES_NO_RETURN(tables)) {
+        
+        
+            
+        
+    // }
     
     DBUG_RETURN( arg_node);
 }
@@ -294,9 +261,11 @@ node *CAFfuncall(node *arg_node, info *tables)
 
     // Check if you can find the function in one of the tables.
     // Otherwise give a error.
-    node* foundNode = searchFunctionTables(tables, arg_node, NULL);
-    if(foundNode != NULL) {
-        FUNCALL_SYMBOLTABLEENTRY(arg_node) = foundNode;
+    int times = 0;
+    node* entry = searchFunctionTable(arg_node, &times);
+    
+    if(entry != NULL) {
+        FUNCALL_SYMBOLTABLEENTRY(arg_node) = entry;
     } else {
         CTIerror(ERROR_UNDEC_FUNC, arg_node->lineno + 1, IDENT_NAME(FUNCALL_IDENT(arg_node)));
     }
@@ -315,7 +284,7 @@ node *CAFdoFunctions( node *syntaxtree)
     DBUG_ENTER("CAVdoFunctions");
 
     tables = MakeTables();
-
+    root_node = syntaxtree;
     TRAVpush(TR_caf);
     syntaxtree = TRAVdo( syntaxtree, tables);
     TRAVpop();
