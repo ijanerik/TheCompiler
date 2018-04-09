@@ -66,6 +66,7 @@ node* TCVcastexpr(node* arg_node, info *arg_info)
         node* condexpr = TBmakeCondexpr(TBmakeBool(TRUE), TBmakeBool(FALSE),
                                         binop);
         CASTEXPR_CONDEXPR(arg_node) = condexpr;
+        CASTEXPR_EXPR(arg_node) = TBmakeNum(0);
     }
     else if (type == T_int && expr_type == T_bool) {
         node* binop = TBmakeBinop(BO_eq, expr, TBmakeBool(TRUE), NULL);
@@ -73,6 +74,7 @@ node* TCVcastexpr(node* arg_node, info *arg_info)
         node* condexpr = TBmakeCondexpr(TBmakeNum(1), TBmakeNum(0),
                                         binop);
         CASTEXPR_CONDEXPR(arg_node) = condexpr;
+        CASTEXPR_EXPR(arg_node) = TBmakeNum(0);
     }
     else if (type == T_float && expr_type == T_bool) {
         node* binop = TBmakeBinop(BO_eq, expr, TBmakeBool(TRUE), NULL);
@@ -80,6 +82,7 @@ node* TCVcastexpr(node* arg_node, info *arg_info)
         node* condexpr = TBmakeCondexpr(TBmakeFloat(1.0), TBmakeFloat(0.0),
                                         binop);
         CASTEXPR_CONDEXPR(arg_node) = condexpr;
+        CASTEXPR_EXPR(arg_node) = TBmakeNum(0);
     }
     else if (type == T_bool && expr_type == T_float) {
         node* binop = TBmakeBinop(BO_ge, expr, TBmakeFloat(1.0), NULL);
@@ -87,6 +90,7 @@ node* TCVcastexpr(node* arg_node, info *arg_info)
         node* condexpr = TBmakeCondexpr(TBmakeBool(TRUE), TBmakeBool(FALSE),
                                         binop);
         CASTEXPR_CONDEXPR(arg_node) = condexpr;
+        CASTEXPR_EXPR(arg_node) = TBmakeNum(0);
     }
 
     INFO_SET_TYPE(arg_info, type);
@@ -208,11 +212,13 @@ node *TCVvarcall(node *arg_node, info *arg_info) {
 node *TCVfuncall(node *arg_node, info *arg_info) {
     DBUG_ENTER("TCVfuncall");
 
-    
     node* fundef = FUNCALL_SYMBOLTABLEENTRY(arg_node);
-
     node* funheader = FUNDEF_FUNHEADER(fundef);
-   
+
+    if (FUNCALL_ARGS(arg_node)) {
+        FUNCALL_ARGS(arg_node) = TRAVdo(FUNCALL_ARGS(arg_node), arg_info);
+    }
+    
     cctype type = FUNHEADER_RETTYPE(funheader);
 
     INFO_SET_TYPE(arg_info, type);

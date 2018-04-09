@@ -395,6 +395,7 @@ node* GBCcastexpr(node* arg_node, info* arg_info) {
     cctype expr_type = CASTEXPR_EXPRTYPE(arg_node);
 
     if (CASTEXPR_CONDEXPR(arg_node)) {
+        printf("conditional??");
         CASTEXPR_CONDEXPR(arg_node) = TRAVdo(CASTEXPR_CONDEXPR(arg_node), arg_info);
     }
     else {
@@ -698,7 +699,9 @@ node* GBCbinop(node* arg_node, info* arg_info) {
         if (BINOP_TYPE(arg_node) == T_int) {
             printOp0(IADD);
         }
-        
+        if (BINOP_TYPE(arg_node) == T_bool) {
+            printOp0(BADD);
+        }
     }
 
     if (BINOP_OP(arg_node) == BO_sub) {
@@ -716,6 +719,9 @@ node* GBCbinop(node* arg_node, info* arg_info) {
         }
         if (BINOP_TYPE(arg_node) == T_float) {
             printOp0(FMUL);
+        }
+        if (BINOP_TYPE(arg_node) == T_bool) {
+            printOp0(BMUL);
         }
     }
 

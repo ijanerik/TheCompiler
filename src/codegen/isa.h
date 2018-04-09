@@ -38,6 +38,9 @@ char* BNOT = "bnot";
 char* INEG = "ineg";
 char* FNEG = "fneg";
 
+char* BMUL = "bmul";
+char* BADD = "badd";
+
 /* CONVERSION INSTRUCTIONS */
 
 char* I2F = "i2f";
