@@ -43,7 +43,7 @@ bool is_equal(node* funDef, node* fun) {
  * @return
  */
 node* searchFunctionTable(node* fun, int* times) {
-    node* declarations;
+    node* declarations = NULL;
     node* foundNode = NULL;
     
     if(NODE_TYPE(root_node) == N_program) {

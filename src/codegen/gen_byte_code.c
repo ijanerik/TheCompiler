@@ -198,7 +198,7 @@ node* GBCfuncall(node* arg_node, info* arg_info) {
         printOp0(ISR);
     }
 
-    if (FUNCALL_ARGS(arg_node)) {
+    if (FUNCALL_ARGS(arg_node) != NULL) {
         FUNCALL_ARGS(arg_node) = TRAVdo(FUNCALL_ARGS(arg_node), arg_info);
     }
 
@@ -606,25 +606,35 @@ node* GBCdowhilestmt(node* arg_node, info* arg_info) {
 node* GBCforstmt(node* arg_node, info* arg_info) {
     DBUG_ENTER("GBCforstmt");
 
+
     int id = INFO_FORCNT(arg_info);
     char* FOR_LABEL = "FOR";
     char* END_FOR_LABEL = "ENDFOR";
 
-    FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), arg_info);
+    if(FORSTMT_ASSIGNEXPR(arg_node) != NULL) {
+        FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), arg_info);
+    }
     node* entry = FORSTMT_SYMBOLTABLEENTRY(arg_node);
     printOp1(ISTORE, SYMBOLTABLEENTRY_INDEX(entry));
 
     printLabel(FOR_LABEL, id);
-    printOp1(ILOAD, SYMBOLTABLEENTRY_INDEX(entry));  
-    
-    FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), arg_info);
+    printOp1(ILOAD, SYMBOLTABLEENTRY_INDEX(entry));
+
+    if(FORSTMT_COMPAREEXPR(arg_node) != NULL) {
+        FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), arg_info);
+    }
 
     printOp0(ILT);
     printBranch(BRANCH_F, END_FOR_LABEL, id);
 
-    FORSTMT_BLOCK(arg_node) = TRAVdo(FORSTMT_BLOCK(arg_node), arg_info);    
+    if(FORSTMT_BLOCK(arg_node) != NULL) {
+        FORSTMT_BLOCK(arg_node) = TRAVdo(FORSTMT_BLOCK(arg_node), arg_info);
+    }
 
-    FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), arg_info);
+    if(FORSTMT_UPDATEEXPR(arg_node) != NULL) {
+        FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), arg_info);
+    }
+
 
     printOp1(ILOAD, SYMBOLTABLEENTRY_INDEX(entry));
     printOp0(IADD);

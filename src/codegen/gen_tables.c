@@ -115,14 +115,20 @@ node* GTforstmt(node* arg_node, info *arg_info) {
     node* entry = FORSTMT_SYMBOLTABLEENTRY(arg_node);
     SYMBOLTABLEENTRY_INDEX(entry) = INFO_NEW_INDEX(arg_info);
 
-    FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), arg_info);
-    FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), arg_info);
+    if(FORSTMT_ASSIGNEXPR(arg_node) != NULL) {
+        FORSTMT_ASSIGNEXPR(arg_node) = TRAVdo(FORSTMT_ASSIGNEXPR(arg_node), arg_info);
+    }
+    if(FORSTMT_COMPAREEXPR(arg_node) != NULL) {
+        FORSTMT_COMPAREEXPR(arg_node) = TRAVdo(FORSTMT_COMPAREEXPR(arg_node), arg_info);
+    }
 
     if (FORSTMT_BLOCK(arg_node)) {
         FORSTMT_BLOCK(arg_node) = TRAVdo(FORSTMT_BLOCK(arg_node), arg_info);
     }
 
-    FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), arg_info);
+    if( FORSTMT_UPDATEEXPR(arg_node) != NULL) {
+        FORSTMT_UPDATEEXPR(arg_node) = TRAVdo(FORSTMT_UPDATEEXPR(arg_node), arg_info);
+    }
 
     DBUG_RETURN(arg_node);
 }
